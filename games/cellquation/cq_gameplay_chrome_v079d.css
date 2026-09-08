@@ -1,0 +1,409 @@
+/*
+ * Cellquation v0.7.9d — Gameplay Chrome
+ * --------------------------------------
+ * Permanent gameplay shell migration for the v0.7.9 UI system.
+ * Art direction: Living world. Precise interface.
+ *
+ * Scope:
+ *   - top HUD / goal / move readout
+ *   - stage hint + transient selection/debug chrome
+ *   - bottom gameplay toolbar
+ *
+ * Explicitly out of scope until v0.7.9e:
+ *   settings, pause, result/completion, error dialogs, tutorial overlays.
+ *
+ * No blur/backdrop-filter: deliberately A20-safe.
+ */
+
+body[data-screen="play"][data-gameplay-chrome="v079d"] {
+  --cq-chrome-line: var(--cq-ui-line, rgba(147,212,229,.13));
+  --cq-chrome-line-strong: var(--cq-ui-line-strong, rgba(147,212,229,.24));
+  --cq-chrome-text-1: var(--cq-ui-text-1, #f2fbff);
+  --cq-chrome-text-2: var(--cq-ui-text-2, #b7cdd5);
+  --cq-chrome-text-3: var(--cq-ui-text-3, #7f9aa4);
+  --cq-chrome-accent: var(--cq-ui-cyan, #5ee4ff);
+  --cq-chrome-accent-line: rgba(94, 228, 255, .55);
+  --cq-chrome-surface: rgba(3, 16, 23, .79);
+  --cq-chrome-surface-deep: rgba(2, 12, 18, .88);
+  --cq-chrome-control: 8px;
+  --cq-chrome-safe-x: max(14px, env(safe-area-inset-left));
+}
+
+body[data-screen="play"][data-gameplay-chrome="v079d"][data-campaign="living"] {
+  --cq-chrome-accent: var(--cq-ui-green, #64e9ad);
+  --cq-chrome-accent-line: rgba(100, 233, 173, .55);
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"][data-colour="three"][data-campaign="foundations"] {
+  --cq-chrome-accent: var(--cq-ui-violet, #c486ff);
+  --cq-chrome-accent-line: rgba(196, 134, 255, .55);
+}
+
+/* Full-screen shell stays structurally identical; only the permanent chrome changes. */
+body[data-screen="play"][data-gameplay-chrome="v079d"] .play-app {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+/* ---------- Top gameplay bar ---------- */
+body[data-screen="play"][data-gameplay-chrome="v079d"] .top {
+  position: relative;
+  z-index: 8;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: "meta targets moves";
+  align-items: center;
+  gap: 14px;
+  min-height: 74px;
+  margin: 0;
+  padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
+  border: 0;
+  border-bottom: 1px solid var(--cq-chrome-line);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(2,16,23,.91) 0%, rgba(3,17,24,.78) 72%, rgba(3,17,24,.54) 100%);
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .top::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 0 5%, var(--cq-chrome-accent) 48% 52%, transparent 95% 100%);
+  opacity: .10;
+}
+
+body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta {
+  grid-area: meta;
+  min-width: 0;
+  align-self: center;
+  padding-left: 1px;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta b {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--cq-chrome-text-1);
+  font-size: 14px;
+  font-weight: 830;
+  line-height: 1.12;
+  letter-spacing: .055em;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta small {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px 6px;
+  margin-top: 4px;
+  color: var(--cq-chrome-text-3);
+  font-size: 11.5px;
+  line-height: 1.2;
+  letter-spacing: .025em;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta small span { white-space: nowrap; }
+
+body[data-screen="play"][data-gameplay-chrome="v079d"] .movebox {
+  grid-area: moves;
+  justify-self: end;
+  min-width: 0;
+  padding-right: 1px;
+  text-align: right;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .movebox b {
+  display: block;
+  color: var(--cq-chrome-text-1);
+  font: 780 12.5px/1.1 var(--cq-ui-mono, var(--cq-mono));
+  letter-spacing: .025em;
+  white-space: nowrap;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .movebox small {
+  display: block;
+  margin-top: 4px;
+  color: var(--cq-chrome-text-3);
+  font-size: 11.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* The goal cells stay organic; the surrounding UI becomes quiet and exact. */
+body[data-screen="play"][data-gameplay-chrome="v079d"] .targets {
+  grid-area: targets;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  min-width: 0;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .target {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  filter: drop-shadow(0 4px 9px rgba(0,0,0,.24));
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .target img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .target strong {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #f7fdff;
+  font-size: 19px;
+  font-weight: 850;
+  line-height: 1;
+  text-shadow: 0 1px 5px #000, 0 0 5px rgba(0,0,0,.58);
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .target + .target::before {
+  content: ":";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translate(-50%, -52%);
+  color: rgba(161, 195, 206, .68);
+  font: 760 14px/1 var(--cq-ui-mono, var(--cq-mono));
+  text-shadow: none;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .three-targets {
+  gap: 9px;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .three-targets .target {
+  width: 45px;
+  height: 45px;
+  flex-basis: 45px;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .three-targets .target strong { font-size: 18px; }
+
+/* ---------- Stage-adjacent information ---------- */
+body[data-screen="play"][data-gameplay-chrome="v079d"] .stage {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .hint {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  bottom: 8px;
+  width: min(92%, 760px);
+  max-width: 760px;
+  transform: translateX(-50%);
+  padding: 7px 16px;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(2,13,19,.62) 14%, rgba(2,13,19,.76) 50%, rgba(2,13,19,.62) 86%, transparent 100%);
+  box-shadow: none;
+  color: rgba(207, 226, 232, .86);
+  font-size: 12.5px;
+  line-height: 1.32;
+  text-align: center;
+  pointer-events: none;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .selection {
+  top: 10px;
+  right: 12px;
+  padding: 5px 8px 5px 9px;
+  border: 0;
+  border-left: 2px solid var(--cq-chrome-accent-line);
+  border-radius: 0;
+  background: rgba(1, 10, 15, .66);
+  box-shadow: none;
+  color: #a8c4cd;
+  font-size: 11.5px;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .debug {
+  top: 10px;
+  left: 12px;
+  padding: 5px 7px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(1, 10, 15, .62);
+  box-shadow: none;
+}
+
+/* ---------- Bottom edge toolbar ---------- */
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom {
+  position: relative;
+  z-index: 8;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+  min-height: 62px;
+  margin: 0;
+  padding: 4px max(12px, env(safe-area-inset-right)) 5px max(12px, env(safe-area-inset-left));
+  border: 0;
+  border-top: 1px solid var(--cq-chrome-line);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(3,17,24,.62) 0%, rgba(2,14,20,.86) 35%, rgba(2,12,18,.94) 100%);
+  box-shadow: 0 -8px 24px rgba(0,0,0,.10);
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button,
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: auto;
+  max-width: 180px;
+  min-width: 0;
+  min-height: 52px;
+  padding: 3px 7px 4px;
+  border: 0;
+  border-radius: var(--cq-chrome-control);
+  background: transparent;
+  color: #98b2bc;
+  text-decoration: none;
+  text-align: center;
+  font-size: 11.75px;
+  font-weight: 720;
+  line-height: 1.05;
+  transition: color 120ms ease, background-color 120ms ease, transform 80ms ease;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button::before,
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a::before {
+  width: 21px;
+  height: 21px;
+  margin: 0 auto 2px;
+  opacity: .78;
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button:active,
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a:active {
+  transform: scale(.985);
+  color: var(--cq-chrome-text-1);
+  background: rgba(103, 212, 237, .07);
+}
+@media (hover:hover) {
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button:hover,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a:hover {
+    color: #d7e9ee;
+    background: rgba(103, 212, 237, .045);
+  }
+}
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button:focus-visible,
+body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a:focus-visible {
+  outline: 2px solid var(--cq-chrome-accent);
+  outline-offset: -2px;
+}
+
+/* ---------- Portrait phones ---------- */
+@media (max-width: 480px) and (orientation: portrait) {
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "meta moves"
+      "targets targets";
+    column-gap: 10px;
+    row-gap: 2px;
+    min-height: 112px;
+    padding: 7px 12px 6px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .targets { justify-self: center; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .target {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .target strong { font-size: 18px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .three-targets .target {
+    width: 41px;
+    height: 41px;
+    flex-basis: 41px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .three-targets .target strong { font-size: 17px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta b { font-size: 13px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta small,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .movebox small { font-size: 11px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .movebox b { font-size: 12px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .hint {
+    bottom: 6px;
+    width: 96%;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom { min-height: 61px; padding-inline: 5px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a {
+    min-height: 52px;
+    padding-inline: 3px;
+    font-size: 11.5px;
+  }
+}
+
+/* ---------- Low-height landscape / A20 target ---------- */
+@media (max-height: 650px) and (orientation: landscape) {
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .top {
+    min-height: 62px;
+    gap: 10px;
+    padding: 5px max(12px, env(safe-area-inset-right)) 5px max(12px, env(safe-area-inset-left));
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .target {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .target strong { font-size: 16.5px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .three-targets {
+    gap: 8px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .three-targets .target {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .three-targets .target strong { font-size: 15.5px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .target + .target::before {
+    left: -6px;
+    font-size: 12px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta b,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .movebox b { font-size: 12.25px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta small,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .movebox small { font-size: 11px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .hint {
+    bottom: 4px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom {
+    min-height: 56px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a {
+    min-height: 50px;
+    font-size: 11.25px;
+  }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button::before,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a::before {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 1px;
+  }
+}
+
+/* ---------- Very narrow phones ---------- */
+@media (max-width: 360px) {
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .top { padding-inline: 9px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta b { font-size: 12.5px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .level-meta small,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .movebox small { font-size: 10.75px; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a { transition: none; }
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom button:active,
+  body[data-screen="play"][data-gameplay-chrome="v079d"] .bottom a:active { transform: none; }
+}

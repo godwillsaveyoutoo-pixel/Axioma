@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#e8e5dc"><title>Gravity Maze — basis + Tier 2</title>
+  <link rel="icon" href="data:,"><link rel="stylesheet" href="style.css">
+  <script defer src="legacy-engine.js"></script><script defer src="engine.js"></script><script defer src="levels.js"></script><script defer src="save-migration.js"></script><script defer src="telemetry.js"></script><script defer src="game.js"></script>
+</head>
+<body>
+  <main>
+    <div class="play">
+      <section class="field" aria-label="Puzzelkamer"><canvas id="board" tabindex="0" aria-label="Speelveld. Gebruik de twee grote pijlen of de pijltjestoetsen. Gravity verandert wanneer je een pijl in de kamer raakt."></canvas><div id="win" hidden><p class="overline">DOORGANG GEVONDEN</p><h1 id="win-title">De kamer klopt.</h1><p id="win-note"></p><button id="next">Volgende kamer →</button><button id="replay" class="text-button">Deze opnieuw</button></div></section>
+      <button id="negative" class="move" aria-label="Beweeg naar links"><span aria-hidden="true">←</span></button>
+      <button id="positive" class="move" aria-label="Beweeg naar rechts"><span aria-hidden="true">→</span></button>
+      <button id="reset" class="retry" aria-label="Kamer opnieuw beginnen" title="Opnieuw (R)"><span aria-hidden="true">↺</span></button>
+      <button id="menu-handle" aria-label="Open spelmenu" aria-controls="top-menu" aria-expanded="false"><span aria-hidden="true"></span></button>
+      <header id="top-menu" aria-label="Spelmenu" inert>
+        <button id="menu-close" class="menu-icon" aria-label="Terug naar het spel">⌃</button>
+        <button id="level-menu" aria-label="Kies een kamer"><span id="level-number">1 / 9</span><span id="level-name">MASS-6</span><span aria-hidden="true">⌄</span></button>
+        <button id="undo" class="menu-icon" aria-label="Laatste beslissing terugdraaien" title="Terug (Z)">↶</button>
+        <button id="hint" class="menu-icon" aria-label="Geef een hint" hidden>◌</button>
+        <button id="pace" class="menu-icon" aria-label="Animatiesnelheid aanpassen">1×</button>
+        <button id="help" class="menu-icon" aria-label="Spelregels">?</button>
+      </header>
+      <div id="status-toast" hidden></div>
+      <div class="sr-only"><span id="gravity" aria-label="Actieve zwaartekracht">↓</span><p id="status" role="status" aria-live="polite"></p><span id="moves">0 zetten</span></div>
+    </div>
+  </main>
+  <dialog id="selection"><div class="dialog-top"><div><p class="overline">6 BASISLEVELS + 3 TIER-2-KANDIDATEN</p><h2>Kies een kamer.</h2></div><button class="close" data-close="selection" aria-label="Sluiten">×</button></div><p class="intro">Bereik de uitgang. Elke kamer is direct beschikbaar.</p><div id="level-list"></div><p class="dialog-foot">Witte figuur = jij · Massieve steen = contragewicht · Gevulde pijl = eenmalig · Dubbele inkeping = vaste verbinding</p></dialog>
+  <dialog id="instructions"><div class="dialog-top"><h2>Alleen de wereld schakelt.</h2><button class="close" data-close="instructions" aria-label="Sluiten">×</button></div><p>Tik een grote pijl om langs je vloer te lopen. De beweging loopt vanzelf af tot de volgende beslissing.</p><p>Een gevulde pijl in de kamer verandert de zwaartekracht <strong>bij aanraking</strong> en verdwijnt. Ook als je al in die richting valt.</p><p>Alle stenen bewegen onder dezelfde zwaartekracht en hebben dezelfde eigenschappen. Je kunt ze niet duwen of oppakken. Iedereen beweegt gelijktijdig, cel voor cel. Een lichaam kan een ander tegenhouden; een volger mag de vrijgekomen plek innemen. Niemand wordt verpletterd.</p><p>Een steen kan een pijl of de uitgang bedekken. Beide blijven zichtbaar op hun vaste plek en reageren alleen op jouw aanraking.</p><p>Je kunt niet springen of in de lucht sturen. Je hoeft niets precies te timen. Een volgende tik werkt pas nadat je bent geland.</p><p>De twee ingekerfde openingen zijn een vaste verbinding. Zowel jij als iedere steen kunnen erdoor wanneer de hele vorm past en er ruimte is aan de overkant. De zwaartekracht blijft gelijk.</p><p><strong>Z</strong> = terug · <strong>R</strong> = opnieuw. De pijltjestoetsen en WASD volgen de schermrichting. Je voortgang wordt lokaal bewaard.</p><p>Deze blinde test bevat standaard geen hints. Zetten, actieve speeltijd, terugdraaien en resets worden alleen op dit toestel opgeslagen.</p><button id="export">Exporteer playtest JSON</button><p class="dialog-foot">Op een telefoon is liggend spelen het duidelijkst. Draaien pauzeert je input; de kamer blijft behouden.</p></dialog>
+  <noscript>Deze lokale demo heeft JavaScript nodig.</noscript>
+</body>
+</html>

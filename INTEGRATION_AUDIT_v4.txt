@@ -1,0 +1,46 @@
+AXIOMA Speel — Games & spelwerelden integration audit
+Version: v4 game-worlds integration
+
+Added category:
+- Games & spelwerelden
+
+Added games / entrypoints:
+- CONTINUUM · World 1 -> games/continuum/index.html
+- Gravity Maze -> games/gravity-maze/index.html
+- Cellquation -> games/cellquation/index.html
+- INSLEG -> games/insleg/index.html
+
+Discoverability:
+- All four appear in Games & spelwerelden.
+- Cellquation also appears under Getallen & verhoudingen.
+
+Portal navigation:
+- Persistent AXIOMA · menu button remains above the game iframe.
+- Closing returns to the portal view from which the game was launched.
+- Browser history/back continues to close the player.
+- Portal iframe now allows autoplay + fullscreen for game runtimes.
+
+Orientation:
+- CONTINUUM, Gravity Maze and INSLEG retain the landscape gate.
+- Cellquation is marked orientation:any so its portrait/landscape runtime is not blocked by the portal.
+
+Progress integration:
+- Gravity Maze reads the existing blind-run completed list.
+- Cellquation sums completed levels across its four campaigns.
+- INSLEG sums completed levels across its three worlds.
+- CONTINUUM is marked as started by the portal; its six levels do not persist completion in the supplied build.
+
+PWA/cache:
+- Portal cache bumped to axioma-speel-v4-game-worlds.
+- New game entry HTML files are precached; larger game assets remain runtime-cached.
+- Cellquation keeps its own nested service-worker scope; the portal cache cleanup does not delete cellquation-* caches.
+
+Static verification:
+- 367 local runtime asset references checked.
+- 0 missing runtime references.
+- assets/app.js passes node --check.
+- All standalone runtime .js files in CONTINUUM, Gravity Maze and Cellquation pass node --check.
+- Original supplied game runtime code was not rewritten; it was mounted under stable subdirectories to preserve relative paths.
+
+Environment note:
+- This container's managed Chromium policy blocks localhost and file:// pages, so a fresh end-to-end rendered browser pass could not be executed here. The supplied game builds themselves were preserved, and integration was verified structurally as above.

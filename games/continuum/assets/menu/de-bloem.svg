@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+<defs>
+ <radialGradient id="bg" cx="50%" cy="38%"><stop stop-color="#334127"/><stop offset=".52" stop-color="#121c16"/><stop offset="1" stop-color="#070b0a"/></radialGradient>
+ <radialGradient id="petal"><stop stop-color="#b59bd8"/><stop offset=".48" stop-color="#7664a8"/><stop offset="1" stop-color="#332b59"/></radialGradient>
+ <radialGradient id="core"><stop stop-color="#f2d989"/><stop offset="1" stop-color="#7d5d24"/></radialGradient>
+ <linearGradient id="water" x1="0" x2="1"><stop stop-color="#80c1c5" stop-opacity=".55"/><stop offset="1" stop-color="#0f586b" stop-opacity=".12"/></linearGradient>
+ <filter id="blur"><feGaussianBlur stdDeviation="16"/></filter>
+</defs>
+<rect width="800" height="1000" fill="url(#bg)"/>
+<g opacity=".18" stroke="#b7c69a" fill="none" stroke-width="5"><path d="M70 910C120 630 205 500 315 350S545 125 720 60"/><path d="M-20 740C185 700 200 555 300 475S515 410 830 465"/><path d="M130 0C155 225 320 300 390 430S430 760 605 1010"/></g>
+<ellipse cx="399" cy="528" rx="248" ry="244" fill="#6d57a2" opacity=".22" filter="url(#blur)"/>
+<g transform="translate(400 520)">
+ <g fill="url(#petal)" stroke="#d6cbe5" stroke-opacity=".34" stroke-width="4">
+  <path d="M0-42C-52-245-168-275-183-166C-196-70-92-36 0 0C92-36 196-70 183-166C168-275 52-245 0-42Z" transform="rotate(0)"/>
+  <path d="M0-42C-52-245-168-275-183-166C-196-70-92-36 0 0C92-36 196-70 183-166C168-275 52-245 0-42Z" transform="rotate(90)"/>
+  <path d="M0-42C-52-245-168-275-183-166C-196-70-92-36 0 0C92-36 196-70 183-166C168-275 52-245 0-42Z" transform="rotate(180)"/>
+  <path d="M0-42C-52-245-168-275-183-166C-196-70-92-36 0 0C92-36 196-70 183-166C168-275 52-245 0-42Z" transform="rotate(270)"/>
+ </g>
+ <circle r="58" fill="url(#core)"/><circle r="23" fill="#584223"/><circle r="11" fill="#d6b96d"/>
+</g>
+<path d="M0 785C110 720 206 745 288 820S518 942 800 820V1000H0Z" fill="url(#water)"/>
+<g fill="#9eaa62" opacity=".7"><ellipse cx="122" cy="676" rx="20" ry="48" transform="rotate(-38 122 676)"/><ellipse cx="680" cy="622" rx="18" ry="45" transform="rotate(32 680 622)"/></g>
+<circle cx="610" cy="164" r="52" fill="#f3d680" opacity=".16" filter="url(#blur)"/><circle cx="610" cy="164" r="24" fill="#eacb75" opacity=".4"/>
+</svg>

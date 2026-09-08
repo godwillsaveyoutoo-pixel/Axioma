@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#173235"/><stop offset=".5" stop-color="#0a1c21"/><stop offset="1" stop-color="#071014"/></linearGradient>
+ <linearGradient id="stone"><stop stop-color="#8f8878"/><stop offset=".5" stop-color="#514f47"/><stop offset="1" stop-color="#252927"/></linearGradient>
+ <linearGradient id="water"><stop stop-color="#a4d8d8" stop-opacity=".72"/><stop offset=".45" stop-color="#3a8589" stop-opacity=".8"/><stop offset="1" stop-color="#14505a" stop-opacity=".68"/></linearGradient>
+ <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="800" height="1000" fill="url(#bg)"/>
+<g stroke="#59635e" stroke-width="12" fill="#1d2524"><rect x="80" y="120" width="250" height="190" rx="54"/><rect x="470" y="120" width="250" height="190" rx="54"/><rect x="80" y="690" width="250" height="190" rx="54"/><rect x="470" y="690" width="250" height="190" rx="54"/></g>
+<g fill="url(#water)"><ellipse cx="205" cy="218" rx="97" ry="56"/><ellipse cx="595" cy="218" rx="97" ry="56"/><ellipse cx="205" cy="782" rx="97" ry="56"/><ellipse cx="595" cy="782" rx="97" ry="56"/></g>
+<path d="M205 285C223 388 338 386 400 500S571 620 595 715" fill="none" stroke="#8bbec0" stroke-opacity=".55" stroke-width="34" stroke-linecap="round"/>
+<path d="M595 285C580 382 470 403 400 500S230 621 205 715" fill="none" stroke="#367d83" stroke-opacity=".38" stroke-width="24" stroke-linecap="round"/>
+<rect x="350" y="376" width="100" height="248" rx="24" fill="url(#stone)" stroke="#aaa38f" stroke-opacity=".35" stroke-width="7"/>
+<g stroke="#bfb7a0" opacity=".25" stroke-width="6"><path d="M330 395H470"/><path d="M330 465H470"/><path d="M330 535H470"/><path d="M330 605H470"/></g>
+<g transform="translate(596 782) rotate(-12)"><path d="M-32 0C-16-22 17-22 38 0C18 22-15 22-32 0Z" fill="#d2ad63"/><circle cx="18" cy="-5" r="3.5" fill="#1b2424"/><path d="M-31 0L-48-17V17Z" fill="#a9824c"/></g>
+<ellipse cx="596" cy="782" rx="125" ry="78" fill="#9fd5d1" opacity=".1" filter="url(#blur)"/>
+</svg>

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1115">
+<title>CONTINUUM — Spiegelwereld · Procedural Rebuild v0.3</title>
+<style>
+:root{color-scheme:dark;--ink:#f5efe7;--muted:rgba(231,238,239,.58)}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080d10}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#game.dragging{cursor:grabbing}
+.hud{position:fixed;inset:0;pointer-events:none}
+.title{position:absolute;left:max(14px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));text-shadow:0 2px 14px rgba(0,0,0,.58)}
+.title small{display:block;font-size:7px;font-weight:850;letter-spacing:.18em;color:rgba(230,236,235,.54);text-transform:uppercase}
+.title strong{display:block;margin-top:2px;font:500 italic 21px/1 Georgia,"Times New Roman",serif;letter-spacing:-.025em}
+.objective{position:absolute;left:50%;top:max(11px,env(safe-area-inset-top));transform:translateX(-50%);max-width:min(56vw,480px);text-align:center;font:500 italic 12px/1.25 Georgia,"Times New Roman",serif;color:rgba(249,242,231,.78);text-shadow:0 2px 12px rgba(0,0,0,.55)}
+.worldLabel{position:absolute;top:52px;font-size:7px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;opacity:.62;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.worldLabel.light{left:11%}.worldLabel.water{right:10%}
+.reset{pointer-events:auto;position:absolute;right:max(12px,env(safe-area-inset-right));top:max(9px,env(safe-area-inset-top));width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(8,13,16,.36);backdrop-filter:blur(7px);color:#eaf2f0;font-size:22px;display:grid;place-items:center;cursor:pointer}
+.reset:active{transform:scale(.96)}
+.success{position:absolute;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translate(-50%,10px);padding:7px 14px;border-radius:999px;border:1px solid rgba(242,224,178,.17);background:rgba(16,20,18,.58);backdrop-filter:blur(8px);font:500 italic 12px Georgia,"Times New Roman",serif;color:#f9f0d7;opacity:0;transition:.26s ease;white-space:nowrap}
+.success.on{opacity:1;transform:translate(-50%,0)}
+.debug{display:none;position:absolute;left:10px;bottom:10px;padding:7px 9px;border-radius:9px;background:rgba(0,0,0,.66);border:1px solid rgba(255,255,255,.13);font:8px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;color:#dbe4e6;white-space:pre;pointer-events:none}
+.debug.on{display:block}
+.rotate{display:none;position:fixed;inset:0;z-index:20;background:radial-gradient(circle at 50% 40%,#152128,#070c0f 72%);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:28px}
+.rotate .phone{font-size:48px;transform:rotate(90deg);opacity:.75;margin-bottom:13px}
+.rotate strong{font:500 italic 21px Georgia,"Times New Roman",serif}
+.rotate span{margin-top:7px;color:rgba(230,239,240,.56);font-size:10px}
+@media(orientation:portrait){.rotate{display:flex}#game,.hud{visibility:hidden}}
+@media(max-height:380px){.title strong{font-size:18px}.objective{font-size:11px}.worldLabel{top:43px}.reset{width:44px;height:44px}}
+@media(prefers-reduced-motion:reduce){.success{transition:none}}
+
+.successOverlay{position:absolute;inset:0;z-index:12;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,rgba(255,235,181,.16),transparent 24%),linear-gradient(180deg,rgba(7,12,14,.44),rgba(4,9,11,.78));backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .45s ease}
+.successOverlay.on{opacity:1;pointer-events:auto}
+.endCard{width:min(430px,78vw);padding:22px 24px 20px;border-radius:22px;background:linear-gradient(180deg,rgba(12,19,21,.92),rgba(8,14,16,.96));border:1px solid rgba(244,224,181,.18);box-shadow:0 20px 60px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.05);text-align:center}
+.endKicker{font-size:10px;font-weight:850;letter-spacing:.20em;color:rgba(234,222,180,.72)}
+.endCard h2{margin:8px 0 9px;font:500 italic clamp(24px,4vw,33px)/1.05 Georgia,"Times New Roman",serif;color:#fff0d7}
+.endCard p{margin:0 auto;max-width:320px;font-size:13px;line-height:1.52;color:#c9d5d6}
+.endActions{display:flex;justify-content:center;gap:10px;margin-top:18px;flex-wrap:wrap}
+.endBtn,.endLink{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(244,224,181,.18);background:rgba(255,255,255,.06);color:#eef2ee;font:800 12px/44px Inter,system-ui,sans-serif;letter-spacing:.08em;text-decoration:none;display:inline-block}
+.endBtn{cursor:pointer}
+@media(max-height:380px){.successOverlay{align-items:end;padding-bottom:max(12px,env(safe-area-inset-bottom))}.endCard{width:auto;max-width:calc(100vw - 22px);padding:12px 14px;border-radius:18px}.endKicker,.endCard p{display:none}.endCard h2{margin:0;font-size:13px}.endActions{margin-top:10px}.endBtn,.endLink{min-height:40px;line-height:40px;font-size:11px;padding:0 15px}}
+
+</style>
+<link rel="stylesheet" href="../../shared/continuum-shell.css">
+</head>
+<body>
+<canvas id="game" aria-label="Spiegelwereld: één gedeelde vorm beïnvloedt licht en water tegelijk"></canvas>
+<div class="hud">
+  <div class="title"><small>CONTINUUM · WORLD 1 · LEVEL 2</small><strong>Spiegelwereld</strong></div>
+  <div class="objective">Buig één gedeelde grens. Leid licht naar het altaar en water naar het bassin.</div>
+  <div class="worldLabel light">Lichtwereld</div>
+  <div class="worldLabel water">Waterwereld</div>
+  <button class="reset" id="reset" type="button" aria-label="Opnieuw" title="Opnieuw">↻</button>
+  <div class="success" id="success">De twee werelden vallen samen.</div>
+  <div class="successOverlay" id="successOverlay" aria-hidden="true">
+    <div class="endCard">
+      <div class="endKicker">LICHT EN WATER DELEN ÉÉN WET</div>
+      <h2>De twee werelden vallen samen.</h2>
+      <p>Je trok niet twee losse lijnen recht. Je vond één gedeelde vorm waardoor licht en water tegelijk hun weg terugvonden.</p>
+      <div class="endActions">
+        <button class="endBtn" id="againBtn" type="button">OPNIEUW</button>
+        <a class="endLink" href="../../index.html">WERELD 1</a>
+      </div>
+    </div>
+  </div>
+  <div class="debug" id="debug"></div>
+</div>
+<div class="rotate">
+  <div class="phone">▭</div>
+  <strong>Draai je telefoon horizontaal</strong>
+  <span>Spiegelwereld gebruikt het volledige brede scherm als spelbord.</span>
+</div>
+<script src="../../shared/continuum-audio.js"></script>
+<script>
+const AUDIO=window.CONTINUUM_AUDIO=ContinuumAudio.create({profile:'mirror',toggle:false});
+(() => {
+'use strict';
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d', {alpha:false});
+const resetBtn = document.getElementById('reset');
+const successEl = document.getElementById('success');
+const successOverlay = document.getElementById('successOverlay');
+const againBtn = document.getElementById('againBtn');
+const debugEl = document.getElementById('debug');
+const CFG = {
+  min:-.20,max:.20,
+  start:[0,.05,-.15],
+  solution:[.05,-.05,.05],
+  centers:[.27,.53,.76],sigmas:[.16,.17,.16],
+  lightBase:.049,lightAmp:.03,lightPhase:.6,
+  lightFocusY:.64,lightTargetY:.84,
+  lightFocusTarget:.05748,lightFocusTolerance:.018,
+  waterCatchY:.22,waterCatchMin:-.005,waterCurvMax:11.8,
+  waterOutletY:.82,waterLandingY:.93,
+  waterLandingTarget:-.01211,waterLandingTolerance:.0075
+};
+const state = {modes:[...CFG.start],drag:null,time:0,solved:false,solvedSince:0,pulse:0,last:performance.now(),pointer:{x:0,y:0},debug:new URLSearchParams(location.search).get('debug')==='1',audioScoreAtGrab:0};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const smoothstep=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
+const strength=(m,s)=>smoothstep(-s,s,m);
+let W=1,H=1,dpr=1;
+function resize(){const r=canvas.getBoundingClientRect();W=Math.max(1,r.width);H=Math.max(1,r.height);dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
+new ResizeObserver(resize).observe(canvas); resize();
+function basis(y,i){return Math.exp(-.5*Math.pow((y-CFG.centers[i])/CFG.sigmas[i],2))}
+function curveNorm(y,modes=state.modes){let v=0;for(let i=0;i<3;i++)v+=modes[i]*basis(y,i);return v*.95*Math.sin(Math.PI*y)}
+function derivativeAt(fn,y,h=.002){return (fn(y+h)-fn(y-h))/(2*h)}
+function lightEnvelope(y){return CFG.lightBase+CFG.lightAmp*Math.sin(Math.PI*2*y+CFG.lightPhase)}
+function analysis(modes=state.modes){
+  const N=120, arr=[]; for(let i=0;i<=N;i++){const y=i/N;arr.push({y,c:curveNorm(y,modes)})}
+  let minLM=Infinity,minLY=.5; for(const p of arr){const lm=lightEnvelope(p.y)-p.c;if(lm<minLM){minLM=lm;minLY=p.y}}
+  const passageMargin=minLM;
+  const focusFn=y=>(curveNorm(y,modes)+(lightEnvelope(y)+.055))*.5;
+  const focusBase=focusFn(CFG.lightFocusY), focusSlope=derivativeAt(focusFn,CFG.lightFocusY);
+  const focusPred=focusBase+focusSlope*(CFG.lightTargetY-CFG.lightFocusY);
+  const focusError=focusPred-CFG.lightFocusTarget, focusMargin=CFG.lightFocusTolerance-Math.abs(focusError);
+  const nearest=y=>arr.reduce((best,p)=>Math.abs(p.y-y)<Math.abs(best.y-y)?p:best,arr[0]);
+  const catchValue=nearest(CFG.waterCatchY).c;
+  const dy=1/N; let maxCurv=0,curvY=.5;
+  for(let i=1;i<N;i++){const y=arr[i].y;if(y<.16||y>.88)continue; const second=(arr[i+1].c-2*arr[i].c+arr[i-1].c)/(dy*dy); if(Math.abs(second)>maxCurv){maxCurv=Math.abs(second);curvY=y}}
+  const captureMargin=catchValue-CFG.waterCatchMin, curvMargin=CFG.waterCurvMax-maxCurv;
+  const outletC=curveNorm(CFG.waterOutletY,modes), outletSlope=derivativeAt(y=>curveNorm(y,modes),CFG.waterOutletY);
+  const waterPred=-outletC+(-outletSlope)*(CFG.waterLandingY-CFG.waterOutletY)*.90;
+  const landingError=waterPred-CFG.waterLandingTarget, landingMargin=CFG.waterLandingTolerance-Math.abs(landingError);
+  const passageStrength=strength(passageMargin,.05), focusStrength=strength(focusMargin,.028), captureStrength=strength(captureMargin,.055), smoothStrength=smoothstep(-2.5,4.5,curvMargin), adhesionStrength=Math.min(captureStrength,smoothStrength), landingStrength=strength(landingMargin,.016);
+  return {arr,minLY,passageMargin,focusPred,focusError,focusMargin,catchValue,maxCurv,curvY,captureMargin,curvMargin,waterPred,landingError,landingMargin,passageStrength,focusStrength,captureStrength,smoothStrength,adhesionStrength,landingStrength,passageOK:passageMargin>=0,focusOK:focusMargin>=0,adhesionOK:captureMargin>=0&&curvMargin>=0,landingOK:landingMargin>=0}
+}
+function layout(){
+  const top=Math.max(58,H*.14), bottom=H-24, usable=bottom-top, seam=W*.5;
+  return {top,bottom,usable,seam,curveScale:Math.min(W*.16,H*.22), lightTop:W*.43, lightBottom:W*.29, waterTop:W*.57, waterBottom:W*.71, sun:{x:W*.10,y:top+usable*.05}, altar:{x:W*.18,y:top+usable*.83}, waterCloud:{x:W*.90,y:top+usable*.08}, basin:{x:W*.84,y:top+usable*.88}, floor:bottom+8};
+}
+function yPix(yn,L){return L.top+yn*L.usable}
+function leftSpine(yn,L){return lerp(L.lightTop,L.lightBottom,yn)}
+function rightSpine(yn,L){return lerp(L.waterTop,L.waterBottom,yn)}
+function contourX(side,yn,L,modes=state.modes){const c=curveNorm(yn,modes); return side==='left'?leftSpine(yn,L)+c*L.curveScale:rightSpine(yn,L)-c*L.curveScale}
+function lightWallX(yn,L){return leftSpine(yn,L)+(lightEnvelope(yn)+.055)*L.curveScale}
+const rng=(seed)=>{let t=seed>>>0;return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}};
+const R=rng(928341);
+const stars=Array.from({length:42},()=>({x:R(),y:R(),r:.5+R()*1.3,a:.04+R()*.13}));
+const warmRocks=Array.from({length:18},()=>({x:R()*.46,y:.28+R()*.72,w:.035+R()*.07,h:.08+R()*.20,rot:(R()-.5)*.5}));
+const coolRocks=Array.from({length:20},()=>({x:.54+R()*.46,y:.25+R()*.75,w:.035+R()*.07,h:.08+R()*.20,rot:(R()-.5)*.5}));
+function backdrop(L,t){
+  const left=ctx.createLinearGradient(0,0,W*.5,H); left.addColorStop(0,'#513329'); left.addColorStop(.42,'#2b2221'); left.addColorStop(1,'#111316'); ctx.fillStyle=left; ctx.fillRect(0,0,W*.5,H);
+  const right=ctx.createLinearGradient(W*.5,0,W,H); right.addColorStop(0,'#152b34'); right.addColorStop(.45,'#17303a'); right.addColorStop(1,'#08151b'); ctx.fillStyle=right; ctx.fillRect(W*.5,0,W*.5,H);
+  let g=ctx.createRadialGradient(W*.12,H*.26,0,W*.12,H*.26,W*.38); g.addColorStop(0,'rgba(251,181,111,.22)'); g.addColorStop(1,'rgba(251,181,111,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W*.5,H);
+  g=ctx.createRadialGradient(W*.84,H*.22,0,W*.84,H*.22,W*.40); g.addColorStop(0,'rgba(114,195,222,.14)'); g.addColorStop(1,'rgba(114,195,222,0)'); ctx.fillStyle=g; ctx.fillRect(W*.5,0,W*.5,H);
+  drawMountainBand(0,W*.5,H*.52,'rgba(44,31,29,.72)',.14,11); drawMountainBand(0,W*.5,H*.64,'rgba(29,28,29,.88)',.11,23); drawMountainBand(W*.5,W,H*.53,'rgba(22,49,58,.72)',.13,41); drawMountainBand(W*.5,W,H*.65,'rgba(12,32,40,.92)',.11,57);
+  drawRocks(warmRocks,true); drawRocks(coolRocks,false);
+  const fg=ctx.createLinearGradient(0,H*.70,0,H); fg.addColorStop(0,'rgba(14,14,16,0)'); fg.addColorStop(.35,'rgba(10,12,13,.46)'); fg.addColorStop(1,'rgba(5,8,10,.94)'); ctx.fillStyle=fg; ctx.fillRect(0,H*.67,W,H*.33);
+  ctx.save(); ctx.globalCompositeOperation='screen'; for(let i=0;i<stars.length;i++){const s=stars[i], xx=s.x*W, yy=(s.y*H+t*.006*(.15+(i%3)*.1))%H; ctx.fillStyle=xx<W*.5?`rgba(255,214,157,${s.a})`:`rgba(181,230,246,${s.a})`; ctx.beginPath(); ctx.arc(xx,yy,s.r,0,Math.PI*2); ctx.fill()} ctx.restore();
+  const mw=Math.max(12,W*.021); const mg=ctx.createLinearGradient(L.seam-mw,0,L.seam+mw,0); mg.addColorStop(0,'rgba(189,221,231,0)'); mg.addColorStop(.34,'rgba(213,239,246,.10)'); mg.addColorStop(.48,'rgba(245,252,252,.30)'); mg.addColorStop(.52,'rgba(255,246,230,.27)'); mg.addColorStop(.70,'rgba(183,221,235,.08)'); mg.addColorStop(1,'rgba(183,221,235,0)'); ctx.fillStyle=mg; ctx.fillRect(L.seam-mw,0,mw*2,H); ctx.strokeStyle='rgba(236,248,249,.21)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(L.seam,L.top-8); ctx.lineTo(L.seam,L.bottom+10); ctx.stroke();
+}
+function drawMountainBand(x0,x1,base,color,amp,seed){const rr=rng(seed),p=new Path2D(); p.moveTo(x0,H); const count=9; for(let i=0;i<=count;i++){const x=lerp(x0,x1,i/count),y=base-H*amp*(.25+rr()*.75); p.lineTo(x,y)} p.lineTo(x1,H); p.closePath(); ctx.fillStyle=color; ctx.fill(p)}
+function drawRocks(arr,warm){for(const q of arr){const x=q.x*W,y=q.y*H,w=q.w*W,h=q.h*H; ctx.save(); ctx.translate(x,y); ctx.rotate(q.rot); const g=ctx.createLinearGradient(-w*.5,-h*.5,w*.5,h*.5); if(warm){g.addColorStop(0,'rgba(91,61,50,.30)');g.addColorStop(1,'rgba(23,22,23,.58)')} else {g.addColorStop(0,'rgba(45,79,91,.28)');g.addColorStop(1,'rgba(9,25,31,.62)')} ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(-w*.5,h*.5); ctx.lineTo(-w*.32,-h*.35); ctx.lineTo(w*.1,-h*.5); ctx.lineTo(w*.48,-h*.08); ctx.lineTo(w*.35,h*.5); ctx.closePath(); ctx.fill(); ctx.restore()}}
+function drawSharedContours(L){
+  for(const side of ['left','right']){const warm=side==='left', p=new Path2D(); for(let i=0;i<=120;i++){const yn=i/120,x=contourX(side,yn,L),y=yPix(yn,L); i?p.lineTo(x,y):p.moveTo(x,y)} ctx.save(); ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle=warm?'rgba(47,31,26,.88)':'rgba(19,40,50,.90)'; ctx.lineWidth=18; ctx.stroke(p); const gr=ctx.createLinearGradient(warm?0:L.seam,L.top,warm?L.seam:W,L.bottom); if(warm){gr.addColorStop(0,'rgba(255,177,110,.76)'); gr.addColorStop(.5,'rgba(255,221,181,.97)'); gr.addColorStop(1,'rgba(255,242,221,.91)')} else {gr.addColorStop(0,'rgba(235,251,255,.96)'); gr.addColorStop(.5,'rgba(169,222,247,.94)'); gr.addColorStop(1,'rgba(80,165,213,.75)')} ctx.strokeStyle=gr; ctx.lineWidth=4.6+state.pulse*1.2; ctx.stroke(p); ctx.strokeStyle=warm?'rgba(255,250,235,.39)':'rgba(247,253,255,.43)'; ctx.lineWidth=.9; ctx.stroke(p); ctx.restore()}
+  for(let k=0;k<3;k++){const yn=CFG.centers[k], y=yPix(yn,L); for(const side of ['left','right']){const x=contourX(side,yn,L), active=state.drag&&state.drag.zone===k; const rr=active?10:7; const rg=ctx.createRadialGradient(x,y,0,x,y,rr*2.4); rg.addColorStop(0,side==='left'?`rgba(255,226,183,${active?.28:.09})`:`rgba(189,231,250,${active?.28:.09})`); rg.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=rg; ctx.beginPath(); ctx.arc(x,y,rr*2.4,0,Math.PI*2); ctx.fill(); ctx.strokeStyle=side==='left'?`rgba(255,236,205,${active?.63:.18})`:`rgba(224,248,255,${active?.63:.18})`; ctx.lineWidth=active?1.5:.8; ctx.beginPath(); ctx.ellipse(x,y,rr,rr*.62,0,0,Math.PI*2); ctx.stroke()}}
+}
+function drawLightWorld(L,a,t){
+  const wall=new Path2D(); let firstFail=-1; for(let i=0;i<=120;i++){const yn=i/120,x=lightWallX(yn,L),y=yPix(yn,L); if(i===0)wall.moveTo(x,y); else wall.lineTo(x,y); if(firstFail<0 && lightEnvelope(yn)-curveNorm(yn)<0)firstFail=i}
+  ctx.save(); ctx.strokeStyle='rgba(46,35,31,.94)'; ctx.lineWidth=13; ctx.lineCap='round'; ctx.stroke(wall); ctx.strokeStyle='rgba(220,165,111,.13)'; ctx.lineWidth=1; ctx.stroke(wall); ctx.restore();
+  const sr=Math.max(8,Math.min(W,H)*.025); let g=ctx.createRadialGradient(L.sun.x,L.sun.y,0,L.sun.x,L.sun.y,sr*4.5); g.addColorStop(0,`rgba(255,226,145,${.21+.18*a.passageStrength})`); g.addColorStop(1,'rgba(255,190,93,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(L.sun.x,L.sun.y,sr*4.5,0,Math.PI*2); ctx.fill(); ctx.fillStyle='rgba(255,225,150,.95)'; ctx.beginPath(); ctx.arc(L.sun.x,L.sun.y,sr,0,Math.PI*2); ctx.fill();
+  const end=firstFail<0?120:Math.min(120,firstFail+1); const ray=new Path2D(); for(let i=0;i<=end;i++){const yn=i/120, x=(contourX('left',yn,L)+lightWallX(yn,L))*.5, y=yPix(yn,L); i?ray.lineTo(x,y):ray.moveTo(x,y)} ctx.save(); ctx.globalCompositeOperation='screen'; ctx.strokeStyle=`rgba(255,231,164,${.17+.49*a.passageStrength})`; ctx.lineWidth=1.5+1.7*a.passageStrength; ctx.shadowBlur=9; ctx.shadowColor='rgba(255,201,112,.30)'; ctx.stroke(ray); ctx.restore();
+  if(a.passageMargin<.045){const yn=a.minLY,y=yPix(yn,L),x=(contourX('left',yn,L)+lightWallX(yn,L))*.5; const risk=1-smoothstep(-.01,.045,a.passageMargin); g=ctx.createRadialGradient(x,y,0,x,y,20); g.addColorStop(0,`rgba(255,169,81,${.09+.30*risk})`); g.addColorStop(1,'rgba(255,169,81,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,20,0,Math.PI*2); ctx.fill(); if(!a.passageOK){ctx.save(); ctx.strokeStyle=`rgba(255,198,111,${.14+.14*risk})`; ctx.lineWidth=1; for(let i=0;i<6;i++){const ang=-1.1+i*.43; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.cos(ang)*24,y+Math.sin(ang)*17); ctx.stroke()} ctx.restore()}}
+  const ax=L.altar.x, ay=L.altar.y, floor=L.floor; ctx.fillStyle='rgba(49,39,33,.95)'; ctx.beginPath(); ctx.moveTo(ax-26,ay+10); ctx.lineTo(ax+26,ay+10); ctx.lineTo(ax+36,floor); ctx.lineTo(ax-36,floor); ctx.closePath(); ctx.fill(); ctx.fillStyle='rgba(88,66,51,.98)'; ctx.beginPath(); ctx.ellipse(ax,ay+3,30,9,0,0,Math.PI*2); ctx.fill(); ctx.fillStyle='rgba(42,34,29,.97)'; ctx.beginPath(); ctx.ellipse(ax,ay,21,6,0,0,Math.PI*2); ctx.fill(); ctx.strokeStyle='rgba(244,218,169,.24)'; ctx.lineWidth=1; ctx.stroke();
+  if(a.passageOK){const fy=yPix(CFG.lightFocusY,L), fx=(contourX('left',CFG.lightFocusY,L)+lightWallX(CFG.lightFocusY,L))*.5; const spotX=L.altar.x+(a.focusPred-CFG.lightFocusTarget)*L.curveScale*1.9; const spread=8+Math.min(2,Math.abs(a.focusError)/CFG.lightFocusTolerance)*13; const cone=new Path2D(); cone.moveTo(fx-2,fy); cone.lineTo(spotX-spread*.6,ay); cone.lineTo(spotX+spread*.6,ay); cone.closePath(); const cg=ctx.createLinearGradient(0,fy,0,ay); cg.addColorStop(0,'rgba(255,231,164,.05)'); cg.addColorStop(1,`rgba(255,206,111,${.06+.13*a.focusStrength})`); ctx.fillStyle=cg; ctx.fill(cone); g=ctx.createRadialGradient(spotX,ay,0,spotX,ay,spread); g.addColorStop(0,`rgba(255,238,181,${.28+.50*a.focusStrength})`); g.addColorStop(1,'rgba(255,176,71,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(spotX,ay,spread,0,Math.PI*2); ctx.fill(); if(a.focusOK){g=ctx.createRadialGradient(ax,ay,0,ax,ay,42); g.addColorStop(0,'rgba(255,225,139,.54)'); g.addColorStop(1,'rgba(255,225,139,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(ax,ay,42,0,Math.PI*2); ctx.fill()}}
+}
+function drawWaterWorld(L,a,t){
+  const sourceY=yPix(CFG.waterCatchY,L), catchX=contourX('right',CFG.waterCatchY,L); const sx=L.waterCloud.x, sy=L.waterCloud.y;
+  ctx.save(); ctx.globalCompositeOperation='screen'; for(const [dx,dy,r,aa] of [[0,0,13,.17],[-9,2,9,.13],[9,3,8,.12],[-3,-5,7,.11],[7,-5,6,.09]]){const g=ctx.createRadialGradient(sx+dx,sy+dy,0,sx+dx,sy+dy,r); g.addColorStop(0,`rgba(210,241,252,${aa+.10*a.captureStrength})`); g.addColorStop(1,'rgba(210,241,252,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(sx+dx,sy+dy,r,0,Math.PI*2); ctx.fill()} ctx.restore();
+  const cap=a.captureStrength; const path=new Path2D(); path.moveTo(sx,sy+8); path.bezierCurveTo(sx,lerp(sy,sourceY,.35),lerp(sx,catchX,cap*.8),sourceY-18,lerp(sx,catchX,cap),sourceY); ctx.save(); ctx.lineCap='round'; ctx.strokeStyle=`rgba(112,202,235,${.22+.35*cap})`; ctx.lineWidth=5; ctx.stroke(path); ctx.strokeStyle=`rgba(218,244,253,${.20+.35*cap})`; ctx.lineWidth=1.3; ctx.stroke(path); ctx.restore();
+  let stop=CFG.waterOutletY, reason='ok'; if(a.captureMargin<0){stop=CFG.waterCatchY;reason='capture'} else if(a.curvMargin<0){stop=a.curvY;reason='curve'}
+  const sp=new Path2D(),pts=[]; const sI=Math.floor(CFG.waterCatchY*120), eI=Math.max(sI+1,Math.floor(stop*120)); for(let i=sI;i<=eI;i++){const yn=i/120,x=contourX('right',yn,L)-5,y=yPix(yn,L); pts.push({x,y,yn}); i===sI?sp.moveTo(x,y):sp.lineTo(x,y)} ctx.save(); ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle=`rgba(75,158,199,${.17+.27*a.adhesionStrength})`; ctx.lineWidth=10; ctx.stroke(sp); ctx.strokeStyle=`rgba(195,235,249,${.20+.55*a.adhesionStrength})`; ctx.lineWidth=2.5; ctx.stroke(sp); ctx.restore();
+  if(pts.length>2){for(let k=0;k<6;k++){const u=(t*.00012+k/6)%1, idx=Math.min(pts.length-1,Math.floor(u*(pts.length-1))), q=pts[idx]; ctx.fillStyle=`rgba(224,246,253,${.10+.34*a.adhesionStrength})`; ctx.beginPath(); ctx.ellipse(q.x-1,q.y,1,2.7,0,0,Math.PI*2); ctx.fill()}}
+  const endPt=pts[pts.length-1]||{x:catchX,y:sourceY};
+  if(reason!=='ok'){const weakness=reason==='capture'?1-a.captureStrength:1-a.smoothStrength; const fx=reason==='capture'?catchX:endPt.x, fy=reason==='capture'?sourceY:endPt.y; ctx.strokeStyle=`rgba(125,195,226,${.14+.24*weakness})`; ctx.lineWidth=3.3; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(fx,fy+2); ctx.quadraticCurveTo(fx+8,fy+18,fx+6,fy+35); ctx.stroke(); for(let i=0;i<4;i++){ctx.fillStyle=`rgba(204,239,252,${.11+.15*weakness})`; ctx.beginPath(); ctx.arc(fx+4+i*2,fy+31+(i%2)*2,1.1+(i%2)*.35,0,Math.PI*2); ctx.fill()}}
+  const bx=L.basin.x, by=L.basin.y; let g=ctx.createRadialGradient(bx,by,0,bx,by,54); g.addColorStop(0,`rgba(73,162,195,${.04+.13*a.landingStrength})`); g.addColorStop(1,'rgba(73,162,195,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(bx,by,54,0,Math.PI*2); ctx.fill(); ctx.fillStyle='rgba(21,45,56,.95)'; ctx.beginPath(); ctx.ellipse(bx,by,42,13,0,0,Math.PI*2); ctx.fill(); ctx.strokeStyle='rgba(167,216,235,.22)'; ctx.lineWidth=1; ctx.stroke(); for(let i=0;i<6;i++){const ang=Math.PI+(i/5)*Math.PI; ctx.fillStyle='rgba(32,48,54,.85)'; ctx.beginPath(); ctx.ellipse(bx+Math.cos(ang)*42,by+Math.sin(ang)*10,7+(i%2)*2,3.5+(i%3),ang*.12,0,Math.PI*2); ctx.fill()}
+  if(reason==='ok'){const oy=yPix(CFG.waterOutletY,L), ox=contourX('right',CFG.waterOutletY,L)-5; const landX=L.basin.x+(a.waterPred-CFG.waterLandingTarget)*L.curveScale*2.2; const fall=new Path2D(); fall.moveTo(ox,oy); fall.bezierCurveTo(ox+2,oy+14,landX-8,by-24,landX,by-3); ctx.save(); ctx.lineCap='round'; ctx.strokeStyle=`rgba(81,174,214,${.18+.32*a.adhesionStrength})`; ctx.lineWidth=7; ctx.stroke(fall); ctx.strokeStyle=`rgba(207,239,250,${.24+.44*a.adhesionStrength})`; ctx.lineWidth=1.8; ctx.stroke(fall); ctx.restore(); if(a.landingOK){for(let i=0;i<3;i++){const u=(t*.00032+i*.31)%1, rr=5+u*22; ctx.strokeStyle=`rgba(162,220,242,${.22*(1-u)})`; ctx.beginPath(); ctx.ellipse(bx,by,rr,rr*.28,0,0,Math.PI*2); ctx.stroke()}} else {const miss=Math.min(1,Math.abs(a.landingError)/.04); ctx.fillStyle=`rgba(97,178,210,${.12+.18*miss})`; ctx.beginPath(); ctx.ellipse(landX,by+1,11+12*miss,3.2+2*miss,0,0,Math.PI*2); ctx.fill(); ctx.strokeStyle=`rgba(190,230,246,${.12+.17*miss})`; ctx.lineWidth=1; for(let i=0;i<6;i++){const dir=Math.sign(a.landingError)||1, ang=-Math.PI/2+dir*(.12+i*.11); ctx.beginPath(); ctx.moveTo(landX,by-2); ctx.lineTo(landX+Math.cos(ang)*(7+i*1.2),by-2+Math.sin(ang)*(7+i*.8)); ctx.stroke()}}}
+}
+function drawMirrorCoupling(L,t){if(!state.drag)return; const yn=state.drag.yn,y=yPix(yn,L),lx=contourX('left',yn,L),rx=contourX('right',yn,L); const g=ctx.createLinearGradient(lx,0,rx,0); g.addColorStop(0,'rgba(255,224,190,.22)'); g.addColorStop(.48,'rgba(239,250,252,.07)'); g.addColorStop(.5,'rgba(255,255,255,.34)'); g.addColorStop(.52,'rgba(239,250,252,.07)'); g.addColorStop(1,'rgba(184,229,248,.22)'); ctx.save(); ctx.strokeStyle=g; ctx.lineWidth=1.2; ctx.setLineDash([3,6]); ctx.lineDashOffset=-t*.02; ctx.beginPath(); ctx.moveTo(lx+6,y); ctx.lineTo(rx-6,y); ctx.stroke(); ctx.restore()}
+function hit(px,py,L){const yn=clamp((py-L.top)/L.usable,0,1); if(yn<.06||yn>.95)return null; const lx=contourX('left',yn,L),rx=contourX('right',yn,L); const dL=Math.abs(px-lx), dR=Math.abs(px-rx); if(Math.min(dL,dR)>48)return null; let zone=0,best=Infinity; for(let i=0;i<3;i++){const d=Math.abs(yn-CFG.centers[i]); if(d<best){best=d;zone=i}} return {side:dL<dR?'left':'right',yn,zone}}
+function point(e){const r=canvas.getBoundingClientRect(); return{x:e.clientX-r.left,y:e.clientY-r.top}}
+canvas.addEventListener('pointerdown',e=>{if(state.solved)return; const L=layout(), p=point(e), h=hit(p.x,p.y,L); if(!h)return; const aa=analysis();state.audioScoreAtGrab=[aa.passageOK,aa.focusOK,aa.adhesionOK,aa.landingOK].filter(Boolean).length;AUDIO.cue('grab',.55); state.drag={...h,startX:p.x,start:[...state.modes]}; state.pointer=p; canvas.classList.add('dragging'); canvas.setPointerCapture?.(e.pointerId); navigator.vibrate?.(6); e.preventDefault()});
+canvas.addEventListener('pointermove',e=>{const p=point(e); state.pointer=p; if(!state.drag)return; const d=state.drag, sign=d.side==='left'?1:-1;
+  // v0.3: deliberate local control. The grabbed zone carries the change;
+  // neighbours flex a little so the boundary still feels like one material,
+  // but a good setting elsewhere no longer gets erased by accident.
+  const delta=(p.x-d.startX)/(W*.34)*sign;
+  const influence=[.06,.06,.06];
+  influence[d.zone]=1;
+  if(d.zone>0)influence[d.zone-1]=.14;
+  if(d.zone<2)influence[d.zone+1]=.14;
+  for(let i=0;i<3;i++)state.modes[i]=clamp(d.start[i]+delta*influence[i]*1.28,CFG.min,CFG.max);
+  state.pulse=1; AUDIO.cue('drag',.28); e.preventDefault()});
+function endDrag(){if(!state.drag)return; state.drag=null; canvas.classList.remove('dragging'); navigator.vibrate?.(3);const aa=analysis(),score=[aa.passageOK,aa.focusOK,aa.adhesionOK,aa.landingOK].filter(Boolean).length;if(score>state.audioScoreAtGrab)AUDIO.cue('good',.62);else if(score<state.audioScoreAtGrab)AUDIO.cue('warn',.46);else AUDIO.cue('release',.35)}
+canvas.addEventListener('pointerup',endDrag); canvas.addEventListener('pointercancel',endDrag);
+function reset(){state.modes=[...CFG.start]; state.drag=null; state.solved=false; state.solvedSince=0; state.pulse=0; successEl.classList.remove('on'); successOverlay.classList.remove('on'); successOverlay.setAttribute('aria-hidden','true')}
+resetBtn.addEventListener('click',reset);
+function frame(now){const dt=Math.min(40,now-state.last); state.last=now; state.time=now; state.pulse=Math.max(0,state.pulse-dt*.002); const L=layout(), a=analysis(); const all=a.passageOK&&a.focusOK&&a.adhesionOK&&a.landingOK; if(all&&!state.solved){if(!state.solvedSince)state.solvedSince=now; if(now-state.solvedSince>520){state.solved=true; successEl.classList.add('on'); navigator.vibrate?.([8,20,8]);AUDIO.cue('mirror',.8);setTimeout(()=>AUDIO.cue('solve',.72),120)}} else if(!all&&!state.solved)state.solvedSince=0; if(state.solved&&now-state.solvedSince>1500&&!successOverlay.classList.contains('on')){successOverlay.classList.add('on');successOverlay.setAttribute('aria-hidden','false');}  ctx.clearRect(0,0,W,H); backdrop(L,now); drawLightWorld(L,a,now); drawWaterWorld(L,a,now); drawSharedContours(L); drawMirrorCoupling(L,now); if(state.debug){debugEl.classList.add('on'); debugEl.textContent=`viewport ${Math.round(W)}×${Math.round(H)} CSS px
+modes ${state.modes.map(v=>v.toFixed(3)).join('  ')}
+light passage ${a.passageOK?'OK':'—'}  focus ${a.focusOK?'OK':'—'}
+water adhesion ${a.adhesionOK?'OK':'—'}  landing ${a.landingOK?'OK':'—'}
+curv ${a.maxCurv.toFixed(2)}  catch ${a.catchValue.toFixed(3)}
+focusErr ${a.focusError.toFixed(4)}  landErr ${a.landingError.toFixed(4)}`;} requestAnimationFrame(frame)}
+reset(); requestAnimationFrame(frame);
+})();
+</script>
+
+<script src="../../shared/continuum-shell.js"></script>
+<script>ContinuumShell.mount({level:2,title:'Spiegelwereld',objective:'Buig één gedeelde grens. Leid licht naar het altaar en water naar het bassin.',resetSelector:'#reset',hide:['.title','.objective','#reset']});</script>
+</body>
+</html>

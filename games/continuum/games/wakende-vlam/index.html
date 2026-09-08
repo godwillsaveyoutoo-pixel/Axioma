@@ -1,0 +1,1458 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#140f13">
+<title>CONTINUUM — De Wakende Vlam · Smartphone Rebuild</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#09070a;
+  --ink:#f7eee4;
+  --muted:#a99ca1;
+  --ember:#ffad59;
+  --ember-soft:#e68a45;
+  --violet:#9a87d0;
+  --violet-soft:#7969aa;
+  --brass:#c89a5f;
+  --leather:#b66f4d;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#060507}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);display:grid;place-items:center;
+  background:
+    radial-gradient(circle at 50% 12%,rgba(106,58,44,.16),transparent 34%),
+    linear-gradient(180deg,#0b080c,#050506 82%);
+}
+button{font:inherit}
+.app{
+  width:min(100vw,620px);height:100dvh;max-height:1000px;min-height:560px;
+  display:grid;grid-template-rows:auto auto 1fr auto;overflow:hidden;position:relative;
+  background:
+    radial-gradient(circle at 16% -6%,rgba(231,139,66,.12),transparent 30%),
+    radial-gradient(circle at 86% 8%,rgba(119,91,172,.14),transparent 31%),
+    linear-gradient(180deg,#1d1319 0%,#120e13 54%,#0b090d 100%);
+}
+.app::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.28;
+  background-image:
+    linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.009) 1px,transparent 1px);
+  background-size:22px 22px,22px 22px;
+  mask-image:linear-gradient(180deg,#000,transparent 78%);
+}
+.topbar{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:max(15px,env(safe-area-inset-top)) 17px 6px}
+.eyebrow{font-size:7.5px;font-weight:800;letter-spacing:.205em;color:#b4a4a8;text-transform:uppercase}
+h1{margin:4px 0 0;font:500 italic 24px/1.02 Georgia,"Times New Roman",serif;letter-spacing:-.025em;text-shadow:0 3px 18px rgba(0,0,0,.34)}
+.topActions{display:flex;gap:8px;align-items:center}
+.iconBtn{
+  width:38px;height:38px;border-radius:50%;border:1px solid rgba(232,201,175,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.022));
+  color:#eadfd6;display:grid;place-items:center;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 8px 24px rgba(0,0,0,.15);
+  transition:transform .16s ease,border-color .18s ease,background .18s ease;
+}
+.iconBtn:hover{border-color:rgba(239,196,155,.28);background:rgba(255,255,255,.065)}
+.iconBtn svg{width:15px;height:15px;fill:currentColor}.homeBtn{text-decoration:none}.iconBtn:active{transform:scale(.95)}
+.prompt{position:relative;z-index:3;padding:4px 18px 11px;display:flex;flex-direction:column;gap:3px;text-align:center}
+.prompt strong{font:500 italic 16.5px Georgia,"Times New Roman",serif;color:#f5eade;text-shadow:0 1px 12px rgba(255,174,92,.08)}
+.prompt span{font-size:9.5px;color:#9f9398;letter-spacing:.015em}
+.worldWrap{
+  min-height:0;position:relative;margin:0 11px 9px;border-radius:30px;overflow:hidden;
+  border:1px solid rgba(236,196,157,.13);
+  background:#0b090c;
+  box-shadow:
+    0 34px 90px rgba(0,0,0,.44),
+    0 0 0 1px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.035);
+  isolation:isolate;
+}
+#world{display:block;width:100%;height:100%;touch-action:none;cursor:grab;background:#0a080a}
+#world.dragging{cursor:grabbing}
+.worldWrap::before{
+  content:"";pointer-events:none;position:absolute;z-index:2;inset:0;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.32),transparent 11%,transparent 88%,rgba(0,0,0,.36)),
+    radial-gradient(ellipse at 50% 52%,transparent 49%,rgba(0,0,0,.30) 100%);
+  mix-blend-mode:multiply;
+}
+.worldWrap::after{
+  content:"";pointer-events:none;position:absolute;z-index:2;inset:0;border-radius:inherit;
+  box-shadow:inset 0 0 74px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,255,255,.014);
+}
+.legend{
+  position:absolute;z-index:4;left:50%;top:10px;transform:translateX(-50%);
+  display:flex;gap:11px;padding:6px 10px;border:1px solid rgba(236,199,164,.11);border-radius:999px;
+  background:linear-gradient(180deg,rgba(19,13,16,.70),rgba(11,8,11,.62));
+  backdrop-filter:blur(9px);pointer-events:none;font-size:6.8px;font-weight:800;letter-spacing:.125em;color:#c7b8b8;white-space:nowrap;
+  box-shadow:0 10px 28px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.035);
+}
+.legend span{display:flex;align-items:center;gap:5px}.legend i{width:6px;height:6px;border-radius:50%;display:block}
+.legend .pilot i{background:#ffb663;box-shadow:0 0 11px rgba(255,170,78,.86)}
+.legend .night i{background:#b2a1ed;box-shadow:0 0 11px rgba(168,151,232,.64)}
+.gestureHint{position:absolute;z-index:4;inset:0;pointer-events:none;transition:opacity .55s ease}.gestureHint.hide{opacity:0}
+.gestureHint span{
+  position:absolute;left:50%;transform:translateX(31px);padding:5px 8px 6px;border-radius:999px;
+  background:rgba(16,11,13,.66);border:1px solid rgba(235,200,171,.10);color:#c9babc;
+  font:500 7.5px/1 Inter,system-ui,sans-serif;letter-spacing:.045em;white-space:nowrap;backdrop-filter:blur(8px);
+  box-shadow:0 7px 20px rgba(0,0,0,.19);
+}
+.upperHint{top:31.2%}.lowerHint{top:65.5%}
+.phase{
+  position:absolute;z-index:5;left:50%;bottom:18px;transform:translate(-50%,8px);width:max-content;max-width:88%;
+  text-align:center;pointer-events:none;opacity:0;transition:.24s ease;padding:8px 12px 9px;border-radius:999px;
+  background:linear-gradient(180deg,rgba(20,13,15,.79),rgba(10,8,10,.76));border:1px solid rgba(239,201,168,.12);
+  color:#efe2d6;font:500 italic 12px Georgia,"Times New Roman",serif;backdrop-filter:blur(9px);
+  box-shadow:0 10px 27px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,255,255,.03)
+}
+.phase.on{opacity:1;transform:translate(-50%,0)}
+.solveCard{
+  position:absolute;z-index:8;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(255,174,80,.20),transparent 29%),
+    radial-gradient(circle at 50% 50%,rgba(112,73,51,.13),transparent 48%),
+    rgba(8,6,8,.87);
+  backdrop-filter:blur(11px);opacity:0;pointer-events:none;transition:.55s ease;
+}
+.solveCard::before{
+  content:"";width:68px;height:1px;margin-bottom:14px;background:linear-gradient(90deg,transparent,rgba(245,199,148,.62),transparent);
+  box-shadow:0 0 18px rgba(255,169,79,.22)
+}
+.solveCard.on{opacity:1;pointer-events:auto}
+.solveKicker{font-size:7.5px;font-weight:800;letter-spacing:.20em;color:#d9c1aa}
+.solveCard h2{margin:8px 0 8px;font:500 italic 27px/1.07 Georgia,"Times New Roman",serif;text-shadow:0 2px 18px rgba(0,0,0,.24)}
+.solveCard p{max-width:350px;margin:0;color:#c7b7b7;font-size:10px;line-height:1.58}
+.solveCard button{
+  margin-top:20px;padding:10px 16px;border-radius:999px;border:1px solid rgba(239,205,174,.17);
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));color:#f2e6db;font-size:8.5px;font-weight:800;letter-spacing:.09em;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)
+}
+.devPanel{position:absolute;z-index:9;left:9px;bottom:9px;display:none;min-width:224px;padding:8px 9px;border-radius:11px;background:rgba(4,4,6,.88);border:1px solid rgba(255,255,255,.12);color:#ddd4d6;font:9px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-line;pointer-events:none}.devPanel.on{display:block}
+.footer{position:relative;z-index:3;padding:0 16px max(12px,env(safe-area-inset-bottom));text-align:center;color:#7f7378;font-size:8.5px;letter-spacing:.02em}
+@media(max-height:660px){
+  .topbar{padding-top:max(9px,env(safe-area-inset-top));padding-bottom:4px}h1{font-size:20px}.prompt{padding-bottom:7px}.prompt strong{font-size:15px}.footer{padding-bottom:max(8px,env(safe-area-inset-bottom))}.legend{top:7px}.phase{bottom:12px}.worldWrap{border-radius:25px}
+}
+@media(min-width:900px){
+  .app{width:min(94vw,1080px);max-height:920px}.topbar{padding-left:22px;padding-right:22px}.worldWrap{margin-left:18px;margin-right:18px}.prompt strong{font-size:17.5px}.footer{font-size:9.5px}.gestureHint span{transform:translateX(39px)}
+}
+@media(prefers-reduced-motion:reduce){.phase,.gestureHint,.solveCard,.iconBtn{transition:none}}
+
+
+/* WORLD 1 SMARTPHONE REBUILD — full viewport is the game board */
+.app{position:fixed;inset:0;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;min-height:0!important;display:block!important;background:#0b080c!important}
+.topbar{position:absolute!important;z-index:12!important;left:0;right:0;top:0;padding:max(9px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left))!important;pointer-events:none;background:none!important}
+.topbar>div:first-child{pointer-events:none}.eyebrow{font-size:7px!important}.topbar h1{font-size:21px!important;margin-top:2px!important}.topActions{margin-left:auto;pointer-events:auto}.homeBtn{display:none!important}.iconBtn{width:46px!important;height:46px!important;border-radius:50%!important;background:rgba(14,11,14,.38)!important;backdrop-filter:blur(8px);border:1px solid rgba(239,207,178,.16)!important}
+.prompt{position:absolute!important;z-index:11!important;left:50%!important;top:max(11px,env(safe-area-inset-top))!important;transform:translateX(-50%);width:min(52vw,470px);padding:0!important;pointer-events:none}.prompt strong{font-size:12px!important}.prompt span{display:none!important}
+.worldWrap{position:absolute!important;z-index:1!important;inset:0!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#0a080a!important}.worldWrap::before,.worldWrap::after{border-radius:0!important}.footer{display:none!important}.legend{display:none!important}
+.gestureHint span{font-size:7px!important;padding:4px 7px!important;background:rgba(16,11,13,.45)!important}.upperHint{top:31%!important}.lowerHint{top:65%!important}
+.phase{bottom:max(11px,env(safe-area-inset-bottom))!important;font-size:11px!important;padding:7px 11px!important;background:rgba(20,13,15,.58)!important}
+.solveCard{inset:auto!important;left:50%!important;bottom:max(11px,env(safe-area-inset-bottom))!important;transform:translate(-50%,8px)!important;width:auto!important;min-width:0!important;display:block!important;padding:7px 14px!important;border-radius:999px!important;background:rgba(18,13,14,.62)!important;border:1px solid rgba(239,201,168,.16)!important;backdrop-filter:blur(8px)!important;white-space:nowrap!important;pointer-events:none!important;transition:.28s ease!important}.solveCard.on{transform:translate(-50%,0)!important;pointer-events:none!important}.solveCard::before,.solveKicker,.solveCard p,.solveCard button{display:none!important}.solveCard h2{margin:0!important;font-size:12px!important}
+.rotateGate{display:none;position:absolute;z-index:40;inset:0;background:radial-gradient(circle at 50% 40%,#241a1f,#080709 72%);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px}.phoneGlyph{font-size:48px;transform:rotate(90deg);opacity:.74;margin-bottom:12px}.rotateGate strong{font:500 italic 22px Georgia,serif}.rotateGate span{margin-top:7px;color:rgba(236,224,225,.58);font-size:10px}
+@media(orientation:portrait){.rotateGate{display:flex}.topbar,.prompt,.worldWrap{visibility:hidden!important}}
+@media(max-height:380px){.topbar h1{font-size:18px!important}.prompt strong{font-size:11px!important}.iconBtn{width:44px!important;height:44px!important}.gestureHint span{display:none!important}}
+
+
+.solveActions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:20px}
+.solveActions .menuLink,.solveActions button{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(239,205,174,.17);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));color:#f2e6db;font-size:8.5px;font-weight:800;letter-spacing:.09em;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);text-decoration:none;display:inline-grid;place-items:center}
+.solveCard.productionEnd{inset:0!important;left:auto!important;bottom:auto!important;transform:none!important;width:auto!important;min-width:0!important;display:flex!important;padding:28px!important;border-radius:0!important;background:radial-gradient(circle at 50% 45%,rgba(255,174,80,.20),transparent 29%),radial-gradient(circle at 50% 50%,rgba(112,73,51,.13),transparent 48%),rgba(8,6,8,.87)!important;border:none!important;white-space:normal!important;pointer-events:none!important;backdrop-filter:blur(11px)!important}
+.solveCard.productionEnd.on{pointer-events:auto!important}
+.solveCard.productionEnd::before,.solveCard.productionEnd .solveKicker,.solveCard.productionEnd p,.solveCard.productionEnd .solveActions{display:block!important}
+.solveCard.productionEnd h2{margin:8px 0 8px!important;font-size:27px!important}
+.solveCard.productionEnd button{margin-top:0!important}
+@media(max-height:380px){.solveCard.productionEnd{inset:auto!important;left:50%!important;bottom:max(10px,env(safe-area-inset-bottom))!important;transform:translate(-50%,0)!important;display:block!important;padding:12px 14px!important;border-radius:18px!important;background:rgba(18,13,14,.78)!important;border:1px solid rgba(239,201,168,.16)!important;white-space:nowrap!important;backdrop-filter:blur(8px)!important}.solveCard.productionEnd::before,.solveCard.productionEnd .solveKicker,.solveCard.productionEnd p{display:none!important}.solveCard.productionEnd h2{margin:0!important;font-size:13px!important}.solveCard.productionEnd .solveActions{margin-top:10px;display:flex!important}.solveActions .menuLink,.solveActions button{min-height:40px;font-size:11px;padding:0 15px}}
+
+</style>
+<link rel="stylesheet" href="../../shared/continuum-shell.css">
+</head>
+<body>
+<main class="app" id="app">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">CONTINUUM · WORLD 1 · LEVEL 3 · CANDIDATE</div>
+      <h1>De Wakende Vlam</h1>
+    </div>
+    <div class="topActions">
+      <a class="iconBtn homeBtn" href="../../index.html" aria-label="Terug naar CONTINUUM" title="Terug naar CONTINUUM">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.2 12 4l8 7.2v8.3a.5.5 0 0 1-.5.5h-5v-5.5h-5V20h-5a.5.5 0 0 1-.5-.5z"/></svg>
+      </a>
+      <button id="resetBtn" class="iconBtn" type="button" aria-label="Opnieuw" title="Opnieuw">↻</button>
+    </div>
+  </header>
+
+  <section class="prompt">
+    <strong>Herstel de nacht. Houd het vuur levend.</strong>
+    <span>Laat beide blaasbalgen samenwerken. Hetzelfde leer kan plooien of te strak komen te staan.</span>
+  </section>
+
+  <section class="worldWrap" id="worldWrap">
+    <canvas id="world" aria-label="Een levende smidsefrieze met een gedeelde vervormbare grens"></canvas>
+    <div class="legend" aria-hidden="true">
+      <span class="pilot"><i></i>WAAKVLAM</span>
+      <span class="night"><i></i>NACHTBALG</span>
+    </div>
+    <div class="gestureHint" id="gestureHint" aria-hidden="true">
+      <span class="upperHint">sleep hier</span>
+      <span class="lowerHint">en hier</span>
+    </div>
+    <div class="phase" id="phase" aria-live="polite"></div>
+    <div class="solveCard productionEnd" id="solveCard" aria-live="polite" aria-hidden="true">
+      <div class="solveKicker" id="solveKicker">DE WERELD ADEMT</div>
+      <h2 id="solveTitle">De nacht brandt weer.</h2>
+      <p id="solveCopy">Je hield het levende vuur intact terwijl de wereld herstelde.</p>
+      <div class="solveActions"><button id="againBtn" type="button">OPNIEUW</button><a class="menuLink" href="../../index.html">WERELD 1</a></div>
+    </div>
+    <div class="devPanel" id="devPanel" aria-hidden="true"></div>
+  </section>
+
+  <footer class="footer">Sleep het leer bij één balg horizontaal. Wat je hier verandert, verandert overal.</footer>
+
+  <div class="rotateGate"><div class="phoneGlyph">▭</div><strong>Draai je telefoon horizontaal</strong><span>De smartphone is het spelbord.</span></div>
+</main>
+<script src="../../shared/continuum-audio.js"></script>
+<script>
+const AUDIO=window.CONTINUUM_AUDIO=ContinuumAudio.create({profile:'forge',toggle:false});
+(() => {
+  'use strict';
+
+  const canvas = document.getElementById('world');
+  const resetBtn = document.getElementById('resetBtn');
+  const againBtn = document.getElementById('againBtn');
+  const solveCard = document.getElementById('solveCard');
+  const solveKicker = document.getElementById('solveKicker');
+  const solveTitle = document.getElementById('solveTitle');
+  const solveCopy = document.getElementById('solveCopy');
+  const phaseEl = document.getElementById('phase');
+  const gestureHint = document.getElementById('gestureHint');
+  const devPanel = document.getElementById('devPanel');
+  const ctx = canvas.getContext('2d');
+
+  const START = { p: 0.5, q: 0 };
+  const HEALTH = {
+    minMargin: 0.09,
+    minSafe: 0.0025,
+    maxImbalance: 0.30,
+    dwellMs: 650
+  };
+
+  // v0.2 R&D: two failure modes of the SAME shared leather.
+  // 1) a bounded local buckle against the hot saddle;
+  // 2) a later tensile limit caused by total leather stretch under a vulnerable load split.
+  // No phase flag or extra control is introduced: both are derived from the current geometry.
+  const BUCKLE = {
+    meanCenter: -0.2962167023,
+    biasCenter: 0.5185726730,
+    meanRadius: 0.0799588582,
+    biasRadius: 0.1843574383,
+    warnDistance: 1.72
+  };
+  const TENSION = {
+    // v0.3: same physical tensile law, retuned into a broader human-readable corridor.
+    // The v0.2 law was mathematically valid but forced too many tiny corrective wiggles.
+    baseLimit: 0.114603,
+    dipDepth: 0.072530,
+    biasCenter: 0.389499,
+    biasRadius: 0.195431,
+    warnMargin: 0.018
+  };
+  const state = {
+    p: START.p,
+    q: START.q,
+    active: null,
+    hover: null,
+    pointerId: null,
+    startX: 0,
+    startValue: 0,
+    masteryFlame: true,
+    masterySkin: true,
+    flameLost: false,
+    hasMoved: false,
+    hasLitOven: false,
+    solveSince: 0,
+    solved: false,
+    lastTime: performance.now(),
+    flameLife: 0.24,
+    ovenHeat: 0,
+    flash: 0,
+    phaseUntil: 0,
+    phaseText: '',
+    dev: new URLSearchParams(location.search).get('debug') === '1',
+    feedback: { flame: 'weak', skin: 'relaxed', fold: 'clear', tension: 'clear', night: 'dead', healthy: false },
+    pendingHealthyCue: false
+  };
+
+  if (state.dev) { devPanel.classList.add('on'); devPanel.setAttribute('aria-hidden','false'); }
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function xAt(t, p = state.p, q = state.q) {
+    return 0.5 + 0.81 * t * (1 - t) * ((1 - t) * p + t * q);
+  }
+
+  function exactExtrema(p = state.p, q = state.q) {
+    const candidates = [0, 1];
+    const A = 3 * (p - q);
+    const B = 2 * (-2 * p + q);
+    const C = p;
+    const eps = 1e-12;
+    if (Math.abs(A) < eps) {
+      if (Math.abs(B) > eps) {
+        const t = -C / B;
+        if (t > 0 && t < 1) candidates.push(t);
+      }
+    } else {
+      const D = B * B - 4 * A * C;
+      if (D >= 0) {
+        const s = Math.sqrt(D);
+        const t1 = (-B - s) / (2 * A);
+        const t2 = (-B + s) / (2 * A);
+        if (t1 > 0 && t1 < 1) candidates.push(t1);
+        if (t2 > 0 && t2 < 1) candidates.push(t2);
+      }
+    }
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minT = 0;
+    let maxT = 0;
+    for (const t of candidates) {
+      const x = xAt(t, p, q);
+      if (x < minX) { minX = x; minT = t; }
+      if (x > maxX) { maxX = x; maxT = t; }
+    }
+    return { minX, maxX, minT, maxT, safeMargin: Math.min(minX - 0.4, 0.6 - maxX) };
+  }
+
+  function buckleFromMargins(upper, lower) {
+    const meanLoad = (upper + lower) * 0.5;
+    const bias = (upper - lower) * 0.5;
+    const a = (meanLoad - BUCKLE.meanCenter) / BUCKLE.meanRadius;
+    const b = (bias - BUCKLE.biasCenter) / BUCKLE.biasRadius;
+    const distance = Math.sqrt(a * a + b * b);
+    return { meanLoad, bias, buckleDistance: distance, buckleMargin: distance - 1 };
+  }
+
+  function leatherStretch(p = state.p, q = state.q) {
+    // Arc-length excess of the visible shared leather over the straight 1.0 reference.
+    // 32 segments are ample for this low-order curve and cheap enough for live dragging.
+    let length = 0;
+    let px = xAt(0, p, q), py = 0;
+    const N = 32;
+    for (let i = 1; i <= N; i++) {
+      const t = i / N;
+      const nx = xAt(t, p, q), ny = t;
+      length += Math.hypot(nx - px, ny - py);
+      px = nx; py = ny;
+    }
+    return length - 1;
+  }
+
+  function tensionFromShape(p, q, bias) {
+    const stretch = leatherStretch(p, q);
+    const z = (bias - TENSION.biasCenter) / TENSION.biasRadius;
+    const stretchLimit = TENSION.baseLimit - TENSION.dipDepth * Math.exp(-(z * z));
+    return { stretch, stretchLimit, tensionMargin: stretchLimit - stretch };
+  }
+
+  function metricsFor(p = state.p, q = state.q) {
+    const ex = exactExtrema(p, q);
+    const upper = 2 * p + q - 1;
+    const lower = -(p + 2 * q) - 1;
+    const base = { ...ex, upper, lower, imbalance: upper - lower, ...buckleFromMargins(upper, lower) };
+    return { ...base, ...tensionFromShape(p, q, base.bias) };
+  }
+
+  function metrics() {
+    return metricsFor(state.p, state.q);
+  }
+
+  // Visual airflow is deliberately easier to read than the final success margins.
+  // The oven can visibly catch well before the whole forge is healthy: lighting it is
+  // an early reward, while keeping fire + leather healthy remains the actual puzzle.
+  function airStrengths(m) {
+    const day = clamp((m.upper + 0.05) / 0.20, 0, 1);
+    const night = clamp((m.lower + 1.25) / 1.40, 0, 1);
+    const oven = clamp(Math.sqrt(day * night), 0, 1);
+    return { day, night, oven };
+  }
+
+  function healthy(m) {
+    return m.upper >= HEALTH.minMargin &&
+      m.lower >= HEALTH.minMargin &&
+      m.safeMargin >= HEALTH.minSafe &&
+      m.buckleMargin >= 0 &&
+      m.tensionMargin >= 0 &&
+      Math.abs(m.imbalance) <= HEALTH.maxImbalance;
+  }
+
+  function setPhase(text, ms = 1150) {
+    if (state.phaseText === text && performance.now() < state.phaseUntil - 120) return;
+    state.phaseText = text;
+    state.phaseUntil = performance.now() + ms;
+    phaseEl.textContent = text;
+    phaseEl.classList.add('on');
+  }
+
+  function resize() {
+    const r = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.max(1, Math.round(r.width * dpr));
+    canvas.height = Math.max(1, Math.round(r.height * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function reset() {
+    Object.assign(state, {
+      p: START.p,
+      q: START.q,
+      active: null,
+      hover: null,
+      pointerId: null,
+      masteryFlame: true,
+      masterySkin: true,
+      flameLost: false,
+      hasMoved: false,
+      hasLitOven: false,
+      solveSince: 0,
+      solved: false,
+      flameLife: 0.24,
+      ovenHeat: 0,
+      flash: 0,
+      phaseUntil: 0,
+      phaseText: '',
+      pendingHealthyCue: false,
+      feedback: { flame: 'weak', skin: 'relaxed', fold: 'clear', night: 'dead', healthy: false }
+    });
+    solveCard.classList.remove('on');
+    solveCard.setAttribute('aria-hidden', 'true');
+    gestureHint.classList.remove('hide');
+    phaseEl.classList.remove('on');
+  }
+
+  function seamPoint(cellX, cellY, w, h, t) {
+    return { x: cellX + xAt(t) * w, y: cellY + t * h };
+  }
+
+  function centralLayout(W, H) {
+    const mobile = W < 700;
+    // One large readable hero forge with partial neighbours. The orbit stays visible,
+    // but the central scene is no longer lost in a stripe pattern.
+    const cols = mobile ? 2.18 : 3.05;
+    const cellW = W / cols;
+    const cellH = mobile ? H * 0.77 : H * 0.78;
+    const totalCols = Math.ceil(cols) + 2;
+    const centerCol = Math.floor(totalCols / 2);
+    const startX = W / 2 - (centerCol + 0.5) * cellW;
+    const startY = H * (mobile ? 0.515 : 0.52) - cellH / 2;
+    return { cellW, cellH, totalCols, startX, startY, centerCol, mobile };
+  }
+
+  function pathForSide(x0, y0, w, h, left) {
+    const path = new Path2D();
+    if (left) {
+      path.moveTo(x0, y0);
+      path.lineTo(x0 + w * 0.5, y0);
+    } else {
+      path.moveTo(x0 + w, y0);
+      path.lineTo(x0 + w * 0.5, y0);
+    }
+    for (let i = 1; i <= 34; i++) {
+      const t = i / 34;
+      path.lineTo(x0 + xAt(t) * w, y0 + t * h);
+    }
+    if (left) path.lineTo(x0, y0 + h);
+    else path.lineTo(x0 + w, y0 + h);
+    path.closePath();
+    return path;
+  }
+
+  function drawHammeredTexture(x0, y0, w, h, warm, alpha = 1) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    const speck = warm ? 'rgba(255,211,151,.042)' : 'rgba(211,199,255,.036)';
+    const groove = warm ? 'rgba(236,174,105,.085)' : 'rgba(177,160,223,.072)';
+    for (let i = 0; i < 20; i++) {
+      const x = x0 + ((i * 47.7 + 9) % 97) / 100 * w;
+      const y = y0 + ((i * 67.3 + 19) % 101) / 100 * h;
+      ctx.fillStyle = speck;
+      ctx.beginPath();
+      ctx.ellipse(x, y, 1 + (i % 4) * .42, .65 + (i % 3) * .28, (i % 5) * .3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = groove;
+    ctx.lineWidth = .8;
+    for (let i = 0; i < 5; i++) {
+      const yy = y0 + h * (0.13 + i * 0.17);
+      ctx.beginPath();
+      ctx.moveTo(x0 + w * .09, yy);
+      ctx.bezierCurveTo(x0 + w * .31, yy - 4, x0 + w * .66, yy + 5, x0 + w * .92, yy - 1);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function archPath(x0, y0, w, h) {
+    const p = new Path2D();
+    const inset = w * .055;
+    const shoulder = y0 + h * .16;
+    p.moveTo(x0 + inset, y0 + h);
+    p.lineTo(x0 + inset, shoulder);
+    p.bezierCurveTo(x0 + w * .08, y0 + h * .02, x0 + w * .28, y0, x0 + w * .5, y0);
+    p.bezierCurveTo(x0 + w * .72, y0, x0 + w * .92, y0 + h * .02, x0 + w - inset, shoulder);
+    p.lineTo(x0 + w - inset, y0 + h);
+    p.closePath();
+    return p;
+  }
+
+  function drawWorldBackdrop(W, H, now) {
+    const wall = ctx.createLinearGradient(0, 0, 0, H);
+    wall.addColorStop(0, '#171116');
+    wall.addColorStop(.45, '#100d11');
+    wall.addColorStop(1, '#080709');
+    ctx.fillStyle = wall;
+    ctx.fillRect(0, 0, W, H);
+
+    // Broad, irregular masonry. It is deliberately low-contrast: world, not grid.
+    ctx.save();
+    ctx.globalAlpha = .30;
+    const bh = Math.max(44, H * .075);
+    const bw = Math.max(76, W * .25);
+    for (let row = -1; row < Math.ceil(H / bh) + 1; row++) {
+      const off = (row & 1) ? -bw * .48 : 0;
+      for (let col = -1; col < Math.ceil(W / bw) + 2; col++) {
+        const x = off + col * bw;
+        const y = row * bh;
+        ctx.fillStyle = row % 3 === 0 ? 'rgba(96,67,64,.070)' : 'rgba(64,49,58,.055)';
+        ctx.fillRect(x + 1, y + 1, bw - 3, bh - 3);
+        ctx.strokeStyle = 'rgba(228,196,166,.022)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x + 2, y + 2, bw - 5, bh - 5);
+      }
+    }
+    ctx.restore();
+
+    const heat = ctx.createRadialGradient(W * .5, H * .52, 4, W * .5, H * .52, Math.max(W, H) * .57);
+    heat.addColorStop(0, `rgba(162,73,38,${.075 + .018 * Math.sin(now * .0017)})`);
+    heat.addColorStop(.42, 'rgba(75,42,43,.055)');
+    heat.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = heat;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function drawForgeArchitecture(x0, y0, w, h, central, swap) {
+    ctx.save();
+    const a = archPath(x0, y0, w, h);
+
+    // Deep alcove shadow gives each repeated forge physical depth without outlining a tile.
+    ctx.fillStyle = central ? 'rgba(5,4,6,.28)' : 'rgba(5,4,6,.38)';
+    ctx.fill(a);
+
+    const hoodY = y0 + h * .17;
+    const hood = ctx.createLinearGradient(0, y0, 0, hoodY + h * .08);
+    hood.addColorStop(0, 'rgba(79,59,57,.95)');
+    hood.addColorStop(.45, 'rgba(48,38,42,.94)');
+    hood.addColorStop(1, 'rgba(25,22,27,.90)');
+    ctx.strokeStyle = hood;
+    ctx.lineWidth = Math.max(8, w * .055);
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x0 + w * .07, hoodY);
+    ctx.bezierCurveTo(x0 + w * .10, y0 + h * .04, x0 + w * .30, y0 + h * .015, x0 + w * .5, y0 + h * .015);
+    ctx.bezierCurveTo(x0 + w * .70, y0 + h * .015, x0 + w * .90, y0 + h * .04, x0 + w * .93, hoodY);
+    ctx.stroke();
+
+    // Brass shoulder plates suggest a crafted mechanism rather than a flat pattern.
+    const plateY = y0 + h * .19;
+    for (const sx of [.13, .87]) {
+      const px = x0 + w * sx;
+      ctx.fillStyle = 'rgba(69,47,39,.86)';
+      ctx.strokeStyle = swap ? 'rgba(159,141,209,.18)' : 'rgba(212,156,91,.19)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(px - w * .045, plateY - h * .025, w * .09, h * .05, 4);
+      ctx.fill();ctx.stroke();
+      ctx.fillStyle = 'rgba(212,166,103,.42)';
+      for (const dx of [-1,1]) {
+        ctx.beginPath();ctx.arc(px + dx * w * .025, plateY, Math.max(1, w * .006), 0, Math.PI*2);ctx.fill();
+      }
+    }
+
+    // Ground shelf under the furnace.
+    const shelfY = y0 + h * .60;
+    const shelf = ctx.createLinearGradient(0, shelfY, 0, shelfY + h * .05);
+    shelf.addColorStop(0, 'rgba(94,65,50,.82)');
+    shelf.addColorStop(1, 'rgba(30,25,27,.88)');
+    ctx.fillStyle = shelf;
+    ctx.beginPath();
+    ctx.roundRect(x0 + w * .16, shelfY, w * .68, h * .034, h * .012);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawForgeFront(x0, y0, w, h, central) {
+    ctx.save();
+    // Thin stone ribs frame the machinery but never close into a rectangular tile border.
+    const rib = ctx.createLinearGradient(x0, 0, x0 + w, 0);
+    rib.addColorStop(0, 'rgba(43,33,35,.28)');
+    rib.addColorStop(.5, 'rgba(111,79,59,.60)');
+    rib.addColorStop(1, 'rgba(43,33,35,.28)');
+    ctx.strokeStyle = rib;
+    ctx.lineWidth = Math.max(3.5, w * .018);
+    ctx.lineCap = 'round';
+    for (const sx of [.075, .925]) {
+      ctx.beginPath();
+      ctx.moveTo(x0 + w * sx, y0 + h * .18);
+      ctx.lineTo(x0 + w * sx, y0 + h * .91);
+      ctx.stroke();
+    }
+
+    // Furnace work shelf, now genuinely in front of the coloured material field.
+    const shelfY = y0 + h * .60;
+    const shelf = ctx.createLinearGradient(0, shelfY, 0, shelfY + h * .05);
+    shelf.addColorStop(0, 'rgba(129,86,57,.86)');
+    shelf.addColorStop(.34, 'rgba(75,54,45,.92)');
+    shelf.addColorStop(1, 'rgba(25,22,25,.95)');
+    ctx.fillStyle = shelf;
+    ctx.strokeStyle = 'rgba(226,175,111,.16)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(x0 + w * .15, shelfY, w * .70, h * .034, h * .011);
+    ctx.fill();ctx.stroke();
+
+    // Curved forge canopy above the hearth; it reads as architecture, not a floating UI polygon.
+    const hoodCx = x0 + w * .5;
+    const hoodY = y0 + h * .405;
+    ctx.strokeStyle = central ? 'rgba(112,78,58,.70)' : 'rgba(86,65,58,.55)';
+    ctx.lineWidth = Math.max(3, w * .018);
+    ctx.beginPath();
+    ctx.moveTo(hoodCx - w * .17, hoodY);
+    ctx.quadraticCurveTo(hoodCx, hoodY - h * .065, hoodCx + w * .17, hoodY);
+    ctx.stroke();
+    ctx.strokeStyle='rgba(220,171,111,.12)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(hoodCx,hoodY-h*.058);ctx.lineTo(hoodCx,y0+h*.31);ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawDomainMotif(x0, y0, w, h, path, warm, col, row) {
+    ctx.save();ctx.clip(path);
+    ctx.globalAlpha = .55;
+    if (warm) {
+      // Hammered solar arcs: ornamental, not a meter.
+      ctx.strokeStyle = 'rgba(244,187,111,.070)';
+      ctx.lineWidth = 1;
+      const cx=x0+w*(.27+((col+row)&1)*.08), cy=y0+h*.48;
+      for(let i=1;i<=4;i++){
+        ctx.beginPath();ctx.arc(cx,cy,w*(.16+i*.075),-1.1,1.1);ctx.stroke();
+      }
+      for(let i=0;i<5;i++){
+        const a=-.8+i*.4;
+        ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*w*.12,cy+Math.sin(a)*w*.12);ctx.lineTo(cx+Math.cos(a)*w*.30,cy+Math.sin(a)*w*.30);ctx.stroke();
+      }
+    } else {
+      // Cool constellation-like marks make the night material visually distinct.
+      ctx.strokeStyle='rgba(190,177,239,.060)';ctx.fillStyle='rgba(212,202,255,.090)';ctx.lineWidth=.8;
+      const pts=[];
+      for(let i=0;i<8;i++){
+        const px=x0+w*(.12+(((i*37+col*13)%79)/100));
+        const py=y0+h*(.18+(((i*53+row*11+19)%67)/100));
+        pts.push([px,py]);ctx.beginPath();ctx.arc(px,py,.7+(i%3)*.25,0,Math.PI*2);ctx.fill();
+      }
+      ctx.beginPath();
+      pts.slice(0,5).forEach((pt,i)=>i?ctx.lineTo(pt[0],pt[1]):ctx.moveTo(pt[0],pt[1]));ctx.stroke();
+      const mx=x0+w*.72,my=y0+h*.42;
+      ctx.beginPath();ctx.arc(mx,my,w*.16,.65,Math.PI*1.78);ctx.stroke();
+      ctx.beginPath();ctx.arc(mx+w*.045,my-w*.012,w*.13,.70,Math.PI*1.72);ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawIgnitionArc(x1,y1,x2,y2,amount) {
+    const a=clamp(amount,0,1);if(a<=.001)return;
+    ctx.save();ctx.globalCompositeOperation='screen';
+    const now=performance.now();
+    const mx=(x1+x2)*.5;const my=Math.min(y1,y2)-18-6*Math.sin(now*.02);
+    for(let layer=0;layer<3;layer++){
+      ctx.strokeStyle=layer===0?`rgba(255,124,44,${.20*a})`:layer===1?`rgba(255,195,85,${.55*a})`:`rgba(255,246,187,${.76*a})`;
+      ctx.lineWidth=layer===0?5:layer===1?2.4:1;
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(mx,my,x2,y2);ctx.stroke();
+    }
+    for(let i=0;i<4;i++){
+      const u=(i+.35)/4;const om=1-u;
+      const x=om*om*x1+2*om*u*mx+u*u*x2;
+      const y=om*om*y1+2*om*u*my+u*u*y2;
+      ctx.fillStyle=`rgba(255,221,132,${a*(.35+.15*i)})`;ctx.beginPath();ctx.arc(x,y,1.2+i*.18,0,Math.PI*2);ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawLeatherSeam(x0, y0, w, h, m, central, cue) {
+    const pts = [];
+    for (let i = 0; i <= 64; i++) {
+      const t = i / 64;
+      pts.push({ t, x: x0 + xAt(t) * w, y: y0 + t * h });
+    }
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Heavy shadow: the seam is a real shared membrane set into the forge, not a UI curve.
+    ctx.beginPath();
+    pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+    ctx.strokeStyle = 'rgba(2,2,3,.82)';
+    ctx.lineWidth = Math.max(15, w * .088);
+    ctx.stroke();
+
+    ctx.beginPath();
+    pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+    const leather = ctx.createLinearGradient(x0, 0, x0 + w, 0);
+    leather.addColorStop(0, 'rgba(71,38,36,.98)');
+    leather.addColorStop(.27, 'rgba(139,76,54,.99)');
+    leather.addColorStop(.47, 'rgba(218,142,83,.99)');
+    leather.addColorStop(.54, 'rgba(247,191,112,.98)');
+    leather.addColorStop(.70, 'rgba(142,73,54,.99)');
+    leather.addColorStop(1, 'rgba(64,34,35,.99)');
+    ctx.strokeStyle = leather;
+    ctx.lineWidth = Math.max(8, w * .047);
+    ctx.stroke();
+
+    // A soft central ridge catches forge light.
+    ctx.beginPath();
+    pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+    ctx.strokeStyle = 'rgba(255,222,167,.20)';
+    ctx.lineWidth = Math.max(1.3, w * .008);
+    ctx.stroke();
+
+    // Fixed hot iron saddle. It is part of the forge, not another control.
+    // Near the elastic instability the shared leather visibly starts to wrinkle against it.
+    if (central) {
+      const sx = x0 + w * .50;
+      const sy = y0 + h * .505;
+      const nearFold = clamp((BUCKLE.warnDistance - m.buckleDistance) / (BUCKLE.warnDistance - 1), 0, 1);
+      ctx.save();
+      ctx.lineCap = 'round';
+      const metal = ctx.createLinearGradient(sx - w*.10, sy, sx + w*.10, sy);
+      metal.addColorStop(0, 'rgba(54,42,39,.92)');
+      metal.addColorStop(.5, nearFold > .01 ? `rgba(153,84,48,${.72 + .18*nearFold})` : 'rgba(83,60,48,.92)');
+      metal.addColorStop(1, 'rgba(49,39,39,.94)');
+      ctx.strokeStyle = metal;
+      ctx.lineWidth = Math.max(5.5, w*.028);
+      ctx.beginPath();
+      ctx.moveTo(sx - w*.088, sy);
+      ctx.lineTo(sx - w*.028, sy);
+      ctx.moveTo(sx + w*.028, sy);
+      ctx.lineTo(sx + w*.088, sy);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(239,165,91,${.20 + .38*nearFold})`;
+      for (const dx of [-w*.096,w*.096]) { ctx.beginPath();ctx.arc(sx+dx,sy,Math.max(1.5,w*.009),0,Math.PI*2);ctx.fill(); }
+      if (nearFold > .01) {
+        const tFold = clamp(.50 + (m.bias - BUCKLE.biasCenter) * .12, .42, .58);
+        const c = seamPoint(x0,y0,w,h,tFold);
+        ctx.globalCompositeOperation = 'screen';
+        const rg = ctx.createRadialGradient(c.x,c.y,1,c.x,c.y,w*(.12+.09*nearFold));
+        rg.addColorStop(0, `rgba(255,222,150,${.28 + .46*nearFold})`);
+        rg.addColorStop(.28, `rgba(255,126,67,${.16 + .34*nearFold})`);
+        rg.addColorStop(1, 'rgba(177,52,35,0)');
+        ctx.fillStyle=rg;ctx.beginPath();ctx.arc(c.x,c.y,w*(.12+.09*nearFold),0,Math.PI*2);ctx.fill();
+        ctx.globalCompositeOperation='source-over';
+        // The warning is the leather shape itself: a dark fold and two converging raised edges,
+        // rather than red warning stripes painted on top of it.
+        const ca=seamPoint(x0,y0,w,h,clamp(tFold-.018,0,1));
+        const cb=seamPoint(x0,y0,w,h,clamp(tFold+.018,0,1));
+        const ang=Math.atan2(cb.y-ca.y,cb.x-ca.x);
+        ctx.save();ctx.translate(c.x,c.y);ctx.rotate(ang);
+        const foldW=9+nearFold*10, foldL=17+nearFold*10;
+        ctx.fillStyle=`rgba(24,10,13,${.28+.68*nearFold})`;
+        ctx.beginPath();ctx.moveTo(-foldL,0);ctx.quadraticCurveTo(0,-foldW*.42,foldL,0);ctx.quadraticCurveTo(0,foldW*.42,-foldL,0);ctx.fill();
+        // Two raised leather lips visibly converge into the pinch.
+        ctx.strokeStyle=`rgba(255,220,169,${.20+.56*nearFold})`;ctx.lineWidth=1.25+nearFold*.65;
+        ctx.beginPath();ctx.moveTo(-foldL,-foldW*.50);ctx.quadraticCurveTo(-5,-2,0,0);ctx.quadraticCurveTo(5,-2,foldL,-foldW*.50);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(-foldL,foldW*.50);ctx.quadraticCurveTo(-5,2,0,0);ctx.quadraticCurveTo(5,2,foldL,foldW*.50);ctx.stroke();
+        ctx.strokeStyle=`rgba(32,10,14,${.42+.52*nearFold})`;ctx.lineWidth=2.0+nearFold*.9;
+        ctx.beginPath();ctx.moveTo(-foldL*.78,0);ctx.lineTo(foldL*.78,0);ctx.stroke();
+        // Small wrinkles pull toward the pinch: shape first, colour second.
+        ctx.strokeStyle=`rgba(79,31,28,${.20+.48*nearFold})`;ctx.lineWidth=.9;
+        for (const yy of [-1,1]) {
+          for (let k=1;k<=3;k++) {
+            const yk=yy*(foldW*.22+k*2.1);
+            ctx.beginPath();ctx.moveTo(-foldL*.88,yk);ctx.quadraticCurveTo(-foldL*.28,yy*2,0,0);ctx.stroke();
+            ctx.beginPath();ctx.moveTo(foldL*.88,yk);ctx.quadraticCurveTo(foldL*.28,yy*2,0,0);ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+
+    // A second, later material truth: the same leather can be pulled too taut.
+    // Near that limit, a short lower segment visibly narrows and the stitch holes elongate.
+    const tensionCue = clamp((TENSION.warnMargin - m.tensionMargin) / TENSION.warnMargin, 0, 1);
+    if (tensionCue > .001) {
+      const seg = [];
+      for (let i = 0; i <= 14; i++) {
+        const t = .60 + i / 14 * .18;
+        seg.push(seamPoint(x0, y0, w, h, t));
+      }
+      // mask the wide underlying leather locally, then redraw it as a tightened strap
+      ctx.beginPath();
+      seg.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+      ctx.strokeStyle='rgba(8,5,7,.86)';
+      ctx.lineWidth=Math.max(10,w*.056);ctx.stroke();
+      ctx.beginPath();
+      seg.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+      const tg=ctx.createLinearGradient(x0,0,x0+w,0);
+      tg.addColorStop(0,'rgba(91,48,42,.98)');tg.addColorStop(.5,'rgba(232,156,91,.99)');tg.addColorStop(1,'rgba(83,43,40,.98)');
+      ctx.strokeStyle=tg;
+      ctx.lineWidth=Math.max(5.5,w*(.041-.010*tensionCue));ctx.stroke();
+      const tc=seamPoint(x0,y0,w,h,.70);
+      const ta=seamPoint(x0,y0,w,h,.685), tb=seamPoint(x0,y0,w,h,.715);
+      const ang=Math.atan2(tb.y-ta.y,tb.x-ta.x);
+      ctx.save();ctx.translate(tc.x,tc.y);ctx.rotate(ang);
+      ctx.strokeStyle=`rgba(255,224,177,${.18+.56*tensionCue})`;ctx.lineWidth=1;
+      for(let k=-2;k<=2;k++){
+        const yy=k*3.1*(1+.45*tensionCue);
+        ctx.beginPath();ctx.ellipse(0,yy,2.2+2.2*tensionCue,1.05,0,0,Math.PI*2);ctx.stroke();
+      }
+      ctx.strokeStyle=`rgba(60,24,25,${.25+.55*tensionCue})`;ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(-13,0);ctx.lineTo(13,0);ctx.stroke();
+      ctx.restore();
+    }
+
+    // Cross-grain fibers become slightly taut when the skin approaches the outer invariant.
+    const onset = 0.016;
+    const strain = clamp((onset - m.safeMargin) / onset, 0, 1.45);
+    ctx.strokeStyle = `rgba(255,225,180,${.13 + .12 * clamp(strain,0,1)})`;
+    ctx.lineWidth = .7;
+    for (let i = 4; i < pts.length - 3; i += 5) {
+      const a = pts[i - 1], b = pts[i + 1], p = pts[i];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const len = Math.max(1, Math.hypot(dx, dy));
+      const nx = -dy / len, ny = dx / len;
+      const half = Math.max(2.7, w * .0145);
+      ctx.beginPath();
+      ctx.moveTo(p.x - nx * half, p.y - ny * half);
+      ctx.lineTo(p.x + nx * half, p.y + ny * half);
+      ctx.stroke();
+    }
+
+    if (strain > 0.01) {
+      const maxGap = 0.6 - m.maxX;
+      const minGap = m.minX - 0.4;
+      const bindMax = maxGap < minGap;
+      const hotTs = [bindMax ? m.maxT : m.minT];
+      // On the balanced reverse-S both sides approach the invariant together.
+      // Show both real extrema instead of arbitrarily choosing one due to float tie-breaking.
+      if (Math.abs(maxGap - minGap) < 0.0025) {
+        const other = bindMax ? m.minT : m.maxT;
+        if (Math.abs(other - hotTs[0]) > .05) hotTs.push(other);
+      }
+      for (const t of hotTs) {
+        const c = seamPoint(x0, y0, w, h, t);
+        const radius = w * (.29 + .055 * clamp(strain, 0, 1));
+        ctx.globalCompositeOperation = 'screen';
+        const g = ctx.createRadialGradient(c.x, c.y, 1, c.x, c.y, radius);
+        g.addColorStop(0, `rgba(255,246,198,${.76 * clamp(strain, 0, 1)})`);
+        g.addColorStop(.14, `rgba(255,182,91,${.48 * clamp(strain, 0, 1)})`);
+        g.addColorStop(.48, `rgba(221,92,53,${.18 * clamp(strain, 0, 1)})`);
+        g.addColorStop(1, 'rgba(190,61,39,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();ctx.arc(c.x, c.y, radius, 0, Math.PI * 2);ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+
+        // Contact reads as a local flattened crease, not a set of red meter-like bands.
+        const aa=seamPoint(x0,y0,w,h,clamp(t-.014,0,1));
+        const bb=seamPoint(x0,y0,w,h,clamp(t+.014,0,1));
+        const ang=Math.atan2(bb.y-aa.y,bb.x-aa.x);
+        ctx.save();ctx.translate(c.x,c.y);ctx.rotate(ang);
+        ctx.strokeStyle=`rgba(54,20,22,${.22+.60*clamp(strain,0,1)})`;ctx.lineWidth=2.2;
+        ctx.beginPath();ctx.moveTo(-11,0);ctx.quadraticCurveTo(0,2.5+4*strain,11,0);ctx.stroke();
+        ctx.strokeStyle=`rgba(255,219,157,${.18+.34*clamp(strain,0,1)})`;ctx.lineWidth=.9;
+        ctx.beginPath();ctx.moveTo(-10,-3);ctx.quadraticCurveTo(0,-1,10,-3);ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    if (central) {
+      const pulse = .5 + .5 * Math.sin(performance.now() * .0047);
+      for (const zone of ['p', 'q']) {
+        const t = zone === 'p' ? 1 / 3 : 2 / 3;
+        const c = seamPoint(x0, y0, w, h, t);
+        const on = cue === zone;
+        const aura = on ? 18 + pulse * 4 : 11 + pulse * 1.4;
+        const rg = ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,aura);
+        rg.addColorStop(0, on ? 'rgba(255,228,184,.20)' : 'rgba(255,222,184,.07)');
+        rg.addColorStop(1, 'rgba(255,214,170,0)');
+        ctx.fillStyle = rg;ctx.beginPath();ctx.arc(c.x,c.y,aura,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle = on ? 'rgba(255,235,203,.62)' : 'rgba(255,220,180,.18)';
+        ctx.lineWidth = on ? 1.2 : .7;
+        ctx.beginPath();ctx.ellipse(c.x,c.y,on?10:7,on?6:4.5,0,0,Math.PI*2);ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawAirflow(x1, y1, x2, y2, intensity, hue, phase) {
+    const a = clamp(intensity, 0, 1);
+    if (a <= 0.012) return;
+    const now = performance.now();
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+
+    // Main soft current.
+    ctx.strokeStyle = hue;
+    ctx.lineWidth = .8 + a * 1.45;
+    ctx.globalAlpha = .10 + a * .26;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.quadraticCurveTo((x1 + x2) / 2, y1 + (y2 - y1) * .20, x2, y2);
+    ctx.stroke();
+
+    // A few moving air motes communicate direction without becoming a meter.
+    for (let i = 0; i < 4; i++) {
+      const u = (now * (.00018 + .000055 * a) + i * .245 + phase * .11) % 1;
+      const om = 1-u;
+      const mx = (x1+x2)/2;
+      const my = y1 + (y2-y1)*.20;
+      const x = om*om*x1 + 2*om*u*mx + u*u*x2;
+      const y = om*om*y1 + 2*om*u*my + u*u*y2;
+      ctx.globalAlpha = (.08 + .34 * a) * Math.sin(Math.PI * u);
+      ctx.fillStyle = hue;
+      ctx.beginPath();ctx.ellipse(x,y,1.2 + a*.8,.55 + a*.35,0,0,Math.PI*2);ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawBellow(cx, cy, size, strokeDepth, color, mirror = false, dead = false, phase = 0) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    if (mirror) ctx.scale(-1, 1);
+    const d = clamp(strokeDepth, 0, 1);
+    const now = performance.now();
+    const pulse = .5 + .5 * Math.sin(now * (.003 + d * .00125) + phase);
+    const breath = d * (.73 + .27 * pulse);
+    const bodyW = size * (.48 + .18 * breath);
+    const bodyH = size * (.29 + .035 * breath);
+    const alpha = dead ? .39 : .75 + d * .19;
+
+    if (!dead && d > .05) {
+      const glow = ctx.createRadialGradient(0,0,1,0,0,size*.62);
+      glow.addColorStop(0, color.replace('0.70', String(.065 + d * .09)));
+      glow.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,size*.62,0,Math.PI*2);ctx.fill();
+    }
+
+    ctx.globalAlpha = alpha;
+    // Back board, slightly larger than the leather chamber.
+    const wood = ctx.createLinearGradient(-bodyW*.6,-bodyH,bodyW*.6,bodyH);
+    wood.addColorStop(0,'#4e3028');wood.addColorStop(.45,'#805038');wood.addColorStop(1,'#352425');
+    ctx.fillStyle=wood;ctx.strokeStyle='rgba(227,176,112,.24)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(-bodyW*.60,-bodyH*.60,bodyW*.20,bodyH*1.20,bodyH*.13);ctx.fill();ctx.stroke();
+
+    // Accordion chamber.
+    const body = ctx.createLinearGradient(-bodyW/2,0,bodyW/2,0);
+    body.addColorStop(0,'#181214');body.addColorStop(.18,'#2c1d1b');body.addColorStop(.50,'#4a2d25');body.addColorStop(.82,'#2d1d1c');body.addColorStop(1,'#171214');
+    ctx.fillStyle=body;ctx.strokeStyle=color;ctx.lineWidth=1.15;
+    ctx.beginPath();ctx.roundRect(-bodyW*.43,-bodyH*.48,bodyW*.92,bodyH*.96,bodyH*.19);ctx.fill();ctx.stroke();
+
+    // Folds open and close with the breath.
+    ctx.strokeStyle='rgba(245,214,170,.22)';ctx.lineWidth=.85;
+    for(let i=-4;i<=4;i++){
+      const x=i*bodyW/11;
+      ctx.beginPath();ctx.moveTo(x,-bodyH*.36);ctx.quadraticCurveTo(x+1.4+breath*1.2,0,x,bodyH*.36);ctx.stroke();
+    }
+
+    // Front brass/wood compression plate.
+    ctx.fillStyle='rgba(110,72,47,.95)';ctx.strokeStyle='rgba(224,174,104,.30)';
+    ctx.beginPath();ctx.roundRect(bodyW*.43,-bodyH*.57,bodyW*.10,bodyH*1.14,2.5);ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(231,185,116,.55)';
+    for(const yy of [-.30,.30]){ctx.beginPath();ctx.arc(bodyW*.48,bodyH*yy,Math.max(1.1,size*.009),0,Math.PI*2);ctx.fill();}
+
+    // Tapered copper nozzle.
+    const noz=ctx.createLinearGradient(bodyW*.47,0,bodyW*.90,0);
+    noz.addColorStop(0,'#654431');noz.addColorStop(.5,'#a06f46');noz.addColorStop(1,'#d29a5a');
+    ctx.fillStyle=noz;ctx.globalAlpha=dead?.28:.82;
+    ctx.beginPath();ctx.moveTo(bodyW*.48,-bodyH*.14);ctx.lineTo(bodyW*.91,-bodyH*.065);ctx.lineTo(bodyW*.91,bodyH*.065);ctx.lineTo(bodyW*.48,bodyH*.14);ctx.closePath();ctx.fill();
+
+    // Long operating arm is secondary motion: more depth = larger stroke.
+    ctx.globalAlpha=dead?.32:.72;ctx.strokeStyle='rgba(205,164,111,.78)';ctx.lineWidth=Math.max(1.5,size*.012);ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(-bodyW*.52,-bodyH*.42);ctx.lineTo(-bodyW*.69,-bodyH*(.72+.38*breath));ctx.lineTo(-bodyW*.53,-bodyH*(.88+.40*breath));ctx.stroke();
+    ctx.fillStyle='rgba(198,145,86,.66)';ctx.beginPath();ctx.arc(-bodyW*.52,-bodyH*.42,Math.max(1.6,size*.012),0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+
+  function drawFlame(cx, cy, scale, intensity, lean = 0, pilot = false) {
+    const a = clamp(intensity, 0, 1);
+    if (a <= .004) return;
+    const now = performance.now();
+    ctx.save();ctx.translate(cx,cy);ctx.transform(1,0,lean*.18,1,0,0);
+    const h=scale*(pilot?.58:1)*(.45+.78*a);
+    const w=scale*(pilot?.30:.50)*(.55+.38*a);
+    const flick=(Math.sin(now*.012+cx*.018)+.55*Math.sin(now*.021+cy*.01))*.5;
+
+    ctx.globalCompositeOperation='screen';
+    const outer=ctx.createRadialGradient(0,-h*.16,1,0,-h*.12,h*.95);
+    outer.addColorStop(0,`rgba(255,199,94,${.10+.14*a})`);outer.addColorStop(1,'rgba(208,61,26,0)');
+    ctx.fillStyle=outer;ctx.beginPath();ctx.arc(0,-h*.12,h*.90,0,Math.PI*2);ctx.fill();
+    ctx.globalCompositeOperation='source-over';
+
+    ctx.globalAlpha=.48+.52*a;
+    const flame=ctx.createLinearGradient(0,-h,0,0);
+    flame.addColorStop(0,'rgba(255,242,178,.95)');flame.addColorStop(.32,'rgba(255,183,69,.98)');flame.addColorStop(.74,'rgba(224,74,31,.86)');flame.addColorStop(1,'rgba(128,34,25,.32)');
+    ctx.fillStyle=flame;ctx.beginPath();
+    ctx.moveTo(0,-h*(1+.06*flick));
+    ctx.bezierCurveTo(w*.72,-h*.62,w*.74,-h*.14,0,0);
+    ctx.bezierCurveTo(-w*.68,-h*.12,-w*.61,-h*.58,0,-h*(1+.06*flick));ctx.fill();
+
+    if(a>.18){
+      ctx.globalAlpha=.55*a;ctx.fillStyle='rgba(255,247,198,.92)';ctx.beginPath();
+      ctx.moveTo(0,-h*.72);ctx.bezierCurveTo(w*.28,-h*.42,w*.25,-h*.14,0,-h*.08);ctx.bezierCurveTo(-w*.23,-h*.15,-w*.18,-h*.44,0,-h*.72);ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawPilotLamp(cx, cy, size, intensity, mirror) {
+    ctx.save();
+    const a=clamp(intensity,0,1);
+    const halo=ctx.createRadialGradient(cx,cy,1,cx,cy,size*2.3);
+    halo.addColorStop(0,`rgba(255,168,71,${.09+a*.18})`);halo.addColorStop(1,'rgba(255,130,50,0)');
+    ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx,cy,size*2.3,0,Math.PI*2);ctx.fill();
+
+    // Small ritual pilot-lamp: recognisable and clearly separate from the main furnace.
+    ctx.fillStyle='#3a2824';ctx.strokeStyle='rgba(224,174,107,.50)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.ellipse(cx,cy+size*.22,size*.58,size*.27,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(188,130,73,.72)';ctx.beginPath();ctx.roundRect(cx-size*.14,cy+size*.12,size*.28,size*.35,size*.07);ctx.fill();
+    ctx.strokeStyle='rgba(228,190,128,.26)';ctx.lineWidth=1.1;ctx.beginPath();ctx.arc(cx,cy-size*.05,size*.40,Math.PI*.95,Math.PI*2.05);ctx.stroke();
+    ctx.strokeStyle='rgba(192,137,79,.38)';ctx.beginPath();ctx.moveTo(cx,cy+size*.40);ctx.lineTo(cx,cy+size*.74);ctx.stroke();
+    ctx.fillStyle='rgba(174,117,67,.50)';ctx.beginPath();ctx.ellipse(cx,cy+size*.77,size*.26,size*.08,0,0,Math.PI*2);ctx.fill();
+    drawFlame(cx+(mirror?size*.035:-size*.035),cy,size*1.68,a,mirror?.10:-.10,true);
+    ctx.restore();
+  }
+
+  function drawFurnace(cx, cy, r, heat, imbalance) {
+    ctx.save();
+    const h=clamp(heat,0,1);
+    if(h>.005){
+      ctx.globalCompositeOperation='screen';
+      const g=ctx.createRadialGradient(cx,cy,r*.18,cx,cy,r*3.8);
+      g.addColorStop(0,`rgba(255,163,60,${.12+h*.20})`);g.addColorStop(.38,`rgba(216,77,34,${h*.075})`);g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r*3.8,0,Math.PI*2);ctx.fill();ctx.globalCompositeOperation='source-over';
+    }
+
+    // Stone-and-brass hearth body.
+    const outer=ctx.createRadialGradient(cx-r*.2,cy-r*.3,r*.1,cx,cy,r*1.25);
+    outer.addColorStop(0,'#594137');outer.addColorStop(.5,'#332829');outer.addColorStop(1,'#151214');
+    ctx.fillStyle=outer;ctx.strokeStyle='rgba(212,160,102,.30)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(cx,cy,r*1.16,0,Math.PI*2);ctx.fill();ctx.stroke();
+
+    // Four forge clamps make the oven read as machinery instead of a flat icon.
+    ctx.fillStyle='rgba(137,91,55,.82)';
+    for(let i=0;i<4;i++){
+      const a=i*Math.PI/2+.1;const x=cx+Math.cos(a)*r*.91;const y=cy+Math.sin(a)*r*.91;
+      ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.fillRect(-r*.12,-r*.05,r*.24,r*.10);ctx.restore();
+    }
+
+    ctx.fillStyle='#0c0a0b';ctx.strokeStyle='rgba(239,191,129,.16)';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.arc(cx,cy,r*.76,0,Math.PI*2);ctx.fill();ctx.stroke();
+
+    // Coal bed remains legible before ignition: dark red embers are the sleeping promise of the hearth.
+    for(let i=0;i<10;i++){
+      const a=i*2.39;const rr=r*(.16+.38*((i*37)%10)/10);const x=cx+Math.cos(a)*rr;const y=cy+r*.22+Math.sin(a)*rr*.42;
+      const ember = .16 + h*.72;
+      ctx.fillStyle=`rgba(${Math.round(88+152*ember)},${Math.round(38+72*ember)},${Math.round(28+22*ember)},${.30+h*.38})`;
+      ctx.beginPath();ctx.arc(x,y,r*(.058+(i%3)*.012),0,Math.PI*2);ctx.fill();
+    }
+    // Short pedestal makes the oven a physical object rooted on the work shelf.
+    const foot=ctx.createLinearGradient(cx,cy+r*.8,cx,cy+r*1.55);
+    foot.addColorStop(0,'rgba(83,58,45,.92)');foot.addColorStop(1,'rgba(27,23,24,.96)');
+    ctx.fillStyle=foot;ctx.beginPath();ctx.roundRect(cx-r*.58,cy+r*.74,r*1.16,r*.55,r*.12);ctx.fill();
+    ctx.fillStyle='rgba(205,148,83,.30)';ctx.beginPath();ctx.roundRect(cx-r*.44,cy+r*.82,r*.88,r*.08,r*.04);ctx.fill();
+    ctx.strokeStyle='rgba(173,122,74,.34)';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(cx-r*.34,cy+r*1.28);ctx.lineTo(cx-r*.48,cy+r*1.48);ctx.moveTo(cx+r*.34,cy+r*1.28);ctx.lineTo(cx+r*.48,cy+r*1.48);ctx.stroke();
+    drawFlame(cx,cy+r*.40,r*2.15,h,clamp(imbalance*1.65,-1,1),false);
+
+    // Warm lip.
+    ctx.strokeStyle=`rgba(239,167,93,${.08+h*.25})`;ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(cx,cy,r*.82,Math.PI*.08,Math.PI*.92);ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawSmoke(cx, cy, r, heat, phase) {
+    const h=clamp(heat,0,1);if(h<.03)return;
+    const now=performance.now();ctx.save();
+    for(let i=0;i<5;i++){
+      const age=(now*.00011+i*.19+phase*.07)%1;
+      const drift=Math.sin(age*4+i+phase)*r*.22;
+      const x=cx+drift;const y=cy-age*r*3.8;
+      const rr=r*(.18+.42*age);
+      ctx.fillStyle=`rgba(126,105,105,${(.045+.055*h)*(1-age)})`;
+      ctx.beginPath();ctx.arc(x,y,rr,0,Math.PI*2);ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawForgeScene(x0, y0, w, h, col, row, m, central) {
+    const swap=(col%2)!==0;
+    const leftGold=!swap;
+    const leftPath=pathForSide(x0,y0,w,h,true);
+    const rightPath=pathForSide(x0,y0,w,h,false);
+    const arch=archPath(x0,y0,w,h);
+    ctx.save();ctx.globalAlpha=central?1:.72;
+
+    // Atmospheric alcove behind the materials.
+    drawForgeArchitecture(x0,y0,w,h,central,swap);
+    ctx.save();ctx.clip(arch);
+
+    const goldGrad=ctx.createLinearGradient(0,y0,0,y0+h);
+    goldGrad.addColorStop(0,'#6c3d27');goldGrad.addColorStop(.34,'#5b3326');goldGrad.addColorStop(.70,'#35221f');goldGrad.addColorStop(1,'#1d1618');
+    const vioGrad=ctx.createLinearGradient(0,y0,0,y0+h);
+    vioGrad.addColorStop(0,'#40355f');vioGrad.addColorStop(.34,'#322a4e');vioGrad.addColorStop(.70,'#25203a');vioGrad.addColorStop(1,'#15131e');
+    ctx.fillStyle=leftGold?goldGrad:vioGrad;ctx.fill(leftPath);
+    ctx.fillStyle=leftGold?vioGrad:goldGrad;ctx.fill(rightPath);
+    drawDomainMotif(x0,y0,w,h,leftPath,leftGold,col,row);
+    drawDomainMotif(x0,y0,w,h,rightPath,!leftGold,col,row);
+
+    // Side-specific furnace light gives the two materials depth while preserving the shared contour.
+    const localGlow=ctx.createRadialGradient(x0+w*.5,y0+h*.50,w*.05,x0+w*.5,y0+h*.50,w*.70);
+    localGlow.addColorStop(0,`rgba(255,148,72,${central?.065:.035})`);localGlow.addColorStop(.58,'rgba(255,139,67,.012)');localGlow.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=localGlow;ctx.fillRect(x0,y0,w,h);
+    drawHammeredTexture(x0,y0,w,h,leftGold,.95);
+    ctx.restore();
+    drawForgeFront(x0, y0, w, h, central);
+
+    const air=airStrengths(m);
+    const dayDepth=air.day;
+    const nightDepth=air.night;
+    const size=Math.min(w*.92,h*.35);
+    const upper=seamPoint(x0,y0,w,h,.30);
+    const lower=seamPoint(x0,y0,w,h,.70);
+    const dayOnLeft=leftGold;
+    const nightOnLeft=!leftGold;
+    const fx=x0+w*.5;
+    const fy=y0+h*.515;
+    const fr=Math.min(w,h)*.168;
+
+    drawLeatherSeam(x0,y0,w,h,m,central,state.active||state.hover);
+
+    const dayCx=upper.x+(dayOnLeft?-w*.27:w*.27);
+    const nightCx=lower.x+(nightOnLeft?-w*.27:w*.27);
+    const dayCy=upper.y+h*.006;
+    const nightCy=lower.y-h*.006;
+    drawBellow(dayCx,dayCy,size,dayDepth,'rgba(240,177,94,0.70)',!dayOnLeft,m.upper<0,col*.7+row);
+    drawBellow(nightCx,nightCy,size,nightDepth,'rgba(173,159,229,0.70)',!nightOnLeft,m.lower<0,col*.9+row+2);
+
+    const dayNozzleX=dayCx+(dayOnLeft?1:-1)*size*.49;
+    const nightNozzleX=nightCx+(nightOnLeft?1:-1)*size*.49;
+    drawAirflow(dayNozzleX,dayCy,fx,fy-fr*.15,dayDepth,'rgba(255,188,99,.78)',col+row);
+    drawAirflow(nightNozzleX,nightCy,fx,fy+fr*.18,nightDepth,'rgba(193,183,255,.72)',col+row+4);
+
+    const furnaceHeat=state.ovenHeat;
+    drawFurnace(fx,fy,fr,furnaceHeat,m.imbalance);
+    drawSmoke(fx,fy-fr*.7,fr,furnaceHeat,col+row);
+
+    const pilotX=fx+(dayOnLeft?-fr*1.60:fr*1.60);
+    const pilotY=fy-fr*.72;
+    drawPilotLamp(pilotX,pilotY,fr*.72,state.flameLife,!dayOnLeft);
+    if (state.flash > 0 && central) drawIgnitionArc(pilotX, pilotY-fr*.15, fx, fy-fr*.22, state.flash);
+
+    // Tiny heated rivets at seam/forge contact points sell the mechanical integration.
+    ctx.fillStyle='rgba(224,170,103,.55)';
+    for(const t of [.18,.82]){const c=seamPoint(x0,y0,w,h,t);ctx.beginPath();ctx.arc(c.x,c.y,Math.max(1.3,w*.008),0,Math.PI*2);ctx.fill();}
+
+    if(central){
+      const focus=ctx.createRadialGradient(fx,fy,fr*.2,fx,fy,w*.78);
+      focus.addColorStop(0,'rgba(255,181,90,.070)');focus.addColorStop(.55,'rgba(255,181,90,.012)');focus.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=focus;ctx.fillRect(x0,y0,w,h);
+    }
+    ctx.restore();
+  }
+
+  function feedbackState(m) {
+    return {
+      flame: m.upper < 0 ? 'dead' : (m.upper < .07 ? 'weak' : 'alive'),
+      skin: m.safeMargin < 0 ? 'pinched' : (m.safeMargin < .014 ? 'strained' : 'relaxed'),
+      fold: m.buckleMargin < 0 ? 'caught' : (m.buckleDistance < BUCKLE.warnDistance ? 'wrinkling' : 'clear'),
+      tension: m.tensionMargin < 0 ? 'taut' : (m.tensionMargin < TENSION.warnMargin ? 'tightening' : 'clear'),
+      night: airStrengths(m).night >= .16 ? 'alive' : 'dead',
+      healthy: healthy(m)
+    };
+  }
+
+  function updateFeedback(m) {
+    const next = feedbackState(m);
+    const prev = state.feedback;
+    let message = null;
+    let priority = -1;
+    const choose = (text, prio) => { if (prio > priority) { message = text; priority = prio; } };
+
+    if (next.skin === 'pinched' && prev.skin !== 'pinched') choose('Het leer knijpt dicht.', 6);
+    else if (next.skin === 'strained' && prev.skin === 'relaxed') choose('Het leer begint te glimmen.', 3);
+    else if (prev.skin === 'pinched' && next.skin !== 'pinched') choose('De spanning zakt weer.', 2);
+
+    if (next.fold === 'caught' && prev.fold !== 'caught') choose('Het leer haakt aan het hete juk.', 7);
+    else if (next.fold === 'wrinkling' && prev.fold === 'clear') choose('Een plooi trekt naar het hete juk.', 4);
+    else if (prev.fold !== 'clear' && next.fold === 'clear') choose('De plooi trekt weer glad.', 2);
+
+    if (next.tension === 'taut' && prev.tension !== 'taut') choose('Het leer staat te strak.', 7);
+    else if (next.tension === 'tightening' && prev.tension === 'clear') choose('De stiknaad begint te trekken.', 4);
+    else if (prev.tension !== 'clear' && next.tension === 'clear') choose('Het leer krijgt weer ruimte.', 2);
+
+    if (next.flame === 'dead' && prev.flame !== 'dead') choose('De waakvlam dooft.', 7);
+    else if (next.flame === 'weak' && prev.flame === 'alive') choose('De waakvlam flikkert.', 4);
+    else if (prev.flame === 'dead' && next.flame !== 'dead') choose('De waakvlam leeft weer.', 5);
+
+    if (next.night === 'alive' && prev.night !== 'alive') {
+      choose('De nachtblaasbalg haalt adem.', 5);
+    }
+
+    if (next.healthy && !prev.healthy) {
+      state.pendingHealthyCue = true;
+      AUDIO.cue('good',.72);
+    }
+    const improved=(prev.flame==='dead'&&next.flame!=='dead')||(prev.skin!=='relaxed'&&next.skin==='relaxed')||(prev.fold!=='clear'&&next.fold==='clear')||(prev.tension!=='clear'&&next.tension==='clear')||(prev.night!=='alive'&&next.night==='alive');
+    const worsened=(next.flame==='dead'&&prev.flame!=='dead')||(next.skin==='pinched'&&prev.skin!=='pinched')||(next.fold==='caught'&&prev.fold!=='caught')||(next.tension==='taut'&&prev.tension!=='taut');
+    if(worsened)AUDIO.cue('warn',.58);else if(improved&&!next.healthy)AUDIO.cue('good',.42);
+
+    state.feedback = next;
+    if (message) setPhase(message, priority >= 7 ? 1250 : 1000);
+  }
+
+  function render(now) {
+    const W = canvas.clientWidth;
+    const H = canvas.clientHeight;
+    ctx.clearRect(0, 0, W, H);
+    const m = metrics();
+    const dt = Math.min(.05, (now - state.lastTime) / 1000);
+    state.lastTime = now;
+
+    if (state.hasMoved) {
+      if (m.upper < -0.001) state.masteryFlame = false;
+      if (m.safeMargin < -0.0001 || m.buckleMargin < -0.0001 || m.tensionMargin < -0.0001) state.masterySkin = false;
+      if (!state.flameLost && m.upper < -0.025) {
+        // Historical mastery marker only. The pilot may recover when air returns,
+        // matching the earlier Wakende Vlam behaviour instead of forcing a reset.
+        state.flameLost = true;
+        setPhase('De waakvlam dooft.', 1200);
+      }
+    }
+
+    const targetPilot = m.upper < 0 ? 0 : clamp(.20 + m.upper * 3.1, .20, 1);
+    state.flameLife += (targetPilot - state.flameLife) * (1 - Math.exp(-dt * 8));
+    const air = airStrengths(m);
+    const targetOven = air.oven;
+    if (!state.hasLitOven && targetOven >= .24) {
+      state.hasLitOven = true;
+      state.flash = 1;
+      setPhase('De oven vat vuur.', 1050);
+    }
+    state.ovenHeat += (targetOven - state.ovenHeat) * (1 - Math.exp(-dt * 5.5));
+    state.flash = Math.max(0, state.flash - dt * 1.35);
+
+    drawWorldBackdrop(W, H, now);
+
+    const lay = centralLayout(W, H);
+    for (let row = -1; row <= 1; row++) {
+      for (let col = 0; col < lay.totalCols; col++) {
+        const x = lay.startX + col * lay.cellW;
+        const y = lay.startY + row * lay.cellH;
+        const central = row === 0 && col === lay.centerCol;
+        drawForgeScene(x, y, lay.cellW, lay.cellH, col, row, m, central);
+      }
+    }
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const breath = .5 + .5 * Math.sin(now * .0032);
+    for (let i = 0; i < 25; i++) {
+      const x = (i * 79.3 + now * .006 * (i % 3 + 1)) % W;
+      const y = (i * 61.7 + 17) % H;
+      ctx.fillStyle = `rgba(244,178,104,${.014 + .026 * breath})`;
+      ctx.beginPath();
+      ctx.arc(x, y, .7 + (i % 3) * .35, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (state.flash > 0) {
+      ctx.fillStyle = `rgba(255,188,95,${state.flash * .13})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+    ctx.restore();
+
+    if (healthy(m) && !state.solved) {
+      if (!state.solveSince) state.solveSince = now;
+      if (state.pendingHealthyCue && now > state.phaseUntil) {
+        setPhase('De wereld vindt haar adem.', 900);
+        state.pendingHealthyCue = false;
+      }
+      if (now - state.solveSince > HEALTH.dwellMs) solve();
+    } else {
+      state.solveSince = 0;
+      if (!healthy(m)) state.pendingHealthyCue = false;
+    }
+
+    if (now > state.phaseUntil) phaseEl.classList.remove('on');
+    if (state.dev) {
+      const f = feedbackState(m);
+      const air = airStrengths(m);
+      devPanel.textContent = `p ${state.p.toFixed(3)}   q ${state.q.toFixed(3)}\nupper ${m.upper.toFixed(3)}  lower ${m.lower.toFixed(3)}\nsafe ${m.safeMargin.toFixed(4)}  buckle ${m.buckleMargin.toFixed(3)}\nstretch ${m.stretch.toFixed(4)} / ${m.stretchLimit.toFixed(4)}  tension ${m.tensionMargin.toFixed(4)}\nair ${air.day.toFixed(2)} / ${air.night.toFixed(2)}  oven ${air.oven.toFixed(2)}\nfeedback ${f.flame}/${f.skin}/${f.fold}/${f.tension}/${f.night}\npilotEverLost=${state.flameLost}`;
+    }
+    requestAnimationFrame(render);
+  }
+
+  function solve() {
+    state.solved = true;
+    state.active = null;
+    AUDIO.cue('fire',.68);setTimeout(()=>AUDIO.cue('solve',.86),140);
+    canvas.classList.remove('dragging');
+    const perfect = state.masteryFlame && state.masterySkin;
+    if (perfect) {
+      solveKicker.textContent = 'ONONDERBROKEN VUUR';
+      solveTitle.textContent = 'De wereld ademt zonder litteken.';
+      solveCopy.textContent = 'De waakvlam bleef leven en het leer brak nergens. Eén rustige cadans trekt door de hele frieze.';
+    } else {
+      solveKicker.textContent = 'DE WERELD ADEMT';
+      solveTitle.textContent = 'De nacht brandt weer.';
+      solveCopy.textContent = state.masteryFlame
+        ? 'Het vuur bleef leven. Het leer moest onderweg één keer herstellen.'
+        : 'De waakvlam doofde onderweg, maar je vond de levende verhouding terug.';
+    }
+    solveCard.classList.add('on');
+    solveCard.setAttribute('aria-hidden', 'false');
+  }
+
+  function hitZone(clientX, clientY) {
+    const r = canvas.getBoundingClientRect();
+    const x = clientX - r.left;
+    const y = clientY - r.top;
+    const lay = centralLayout(r.width, r.height);
+    const x0 = lay.startX + lay.centerCol * lay.cellW;
+    const y0 = lay.startY;
+    const up = seamPoint(x0, y0, lay.cellW, lay.cellH, 1 / 3);
+    const lo = seamPoint(x0, y0, lay.cellW, lay.cellH, 2 / 3);
+    const rad = Math.max(46, lay.cellW * .30);
+    const du = Math.hypot(x - up.x, y - up.y);
+    const dl = Math.hypot(x - lo.x, y - lo.y);
+    if (Math.min(du, dl) > rad) return null;
+    return du < dl ? 'p' : 'q';
+  }
+
+  function dragSensitivity(width) {
+    return clamp(width * .27, 110, 190);
+  }
+
+  function pointerDown(e) {
+    if (state.solved || state.pointerId !== null) return;
+    const zone = hitZone(e.clientX, e.clientY);
+    if (!zone) return;
+    state.active = zone;
+    state.hover = zone;
+    AUDIO.cue('grab',.5);
+    state.pointerId = e.pointerId;
+    state.startX = e.clientX;
+    state.startValue = state[zone];
+    canvas.setPointerCapture(e.pointerId);
+    canvas.classList.add('dragging');
+    gestureHint.classList.add('hide');
+    e.preventDefault();
+  }
+
+  function materialViolation(m) {
+    if (m.buckleMargin < 0) return 'buckle';
+    if (m.tensionMargin < 0) return 'tension';
+    if (m.safeMargin < 0) return 'contact';
+    return null;
+  }
+
+  function limitAgainstMaterial(zone, proposed) {
+    const current = state[zone];
+    if (Math.abs(proposed - current) < 1e-8) return proposed;
+    const other = zone === 'p' ? state.q : state.p;
+    const at = (v) => zone === 'p' ? metricsFor(v, other) : metricsFor(other, v);
+    const steps = 36;
+    let lastT = 0;
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps;
+      const v = current + (proposed - current) * t;
+      const violation = materialViolation(at(v));
+      if (violation) {
+        let lo = lastT, hi = t;
+        for (let k = 0; k < 22; k++) {
+          const mid = (lo + hi) * .5;
+          const mv = current + (proposed - current) * mid;
+          if (!materialViolation(at(mv))) lo = mid; else hi = mid;
+        }
+        const boundary = current + (proposed - current) * lo;
+        if (violation === 'buckle') setPhase('Het leer plooit tegen het hete juk.', 900);
+        else if (violation === 'tension') setPhase('Het leer staat te strak. Neem spanning terug.', 1050);
+        else setPhase('Het leer raakt zijn grens.', 850);
+        return boundary;
+      }
+      lastT = t;
+    }
+    return proposed;
+  }
+
+  function pointerMove(e) {
+    if (state.pointerId === null && e.pointerType === 'mouse') {
+      state.hover = hitZone(e.clientX, e.clientY);
+    }
+    if (state.pointerId !== e.pointerId || !state.active || state.solved) return;
+    const r = canvas.getBoundingClientRect();
+    const proposed = clamp(state.startValue + (e.clientX - state.startX) / dragSensitivity(r.width), -2, 2);
+    const next = limitAgainstMaterial(state.active, proposed);
+    state[state.active] = next;
+    state.hasMoved = true;
+    AUDIO.cue('leather',.20);
+    updateFeedback(metrics());
+    e.preventDefault();
+  }
+
+  function pointerUp(e) {
+    if (state.pointerId !== e.pointerId) return;
+    state.pointerId = null;
+    state.active = null;
+    canvas.classList.remove('dragging');
+    AUDIO.cue('bellows',.38);
+  }
+
+  canvas.addEventListener('pointerdown', pointerDown);
+  canvas.addEventListener('pointermove', pointerMove);
+  canvas.addEventListener('pointerleave', () => { if (state.pointerId === null) state.hover = null; });
+  canvas.addEventListener('pointerup', pointerUp);
+  canvas.addEventListener('pointercancel', pointerUp);
+  resetBtn.addEventListener('click', reset);
+  againBtn.addEventListener('click', reset);
+  window.addEventListener('resize', resize);
+  window.addEventListener('keydown', e => {
+    if (e.shiftKey && e.key.toLowerCase() === 'd') {
+      state.dev = !state.dev;
+      devPanel.classList.toggle('on', state.dev);
+      devPanel.setAttribute('aria-hidden', String(!state.dev));
+    }
+    if (e.shiftKey && e.key.toLowerCase() === 's') {
+      state.p = 1.15;
+      state.q = -1.15;
+      state.hasMoved = true;
+      updateFeedback(metrics());
+    }
+  });
+
+  // Small QA hook; not player-facing. Lets the automated visual/regression pass inspect states.
+  window.__WV_TEST = {
+    getState: () => ({ p: state.p, q: state.q, ...metrics(), healthy: healthy(metrics()) }),
+    setState: (p, q) => {
+      state.p = clamp(p, -2, 2);
+      state.q = clamp(q, -2, 2);
+      state.hasMoved = true;
+      updateFeedback(metrics());
+    },
+    reset
+  };
+
+  resize();
+  requestAnimationFrame(render);
+})();
+
+</script>
+
+<script src="../../shared/continuum-shell.js"></script>
+<script>ContinuumShell.mount({level:3,title:'De Wakende Vlam',objective:'Herstel de nacht. Houd het vuur levend.',resetSelector:'#resetBtn',hide:['.topbar','.prompt']});</script>
+</body>
+</html>

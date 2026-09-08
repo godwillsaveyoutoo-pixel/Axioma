@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071018">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>AXIOMA · Wiskunde om te spelen</title>
+<meta name="description" content="Ontdek AXIOMA-wiskundegames per thema en speel ze op smartphone, tablet of computer.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+<header class="appbar">
+  <button class="brand" id="brandHome" type="button" aria-label="Naar AXIOMA Ontdek">
+    <span class="brandmark" aria-hidden="true">AX</span>
+    <span class="brandcopy"><strong>AXIOMA</strong><span>Wiskunde om te spelen</span></span>
+  </button>
+  <nav class="site-nav" aria-label="Hoofdnavigatie">
+    <button class="nav-link active" type="button" data-view="discover">Ontdek</button>
+    <button class="nav-link" type="button" data-view="themes">Thema's</button>
+    <button class="nav-link" type="button" data-view="mine">Mijn spellen</button>
+  </nav>
+  <div class="appactions"><button class="topaction" id="installBtn" type="button" hidden>Installeer</button></div>
+</header>
+
+<main id="mainContent">
+  <section class="view active" id="discoverView" data-view-panel="discover" aria-labelledby="discoverTitle">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="kicker">Ontdek door te doen</div>
+        <h1 id="discoverTitle">Wiskunde om te <em>spelen.</em></h1>
+        <p class="hero-lead">Kies een wiskundethema, stap een spelwereld binnen en zie wat de wiskunde doet.</p>
+        <button class="hero-play" id="heroPlay" type="button"><span>SPEEL UITGELICHT</span><span class="arrow" aria-hidden="true">›</span></button>
+      </div>
+      <button class="feature" id="featureLaunch" type="button" aria-label="Speel uitgelicht spel">
+        <div class="feature-frame" id="featureFrame"></div>
+        <div class="feature-caption">
+          <div><small id="featureTheme">Wiskunde</small><strong id="featureTitle">Spel</strong></div>
+          <span>Open spel <b aria-hidden="true">›</b></span>
+        </div>
+      </button>
+    </section>
+
+    <section class="continue-section" id="continueSection" hidden aria-labelledby="continueTitle">
+      <div class="section-title-row"><div><span class="section-kicker">Jouw voortgang</span><h2 id="continueTitle">Ga verder</h2></div></div>
+      <button class="continue-launch" id="continueLaunch" type="button">
+        <div class="continue-preview" id="continuePreview"></div>
+        <div class="continue-copy">
+          <small id="continueTheme">Thema</small>
+          <strong id="continueGame">Spel</strong>
+          <span id="continueStatus">Gestart</span>
+          <span class="continue-track" aria-hidden="true"><i id="continueBar"></i></span>
+        </div>
+        <span class="row-arrow" aria-hidden="true">›</span>
+      </button>
+    </section>
+
+    <section class="themes-home" aria-labelledby="themesHomeTitle">
+      <div class="section-title-row">
+        <div><span class="section-kicker">Vind je ingang</span><h2 id="themesHomeTitle">Wat wil je spelen?</h2></div>
+        <button class="text-action" type="button" data-view-target="themes">Alle thema's</button>
+      </div>
+      <div class="topic-list topic-list-home" id="homeTopicList"></div>
+    </section>
+
+    <footer class="footer-note">
+      <span><strong>Vooruitgang</strong> blijft op dit toestel. Geen account nodig.</span>
+      <span>Een spel opent op smartphone zo groot mogelijk en probeert naar landschap te draaien.</span>
+    </footer>
+  </section>
+
+  <section class="view" id="themesView" data-view-panel="themes" aria-labelledby="themesTitle">
+    <header class="page-head">
+      <span class="section-kicker">Bibliotheek</span>
+      <h1 id="themesTitle">Thema's & spelwerelden</h1>
+      <p>Kies een wiskundethema of open de categorie Games voor de grotere Axioma-spelwerelden.</p>
+    </header>
+    <div class="topic-list topic-directory" id="topicDirectory"></div>
+  </section>
+
+  <section class="view" id="mineView" data-view-panel="mine" aria-labelledby="mineTitle">
+    <header class="page-head mine-head">
+      <span class="section-kicker">Op dit toestel</span>
+      <h1 id="mineTitle">Mijn spellen</h1>
+      <p id="mineSummary">Je voortgang verschijnt hier zodra je een spel start.</p>
+    </header>
+    <div id="mineContent"></div>
+  </section>
+
+  <section class="view" id="topicView" data-view-panel="topic" aria-labelledby="topicTitle">
+    <button class="back-link" id="topicBack" type="button">‹ <span>Alle thema's</span></button>
+    <header class="page-head topic-head">
+      <span class="section-kicker" id="topicKicker">Thema</span>
+      <h1 id="topicTitle">Wiskundethema</h1>
+      <p id="topicDescription"></p>
+      <div class="topic-count" id="topicCount"></div>
+    </header>
+    <div class="topic-games" id="topicGames"></div>
+  </section>
+</main>
+
+<nav class="mobile-nav" aria-label="Mobiele navigatie">
+  <button class="mobile-nav-link active" type="button" data-view="discover"><span aria-hidden="true">◈</span><b>Ontdek</b></button>
+  <button class="mobile-nav-link" type="button" data-view="themes"><span aria-hidden="true">∑</span><b>Thema's</b></button>
+  <button class="mobile-nav-link" type="button" data-view="mine"><span aria-hidden="true">✓</span><b>Mijn spellen</b></button>
+</nav>
+
+<section class="player" id="player" hidden aria-label="Speler">
+  <iframe id="gameFrame" title="AXIOMA spel" allow="autoplay; fullscreen; screen-wake-lock" allowfullscreen></iframe>
+  <button class="player-exit" id="playerExit" type="button" aria-label="Terug naar het AXIOMA-menu"><span class="player-exit-icon" aria-hidden="true">‹</span><span class="player-exit-copy"><strong>AXIOMA</strong><small>menu</small></span></button>
+  <div class="player-loading" id="playerLoading" aria-live="polite"><div class="loader"><i aria-hidden="true"></i><span id="playerName">Spel laden…</span></div></div>
+  <div class="rotate-gate"><div><span class="rotate-phone" aria-hidden="true">▯</span><strong>Draai je toestel</strong><span>Dit spel is ontworpen voor landschap. Als je browser het niet automatisch draait, draai je smartphone één kwartslag.</span></div></div>
+</section>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+<defs>
+ <radialGradient id="bg" cx="54%" cy="38%"><stop stop-color="#33492d"/><stop offset=".46" stop-color="#14251e"/><stop offset="1" stop-color="#07110f"/></radialGradient>
+ <linearGradient id="flood" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#58918a" stop-opacity=".48"/><stop offset="1" stop-color="#0e4a4e" stop-opacity=".82"/></linearGradient>
+ <radialGradient id="light"><stop stop-color="#f0d58a" stop-opacity=".66"/><stop offset="1" stop-color="#f0d58a" stop-opacity="0"/></radialGradient>
+ <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
+</defs>
+<rect width="800" height="1000" fill="url(#bg)"/>
+<path d="M120 130V780M680 130V780M120 130H680M170 130L300 40M630 130L500 40M300 40H500" stroke="#72816e" stroke-opacity=".28" stroke-width="9" fill="none"/>
+<ellipse cx="545" cy="220" rx="160" ry="150" fill="url(#light)" filter="url(#blur)"/>
+<circle cx="548" cy="215" r="42" fill="#e5ca79" opacity=".52"/>
+<rect x="65" y="570" width="670" height="430" fill="url(#flood)"/>
+<g fill="none" stroke="#789b70" stroke-width="12" stroke-linecap="round"><path d="M220 830C210 700 245 610 305 500C345 426 342 335 320 270"/><path d="M522 850C535 690 500 580 452 480C410 394 424 295 465 232"/><path d="M360 900C342 800 362 725 410 650"/></g>
+<g fill="#6f9c62"><ellipse cx="286" cy="510" rx="43" ry="20" transform="rotate(-33 286 510)"/><ellipse cx="342" cy="440" rx="48" ry="21" transform="rotate(24 342 440)"/><ellipse cx="470" cy="486" rx="42" ry="18" transform="rotate(38 470 486)"/><ellipse cx="494" cy="390" rx="39" ry="18" transform="rotate(-31 494 390)"/></g>
+<g stroke="#b2d0c1" stroke-opacity=".27" fill="none" stroke-width="4"><path d="M70 650C210 618 300 688 430 653S635 626 740 655"/><path d="M70 725C210 693 300 763 430 728S635 701 740 730"/><path d="M70 807C210 775 300 845 430 810S635 783 740 812"/></g>
+<g transform="translate(605 690) rotate(8)"><path d="M-30 0C-14-19 15-19 35 0C16 20-13 20-30 0Z" fill="#b99b62"/><path d="M-29 0L-44-14V14Z" fill="#896f49"/><circle cx="16" cy="-4" r="3" fill="#10201d"/></g>
+</svg>

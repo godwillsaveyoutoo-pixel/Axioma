@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<title>CONTINUUM — Living Web v0.3.7.1</title>
+<style>
+:root{color-scheme:dark;--bg:#050a0b;--silk:#ece5d3;--spiral:#d7d2c3;--text:#f4ead5;--muted:#b9ad93;--prey:#c49a58;--gold:#d7b879;--gold2:#a98b55}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text)}
+body{touch-action:none;user-select:none}
+#game{position:relative;width:100%;height:100%;overflow:hidden;background:#05090a}
+canvas{display:block;width:100%;height:100%}
+.hud{position:absolute;inset:0;pointer-events:none}
+.kicker{position:absolute;left:max(22px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));font-family:Georgia,serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(224,193,132,.82);text-shadow:0 1px 10px #000}
+.goal{position:absolute;left:max(22px,env(safe-area-inset-left));bottom:max(17px,env(safe-area-inset-bottom));max-width:min(43vw,330px);font-family:Georgia,serif;font-size:11px;line-height:1.35;letter-spacing:.025em;color:rgba(235,217,181,.72);text-shadow:0 2px 12px #000}
+.hint{position:absolute;right:max(23px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));font-family:Georgia,serif;font-size:10px;letter-spacing:.055em;color:rgba(226,199,148,.62);white-space:nowrap;text-align:right;text-shadow:0 2px 10px #000}
+.home{pointer-events:auto;position:absolute;right:max(122px,env(safe-area-inset-right));top:max(18px,env(safe-area-inset-top));width:46px;height:46px;border:1.4px solid rgba(215,184,121,.48);border-radius:50%;background:rgba(8,12,12,.24);color:#d7b879;text-decoration:none;display:grid;place-items:center;font-size:19px}.reset{pointer-events:auto;position:absolute;right:max(22px,env(safe-area-inset-right));top:max(18px,env(safe-area-inset-top));width:46px;height:46px;border:1.4px solid rgba(215,184,121,.75);border-radius:50%;background:rgba(8,12,12,.28);box-shadow:0 0 0 1px rgba(0,0,0,.32),inset 0 0 14px rgba(214,183,120,.045);color:#d7b879;font-size:22px;display:grid;place-items:center;cursor:pointer;text-shadow:0 1px 7px #000}
+.reset:focus-visible{outline:2px solid #dfe6e0;outline-offset:2px}
+.message{position:absolute;left:50%;top:9%;transform:translateX(-50%);font-family:Georgia,serif;font-size:12px;font-weight:500;letter-spacing:.03em;color:#f0dfbd;text-align:center;opacity:0;transition:opacity .25s;max-width:55vw;text-shadow:0 2px 10px #000}
+.message.show{opacity:.95}
+.debug{display:none;position:absolute;left:8px;top:34px;max-width:360px;padding:7px 9px;background:rgba(0,0,0,.55);font:10px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;color:#dce7df;white-space:pre-wrap;pointer-events:none}
+.debug.on{display:block}
+@media(max-width:680px){.goal{font-size:9px;max-width:45vw;left:14px;bottom:12px}.hint{font-size:8px;right:14px;bottom:12px}.kicker{font-size:8px;left:14px;top:12px}.reset{right:14px;top:12px;width:42px;height:42px}.message{top:8%;font-size:10px}}
+
+.ending{position:absolute;inset:0;z-index:9;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,rgba(215,184,121,.12),transparent 24%),linear-gradient(180deg,rgba(3,8,8,.34),rgba(3,8,8,.72));backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .35s ease}
+.ending.on{opacity:1;pointer-events:auto}
+.endCard{width:min(430px,78vw);padding:22px 24px 20px;border-radius:22px;background:linear-gradient(180deg,rgba(8,13,13,.92),rgba(7,11,11,.96));border:1px solid rgba(215,184,121,.18);box-shadow:0 20px 60px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.04);text-align:center}
+.endCard .endKicker{font-size:10px;font-weight:850;letter-spacing:.20em;color:rgba(215,184,121,.78)}
+.endCard h2{margin:8px 0 9px;font:500 italic clamp(24px,4vw,33px)/1.05 Georgia,"Times New Roman",serif;color:#f0e4c6}
+.endCard p{margin:0 auto;max-width:320px;font-size:13px;line-height:1.52;color:#d7e0d9}
+.endActions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.endActions a,.endActions button{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(215,184,121,.22);background:rgba(255,255,255,.06);color:#f1ead6;font:800 12px/44px Inter,system-ui,sans-serif;letter-spacing:.08em;text-decoration:none;display:inline-grid;place-items:center;cursor:pointer}
+@media(max-height:380px){.ending{align-items:end;padding-bottom:max(12px,env(safe-area-inset-bottom))}.endCard{width:auto;max-width:calc(100vw - 22px);padding:12px 14px;border-radius:18px}.endCard .endKicker,.endCard p{display:none}.endCard h2{margin:0;font-size:13px}.endActions{margin-top:10px}.endActions a,.endActions button{min-height:40px;line-height:40px;font-size:11px;padding:0 15px}}
+
+</style>
+<link rel="stylesheet" href="../../shared/continuum-shell.css">
+</head>
+<body>
+<div id="game">
+  <canvas id="board" aria-label="Interactief klassiek spinnenweb"></canvas>
+  <div class="hud">
+    <div class="kicker">CONTINUUM · WORLD 1 · LEVEL 6 · LIVING WEB</div>
+    <div class="goal">De wind trok het web uit evenwicht.<br>Herstel wat de spin niet meer kan vertrouwen.</div>
+    <div id="message" class="message"></div>
+  <div class="ending" id="ending" aria-hidden="true">
+    <div class="endCard">
+      <div class="endKicker">HET WEB SPREEKT WEER WAAR</div>
+      <h2>De spin vindt de mot.</h2>
+      <p>Je trok niet zomaar aan drie draden. Je herstelde een betrouwbaar web, zodat de spin weer op haar signalen kan vertrouwen.</p>
+      <div class="endActions">
+        <button id="againBtn" type="button">OPNIEUW</button>
+        <a href="../../index.html">WERELD 1</a>
+      </div>
+    </div>
+  </div>
+    <div class="hint">PLUK · TREK · KIJK WAT HET WEB VERTELT</div>
+    <a class="home" href="../../index.html" aria-label="Terug naar World 1">⌂</a><button id="reset" class="reset" type="button" aria-label="Herstel beginstand">↻</button>
+    <div id="debug" class="debug"></div>
+  </div>
+</div>
+<script src="../../shared/continuum-audio.js"></script>
+<script>
+const AUDIO=window.CONTINUUM_AUDIO=ContinuumAudio.create({profile:'web',toggle:false});
+(()=>{
+'use strict';
+const canvas=document.getElementById('board'),ctx=canvas.getContext('2d');
+const bgImage=new Image();let bgReady=false;bgImage.onload=()=>{bgReady=true};bgImage.src='visual_target.png';
+const msg=document.getElementById('message'),dbg=document.getElementById('debug'),ending=document.getElementById('ending'),againBtn=document.getElementById('againBtn');
+const debugMode=new URLSearchParams(location.search).has('debug'); if(debugMode) dbg.classList.add('on');
+const DPR=Math.min(devicePixelRatio||1,2);
+const N=16, K=9; // radial sectors, levels
+let W=0,H=0,scale=1,hub={x:0,y:0};
+let nodes=[],edges=[],anchors=[],frameNodeBySector=[],radialNode=[],spiralEdges=[];
+let pulses=[],lastT=performance.now(),drag=null,spiderAngle=Math.PI/2,spiderTarget=Math.PI/2,preyNode=-1,preyAngle=0;
+let preyTimer=0,goodSignals=0,solved=false,spiderJourney=null,prey=null,feltSector=-1,feltUntil=0;
+let webRevision=0,lastPreyResponseRevision=-1;
+let belief=new Float64Array(N),beliefRevision=-1,decisionTrace=[],spiderNode=0,lastBeliefTop=-1,stableBeliefCount=0;
+let probePulseUntil=0,spiderSenseMode='listen',canonicalSignatures=[],caughtAtPrey=false,webSettlingUntil=0;
+const healthyScalars=[0,0,0];
+const startScalars=[-6,6,9];
+const anchorScalarRange={min:-7,max:11};
+const movableAnchorSlots=[1,3,5]; // among six anchors
+const anchorSectors=[14,2,5,8,11,13];
+const EDGE={RADIAL:0,SPIRAL:1,FRAME:2,MOOR:3};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const angDiff=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
+const lerp=(a,b,t)=>a+(b-a)*t;
+function qBezier(p0,p1,p2,t){let u=1-t;return {x:u*u*p0.x+2*u*t*p1.x+t*t*p2.x,y:u*u*p0.y+2*u*t*p1.y+t*t*p2.y}}
+function baseBoundary(theta){
+  const down=Math.max(-.35,Math.sin(theta));
+  const rx=238*scale*(1+.025*Math.sin(theta*3+.7));
+  const ry=137*scale*(1+.115*down+.02*Math.cos(theta*2));
+  return {x:hub.x+Math.cos(theta)*rx,y:hub.y+Math.sin(theta)*ry};
+}
+function build(resetOffsets=true){
+  ending.classList.remove('on');
+  ending.setAttribute('aria-hidden','true');
+
+  nodes=[];edges=[];anchors=[];frameNodeBySector=[];radialNode=Array.from({length:N},()=>Array(K+1));spiralEdges=[];pulses=[];spiderJourney=null;solved=false;goodSignals=0;feltSector=-1;feltUntil=0;webRevision=0;lastPreyResponseRevision=-1;beliefRevision=-1;decisionTrace=[];spiderNode=0;lastBeliefTop=-1;stableBeliefCount=0;probePulseUntil=0;spiderSenseMode='listen';caughtAtPrey=false;webSettlingUntil=0;resetBelief();
+  hub={x:W*.5,y:H*.405};
+  nodes.push({x:hub.x,y:hub.y,vx:0,vy:0,fixed:false,kind:'hub',mass:1.6});
+  const hubId=0;
+  for(let s=0;s<N;s++){
+    const th=-Math.PI/2+s*2*Math.PI/N;
+    const b=baseBoundary(th);
+    for(let k=1;k<=K;k++){
+      const t=k/K;
+      const ease=Math.pow(t,.94);
+      const x=lerp(hub.x,b.x,ease), y=lerp(hub.y,b.y,ease);
+      const id=nodes.length;nodes.push({x,y,vx:0,vy:0,fixed:false,kind:k===K?'frame':'web',mass:k===K?1.25:1});
+      radialNode[s][k]=id;
+    }
+    radialNode[s][0]=hubId; frameNodeBySector[s]=radialNode[s][K];
+  }
+  function addEdge(a,b,type,kMul=1){const A=nodes[a],B=nodes[b],rest=Math.hypot(B.x-A.x,B.y-A.y);const e={a,b,type,rest,kMul,baseRest:rest};edges.push(e);return edges.length-1}
+  for(let s=0;s<N;s++) for(let k=0;k<K;k++) addEdge(radialNode[s][k],radialNode[s][k+1],EDGE.RADIAL,1.0);
+  // true spiral-like continuous path: almost-complete turns with one advancing seam
+  for(let k=2;k<=K-1;k++){
+    for(let s=0;s<N-1;s++) spiralEdges.push(addEdge(radialNode[s][k],radialNode[s+1][k],EDGE.SPIRAL,.35));
+    if(k<K-1) spiralEdges.push(addEdge(radialNode[N-1][k],radialNode[0][k+1],EDGE.SPIRAL,.35));
+  }
+  for(let s=0;s<N;s++) addEdge(frameNodeBySector[s],frameNodeBySector[(s+1)%N],EDGE.FRAME,.85);
+  // six actual external mooring anchors. Three are draggable.
+  for(let i=0;i<anchorSectors.length;i++){
+    const sec=anchorSectors[i], th=-Math.PI/2+sec*2*Math.PI/N, f=nodes[frameNodeBySector[sec]];
+    const dist=(i===0||i===3?52:44)*scale;
+    const bx=f.x+Math.cos(th)*dist, by=f.y+Math.sin(th)*dist;
+    const movable=movableAnchorSlots.includes(i); const mIndex=movable?movableAnchorSlots.indexOf(i):-1;
+    const ux=Math.cos(th),uy=Math.sin(th);
+    const id=nodes.length;nodes.push({x:bx,y:by,vx:0,vy:0,fixed:true,kind:'anchor',mass:99});
+    anchors.push({id,sec,movable,baseX:bx,baseY:by,ux,uy,mIndex});
+    addEdge(id,frameNodeBySector[sec],EDGE.MOOR,1.25);
+  }
+  // The authored classical orb geometry is the healthy rest state.
+  nodes.forEach(n=>{n.restX=n.x;n.restY=n.y});
+  computeCanonicalSignatures();
+  if(resetOffsets){
+    anchors.filter(a=>a.movable).forEach((a,j)=>{const n=nodes[a.id],v=startScalars[j];n.x=a.baseX+a.ux*v*scale;n.y=a.baseY+a.uy*v*scale;n.vx=n.vy=0});
+    for(let i=0;i<1600;i++) relax(.012,true);nodes.forEach(n=>{n.vx=n.vy=0});
+  }
+  // moth is physically caught midway on a capture-spiral segment between two radii.
+  const pa=radialNode[12][7],pb=radialNode[13][7];
+  const pei=edges.findIndex(e=>(e.a===pa&&e.b===pb)||(e.a===pb&&e.b===pa));
+  prey={a:pa,b:pb,edgeIndex:pei,frac:.45};
+  spiderAngle=Math.PI/2; spiderTarget=spiderAngle; preyTimer=900;
+}
+function edgeParams(e){
+  if(e.type===EDGE.SPIRAL) return {k:.012*e.kMul,damp:.12,base:.018,mu:1.15,atten:.009,loss:.018};
+  if(e.type===EDGE.RADIAL) return {k:.026*e.kMul,damp:.14,base:.09,mu:.8,atten:.0047,loss:.006};
+  if(e.type===EDGE.FRAME) return {k:.035*e.kMul,damp:.13,base:.08,mu:.95,atten:.005,loss:.008};
+  return {k:.045*e.kMul,damp:.15,base:.11,mu:1,atten:.0045,loss:.006};
+}
+function effectiveTension(e){const A=nodes[e.a],B=nodes[e.b],len=Math.hypot(B.x-A.x,B.y-A.y),p=edgeParams(e);const strain=(len-e.rest)/Math.max(1,e.rest);return clamp(p.base+strain*1.55,.006,.52)}
+function relax(dt,calibrating=false){
+  const fx=new Float32Array(nodes.length),fy=new Float32Array(nodes.length);
+  for(const e of edges){const A=nodes[e.a],B=nodes[e.b],dx=B.x-A.x,dy=B.y-A.y,len=Math.hypot(dx,dy)||1,p=edgeParams(e),stretch=len-e.rest,force=p.k*Math.max(0,stretch);const ux=dx/len,uy=dy/len;fx[e.a]+=force*ux;fy[e.a]+=force*uy;fx[e.b]-=force*ux;fy[e.b]-=force*uy}
+  // subtle plane-restoring force prevents numerical drift but is weaker than actual web coupling
+  for(let i=0;i<nodes.length;i++){const n=nodes[i];if(n.fixed)continue;if(Number.isFinite(n.restX)){fx[i]+=(n.restX-n.x)*.008;fy[i]+=(n.restY-n.y)*.008}const m=n.mass||1;n.vx=(n.vx+fx[i]/m*dt*60)*.87;n.vy=(n.vy+fy[i]/m*dt*60)*.87;n.x+=n.vx*dt*60;n.y+=n.vy*dt*60;if(calibrating){n.vx*=.55;n.vy*=.55}}
+}
+function graphMetrics(source){
+  const V=nodes.length,dist=new Float64Array(V),prev=new Int32Array(V);dist.fill(Infinity);prev.fill(-1);
+  const seeds=[];
+  if(typeof source==='number'){dist[source]=0;seeds.push([source,0,1])}else{
+    const e=edges[source.edgeIndex],A=nodes[e.a],B=nodes[e.b],len=Math.hypot(B.x-A.x,B.y-A.y),p=edgeParams(e),T=effectiveTension(e),c=(.22+2.35*Math.sqrt(T/p.mu))*.78,la=len*source.frac,lb=len*(1-source.frac),ta=((la/scale)/c)*.020,tb=((lb/scale)/c)*.020;
+    dist[source.a]=ta;dist[source.b]=tb;seeds.push([source.a,ta,partialTransmission(e,la)],[source.b,tb,partialTransmission(e,lb)]);
+  }
+  const used=new Uint8Array(V);
+  for(let it=0;it<V;it++){
+    let u=-1,best=Infinity;for(let i=0;i<V;i++)if(!used[i]&&dist[i]<best){best=dist[i];u=i}if(u<0)break;used[u]=1;
+    for(const e of edges){let v=-1;if(e.a===u)v=e.b;else if(e.b===u)v=e.a;else continue;const A=nodes[e.a],B=nodes[e.b],len=Math.hypot(B.x-A.x,B.y-A.y),p=edgeParams(e),T=effectiveTension(e);let c=(.22+2.35*Math.sqrt(T/p.mu));if(e.type===EDGE.SPIRAL)c*=.78;const nd=dist[u]+((len/scale)/c)*.020;if(nd<dist[v]){dist[v]=nd;prev[v]=u}}
+  }
+  // Independent maximum-transmission path. This is deliberately not forced to equal the fastest path.
+  const lossDist=new Float64Array(V);lossDist.fill(Infinity);const ampPrev=new Int32Array(V);ampPrev.fill(-1);
+  for(const [id,_t,a] of seeds) lossDist[id]=-Math.log(Math.max(1e-6,a));
+  const used2=new Uint8Array(V);
+  for(let it=0;it<V;it++){
+    let u=-1,best=Infinity;for(let i=0;i<V;i++)if(!used2[i]&&lossDist[i]<best){best=lossDist[i];u=i}if(u<0)break;used2[u]=1;
+    for(const e of edges){let v=-1;if(e.a===u)v=e.b;else if(e.b===u)v=e.a;else continue;const trans=edgeTransmission(e),nd=lossDist[u]-Math.log(Math.max(1e-6,trans));if(nd<lossDist[v]){lossDist[v]=nd;ampPrev[v]=u}}
+  }
+  const strength=new Float64Array(V);for(let i=0;i<V;i++)strength[i]=Number.isFinite(lossDist[i])?Math.exp(-lossDist[i]):0;
+  return {dist,strength,prev,ampPrev};
+}
+function partialTransmission(e,lenPart){const p=edgeParams(e),T=effectiveTension(e);const ref=e.type===EDGE.SPIRAL?.025:.075;const stressFactor=Math.pow(ref/Math.max(.006,T),.72);return Math.exp(-p.loss*(lenPart/scale)*stressFactor)}
+function edgeTransmission(e){const A=nodes[e.a],B=nodes[e.b],len=Math.hypot(B.x-A.x,B.y-A.y);return partialTransmission(e,len)}
+function perceive(source){
+  const g=graphMetrics(source), vals=[];let minT=Infinity;
+  for(let s=0;s<N;s++){const id=radialNode[s][1],t=g.dist[id],a=g.strength[id];vals.push({s,id,t,a});minT=Math.min(minT,t)}
+  let sx=0,sy=0,sw=0;
+  for(const v of vals){const leg=nodes[v.id],hh=nodes[0],th=Math.atan2(leg.y-hh.y,leg.x-hh.x);const timeGate=Math.exp(-(v.t-minT)/.42);const w=Math.pow(v.a,2.15)*timeGate;sx+=Math.cos(th)*w;sy+=Math.sin(th)*w;sw+=w;v.evidence=w}
+  const angle=Math.atan2(sy,sx), concentration=sw>0?Math.hypot(sx,sy)/sw:0;
+  const sorted=[...vals].sort((a,b)=>b.evidence-a.evidence);const dominance=sorted[0].evidence>0?clamp((sorted[0].evidence-sorted[1].evidence)/(sorted[0].evidence+.0001),0,1):0;
+  const clarity=clamp(.35*concentration+.65*dominance,0,1);const signalStrength=Math.max(...vals.map(v=>v.a));
+  const dominantSector=sorted[0].s, dominantNode=radialNode[dominantSector][1], dn=nodes[dominantNode], hh=nodes[0];
+  const targetAngle=Math.atan2(dn.y-hh.y,dn.x-hh.x);
+  vals.forEach(v=>v.score=v.t+(1-v.a)*.45);
+  return {angle,targetAngle,dominantSector,dominance,clarity,signalStrength,vals,g}
+}
+function movableMoorTensions(){const ids=new Set(anchors.filter(a=>a.movable).map(a=>a.id));const out=[];for(const e of edges)if(e.type===EDGE.MOOR&&(ids.has(e.a)||ids.has(e.b)))out.push({e,T:effectiveTension(e),anchor:anchors.find(a=>a.id===e.a||a.id===e.b)});return out}
+function signalTrust(){const r=Array.from({length:N},(_,s)=>radialMeanTension(s));let adj=0,mean=r.reduce((a,b)=>a+b,0)/N;for(let s=0;s<N;s++)adj=Math.max(adj,Math.abs(r[s]-r[(s+1)%N]));let variance=0;for(const x of r)variance+=(x-mean)*(x-mean);const std=Math.sqrt(variance/N);return {adj,std,trustworthy:adj<.035&&std<.0125,radials:r}}
+function structuralSafety(){let max=0,minRad=1;for(const e of edges){const T=effectiveTension(e);if(e.type!==EDGE.SPIRAL)max=Math.max(max,T);if(e.type===EDGE.RADIAL)minRad=Math.min(minRad,T)}const mt=movableMoorTensions(),minMoor=mt.length?Math.min(...mt.map(x=>x.T)):1;return {max,minRad,minMoor,safe:max<.38&&minRad>.012&&minMoor>.025}}
+function sensorFeature(source){const p=perceive(source),maxA=Math.max(...p.vals.map(v=>v.a),1e-9),minT=Math.min(...p.vals.map(v=>v.t));const f=[];for(const v of p.vals){f.push(v.a/maxA);f.push(Math.exp(-(v.t-minT)/.34))}let n=Math.hypot(...f)||1;return f.map(x=>x/n)}
+function computeCanonicalSignatures(){canonicalSignatures=[];for(let q=0;q<N;q++)canonicalSignatures.push(sensorFeature(radialNode[q][7]))}
+function canonicalHubLikelihood(source){const obs=sensorFeature(source),like=new Float64Array(N);let sum=0;for(let q=0;q<N;q++){const ref=canonicalSignatures[q];let d=0;for(let i=0;i<obs.length;i++){const z=obs[i]-ref[i];d+=z*z}const sim=Math.exp(-d*7.5);like[q]=sim;sum+=sim}for(let q=0;q<N;q++)like[q]/=sum||1;return like}
+function resetBelief(){for(let s=0;s<N;s++)belief[s]=1/N;beliefRevision=webRevision;lastBeliefTop=-1;stableBeliefCount=0}
+function sectorForNode(id){if(id===0)return -1;for(let s=0;s<N;s++)for(let k=1;k<=K;k++)if(radialNode[s][k]===id)return s;return -1}
+function neighborsOf(u){const out=[];for(const e of edges){if(e.a===u)out.push({v:e.b,e});else if(e.b===u)out.push({v:e.a,e})}return out}
+function beliefStats(){let top=0,second=1;if(belief[second]>belief[top]){top=1;second=0}for(let s=2;s<N;s++){if(belief[s]>belief[top]){second=top;top=s}else if(belief[s]>belief[second])second=s}let ent=0;for(const b of belief)if(b>1e-12)ent-=b*Math.log(b);return {top,second,topP:belief[top],secondP:belief[second],confidence:clamp((belief[top]-belief[second])/(belief[top]+1e-9),0,1),entropy:ent/Math.log(N)}}
+function localObservation(metrics,u,active=false){
+  const like=new Float64Array(N);const floor=active?.004:.018;for(let s=0;s<N;s++)like[s]=floor;
+  if(u===0){
+    const templ=canonicalHubLikelihood(prey);for(let q=0;q<N;q++)like[q]+=Math.pow(Math.max(1e-8,templ[q]),active?1.20:1.0);
+  }else{
+    const hereSector=sectorForNode(u);const candidates=[];
+    for(const {v,e} of neighborsOf(u)){
+      const c=localStepEvidence(metrics,u,v,null);if(!c)continue;
+      let sec=sectorForNode(v);if(sec<0)sec=hereSector;
+      // The spider only has local thread evidence: amplitude, arrival timing and whether a thread is physically walkable.
+      const localSignal=Math.pow(Math.max(1e-8,metrics.strength[v]),1.85)*Math.exp(-Math.max(0,metrics.dist[v]-Math.min(...neighborsOf(u).map(n=>metrics.dist[n.v])))/(.30+(active?.10:0)));
+      const safeSense=e.type===EDGE.SPIRAL?.88:1;
+      like[sec]+=localSignal*safeSense*(active?1.22:1);
+      candidates.push({sec,v,signal:localSignal});
+    }
+    // Neighboring sectors receive a faint correlated trace, reflecting distributed leg contacts rather than a single compass ray.
+    for(const c of candidates){like[(c.sec+N-1)%N]+=c.signal*.10;like[(c.sec+1)%N]+=c.signal*.10}
+  }
+  let sum=0;for(const x of like)sum+=x;for(let s=0;s<N;s++)like[s]/=sum||1;return like
+}
+function updateBelief(metrics,u,active=false){
+  if(beliefRevision!==webRevision)resetBelief();
+  const like=localObservation(metrics,u,active),post=new Float64Array(N);let sum=0;
+  const memory=active?.44:.62, sensor=active?1.55:1.22;
+  for(let s=0;s<N;s++){post[s]=Math.pow(Math.max(1e-7,belief[s]),memory)*Math.pow(Math.max(1e-7,like[s]),sensor);sum+=post[s]}
+  for(let s=0;s<N;s++)belief[s]=post[s]/(sum||1);
+  const st=beliefStats();if(st.top===lastBeliefTop)stableBeliefCount++;else{lastBeliefTop=st.top;stableBeliefCount=1}
+  decisionTrace.push({kind:active?'active-sense':'listen',node:u,top:st.top,confidence:st.confidence,entropy:st.entropy,belief:Array.from(belief)});if(decisionTrace.length>40)decisionTrace.shift();return st
+}
+function pluck(source,isPrey=false){
+  if(solved)return;
+  const near=edges.filter(e=>e.a===source||e.b===source);const tavg=near.length?near.reduce((s,e)=>s+effectiveTension(e),0)/near.length:.08;const freq=220+Math.sqrt(Math.max(.004,tavg))*720;AUDIO.cue(isPrey?'moth':'pluck',isPrey?.48:.72,{freq,dur:.34+clamp((.12-tavg)*1.8,0,.28)});
+  if(isPrey)lastPreyResponseRevision=webRevision;
+  const p=perceive(source),t0=performance.now();pulses.push({source,start:t0,metrics:p.g,life:1750,isPrey});
+  const arrival=Math.min(...p.vals.map(v=>v.t))*1000;
+  setTimeout(()=>{
+    if(solved)return;
+    if(isPrey){
+      if(!spiderJourney)beginBeliefSearch(p.g);
+    }else{
+      spiderTarget=p.targetAngle;feltSector=p.dominantSector;feltUntil=performance.now()+420;
+    }
+  },clamp(arrival,150,900));
+}
+function edgeBetween(a,b){for(let i=0;i<edges.length;i++){const e=edges[i];if((e.a===a&&e.b===b)||(e.a===b&&e.b===a))return e}return null}
+function localStepEvidence(metrics,u,v,visited){const e=edgeBetween(u,v);if(!e)return null;const A=nodes[e.a],B=nodes[e.b],len=Math.hypot(B.x-A.x,B.y-A.y),p=edgeParams(e),T=effectiveTension(e);let c=.22+2.35*Math.sqrt(T/p.mu);if(e.type===EDGE.SPIRAL)c*=.78;const arrival=metrics.dist[v]+((len/scale)/c)*.020;const amp=metrics.strength[v]*edgeTransmission(e);const revisit=visited&&visited[v]?Math.pow(.46,visited[v]):1;let walk=1;if(T>.34)walk=.00002;else if(T>.25)walk=Math.exp(-(T-.25)*11);else if(T<.012)walk=.06;else if(T<.02)walk=.42;if(e.type===EDGE.SPIRAL)walk*=.86;return {v,arrival,amp,tension:T,walk,e,type:e.type,evidence:Math.pow(amp,2.0)*revisit*walk}}
+function radialMeanTension(s){let sum=0;for(let k=0;k<K;k++){const e=edgeBetween(radialNode[s][k],radialNode[s][k+1]);sum+=effectiveTension(e)}return sum/K}
+function chooseDiagnosticSector(){const mt=movableMoorTensions().sort((a,b)=>a.T-b.T);if(mt.length&&mt[0].T<.025)return mt[0].anchor.sec;let best=0,bestScore=-Infinity;for(let s=0;s<N;s++){const t=radialMeanTension(s),slack=Math.max(0,.09-t),tight=Math.max(0,t-.09);const neighborhood=(radialMeanTension((s+N-1)%N)+radialMeanTension((s+1)%N))*.5;const contrast=Math.abs(t-neighborhood);const score=slack*7.0+tight*.45+contrast*1.4;if(score>bestScore){bestScore=score;best=s}}return best}
+function chooseTrustSector(){const tr=signalTrust(),r=tr.radials;let best=0,bestScore=-1;for(let s=0;s<N;s++){const local=(r[(s+N-1)%N]+r[(s+1)%N])*.5;const score=Math.abs(r[s]-local);if(score>bestScore){bestScore=score;best=s}}return best}
+function triggerStructuralScan(J){J.phase='scan';J.pause=.58;J.structuralScan=true;spiderSenseMode='probe';AUDIO.cue('probe',.58);probePulseUntil=performance.now()+700;const t0=performance.now();const selfMetrics=graphMetrics(0);pulses.push({source:0,start:t0,metrics:selfMetrics,life:1100,isPrey:false});decisionTrace.push({kind:'hub-structure-scan'});showMessage('De spin test de spanning van het web.',680)}
+function beginDiagnosticExcursion(J,sec=chooseDiagnosticSector(),kind='structural-check'){const depth=kind==='signal-balance-check'?5:6;J.diagnostic=true;J.diagSector=sec;J.diagGoal=radialNode[sec][depth];J.target=radialNode[sec][1];J.phase='move';J.t=0;spiderSenseMode='inspect';decisionTrace.push({kind,sector:sec,depth,tension:radialMeanTension(sec)});showMessage(kind==='signal-balance-check'?'De spin test waar het web onrustig voelt.':'De spin controleert eerst een slappe webzijde.',760)}
+function triggerCalibrationScan(J){J.phase='calibration-scan';J.pause=.50;J.calibrationScan=true;spiderSenseMode='probe';AUDIO.cue('probe',.52);probePulseUntil=performance.now()+700;const t0=performance.now();const selfMetrics=graphMetrics(0);pulses.push({source:0,start:t0,metrics:selfMetrics,life:1100,isPrey:false});decisionTrace.push({kind:'hub-balance-scan',trust:signalTrust()});showMessage('De spin test of het web overal hetzelfde spreekt.',820)}
+function chooseBeliefStep(metrics,u,previous=-1,visited={}){
+  const st=beliefStats(),cands=[];let minArrival=Infinity;
+  for(const {v,e} of neighborsOf(u)){const c=localStepEvidence(metrics,u,v,visited);if(!c)continue;c.sec=sectorForNode(v);if(c.sec<0)c.sec=sectorForNode(u);minArrival=Math.min(minArrival,c.arrival);cands.push(c)}
+  for(const c of cands){const gate=Math.exp(-(c.arrival-minArrival)/.31);const b=c.sec>=0?belief[c.sec]:1/N;const beliefWeight=.28+3.1*b;const previousPenalty=c.v===previous?.12:1;c.score=c.evidence*gate*beliefWeight*previousPenalty}
+  cands.sort((a,b)=>b.score-a.score);const best=cands[0],alt=cands[1];const localConfidence=best&&alt?clamp((best.score-alt.score)/(best.score+1e-9),0,1):1;
+  return {next:best?best.v:-1,score:best?best.score:0,localConfidence,candidates:cands,belief:st}
+}
+function beginBeliefSearch(metrics){
+  if(spiderJourney||solved)return;
+  if(beliefRevision!==webRevision)resetBelief();
+  const st=updateBelief(metrics,spiderNode,false);feltSector=-1;spiderSenseMode='listen';
+  spiderJourney={kind:'belief-search',metrics,current:spiderNode,previous:-1,target:spiderNode,phase:'listen',t:0,pause:.42,pos:{x:nodes[spiderNode].x,y:nodes[spiderNode].y},visited:{[spiderNode]:1},trail:[spiderNode],steps:0,maxSteps:16,probes:0,committed:false,returning:false,lastStats:st};
+  showMessage(st.confidence<.10?'De spin luistert en twijfelt.':'De spin vormt een eerste vermoeden.',850)
+}
+function showMessage(text,ms=900){
+  // v0.3.5: reasoning stays in the world. Only debug mode exposes explanatory text.
+  if(!debugMode)return;
+  msg.textContent=text;msg.classList.add('show');clearTimeout(showMessage.t);showMessage.t=setTimeout(()=>msg.classList.remove('show'),ms)
+}
+function triggerActiveProbe(J){
+  if(J.phase==='probe')return;J.phase='probe';J.pause=.62;J.probes++;spiderSenseMode='probe';AUDIO.cue('probe',.62);probePulseUntil=performance.now()+720;
+  const t0=performance.now();const selfMetrics=graphMetrics(J.current);pulses.push({source:J.current,start:t0,metrics:selfMetrics,life:1150,isPrey:false});
+  // The tug disturbs the trapped moth; its reply follows the same web law, only from the moth's real attachment point.
+  pulses.push({source:prey,start:t0+360,metrics:J.metrics,life:1550,isPrey:true});showMessage('De spin test zelf het web.',720)
+}
+function startReturn(J,text='Ze vertrouwt het spoor niet genoeg en keert terug.'){
+  if(J.returning)return;J.returning=true;J.committed=false;J.returnIndex=J.trail.length-2;spiderSenseMode='return';
+  if(J.returnIndex<0){endSearch(text);return}J.target=J.trail[J.returnIndex];J.phase='move';J.t=0;showMessage(text,900)
+}
+function endSearch(text=''){const J=spiderJourney;if(J)spiderNode=J.current>=0?J.current:spiderNode;spiderJourney=null;spiderSenseMode='listen';if(spiderNode===0)spiderTarget=Math.PI/2;if(text)showMessage(text,850)}
+function updateJourney(dt){
+  if(!spiderJourney)return;const J=spiderJourney;
+  if(J.phase==='scan'){J.pause-=dt;if(J.pause>0)return;J.structuralScan=false;spiderSenseMode='listen';beginDiagnosticExcursion(J);return}
+  if(J.phase==='calibration-scan'){J.pause-=dt;if(J.pause>0)return;J.calibrationScan=false;spiderSenseMode='listen';beginDiagnosticExcursion(J,chooseTrustSector(),'signal-balance-check');return}
+  if(J.phase==='probe'){
+    J.pause-=dt;if(J.pause>0)return;const st=updateBelief(J.metrics,J.current,true);J.lastStats=st;spiderSenseMode='listen';if(J.diagnostic){J.diagnostic=false;startReturn(J,'De spin heeft de draad getest en keert terug.');return}J.phase='listen';J.pause=.22;return
+  }
+  if(J.phase==='listen'){
+    J.pause-=dt;if(J.pause>0)return;
+    if(J.returning){if(J.current===0){spiderNode=0;endSearch();return}J.target=J.trail[Math.max(0,J.returnIndex)];J.phase='move';J.t=0;return}
+    if(J.diagnostic){if(J.current!==J.diagGoal){J.target=J.diagGoal;J.phase='move';J.t=0;spiderSenseMode='inspect';return}triggerActiveProbe(J);return}
+    if(J.current===prey.a||J.current===prey.b){const sf=structuralSafety(),tr=signalTrust();if(J.committed&&sf.safe&&tr.trustworthy){J.target=-1;J.phase='move';J.t=0;return}startReturn(J,'Ze is vlak bij de mot, maar het web voelt nog niet betrouwbaar.');return}
+    const st=J.steps===0?J.lastStats:updateBelief(J.metrics,J.current,false);J.lastStats=st;
+    const safety=structuralSafety(),trust=signalTrust();
+    if(!safety.safe&&J.current===0&&J.steps===0&&J.probes<1&&!J.diagnostic&&!J.structuralScan){triggerStructuralScan(J);return}
+    if(safety.safe&&!trust.trustworthy&&J.current===0&&J.steps===0&&J.probes<1&&!J.diagnostic&&!J.calibrationScan){triggerCalibrationScan(J);return}
+    if(safety.safe&&trust.trustworthy&&st.confidence>.14&&stableBeliefCount>=2&&!J.committed){J.committed=true;AUDIO.cue('good',.56);}
+    if(st.confidence<.095&&J.probes<2){triggerActiveProbe(J);return}
+    if(!J.committed&&J.steps>=7){startReturn(J,'Ze heeft genoeg onderzocht en keert naar haar hub terug.');return}
+    if(J.steps>=J.maxSteps){startReturn(J);return}
+    const d=chooseBeliefStep(J.metrics,J.current,J.previous,J.visited);J.lastDecision=d;
+    if(d.next<0||d.score<1e-9){if(J.probes<2){triggerActiveProbe(J);return}startReturn(J);return}
+    if(!J.committed&&d.localConfidence<.055&&J.probes<2){triggerActiveProbe(J);return}
+    J.target=d.next;J.phase='move';J.t=0;spiderSenseMode=J.committed?'commit':'explore';decisionTrace.push({kind:J.committed?'commit-step':'explore-step',from:J.current,to:J.target,top:st.top,confidence:st.confidence,localConfidence:d.localConfidence});return
+  }
+  const a=J.current===-1?preyPos():nodes[J.current],b=J.target===-1?preyPos():nodes[J.target];
+  const seg=Math.hypot(b.x-a.x,b.y-a.y),speed=J.returning?120:(J.committed?142:101),dur=Math.max(.20,seg/(speed*scale));J.t+=dt/dur;const t=clamp(J.t,0,1);J.pos.x=lerp(a.x,b.x,t);J.pos.y=lerp(a.y,b.y,t);spiderTarget=Math.atan2(b.y-J.pos.y,b.x-J.pos.x);
+  if(J.t>=1){
+    if(J.target===-1){solved=true;caughtAtPrey=true;spiderNode=J.current;spiderJourney=null;spiderSenseMode='caught';AUDIO.cue('solve',.9);showMessage('Ze vindt de mot zelf. Het web is weer betrouwbaar.',2100);setTimeout(()=>{ending.classList.add('on');ending.setAttribute('aria-hidden','false')},980);return}
+    J.previous=J.current;J.current=J.target;spiderNode=J.current;J.t=0;J.pos.x=nodes[J.current].x;J.pos.y=nodes[J.current].y;
+    if(J.returning){J.returnIndex--;if(J.current===0){spiderNode=0;endSearch();return}J.phase='listen';J.pause=.10;return}
+    J.visited[J.current]=(J.visited[J.current]||0)+1;J.trail.push(J.current);J.steps++;J.phase='listen';J.pause=J.committed?.26:.42;spiderSenseMode='listen';
+  }
+}
+function previewBeliefRun(maxTicks=800){const savedJourney=spiderJourney,savedNode=spiderNode,savedSolved=solved,savedBelief=Array.from(belief),savedRev=beliefRevision,savedTrace=[...decisionTrace],savedStable=stableBeliefCount,savedTop=lastBeliefTop;spiderJourney=null;spiderNode=0;solved=false;resetBelief();const metrics=graphMetrics(prey);beginBeliefSearch(metrics);let ticks=0;while(spiderJourney&&ticks++<maxTicks)updateJourney(.03);const result={solved,spiderNode,belief:beliefStats(),trace:[...decisionTrace],ticks};spiderJourney=savedJourney;spiderNode=savedNode;solved=savedSolved;belief.set(savedBelief);beliefRevision=savedRev;decisionTrace=savedTrace;stableBeliefCount=savedStable;lastBeliefTop=savedTop;return result}
+function nearestWebNode(x,y){let best=-1,d=1e9;for(let i=0;i<nodes.length;i++){if(nodes[i].kind==='anchor')continue;const q=nodes[i],dd=Math.hypot(q.x-x,q.y-y);if(dd<d){d=dd;best=i}}return d<42*scale?best:-1}
+function pointSegmentDistance(px,py,ax,ay,bx,by){const vx=bx-ax,vy=by-ay,wx=px-ax,wy=py-ay,den=vx*vx+vy*vy;if(den<1e-9)return Math.hypot(px-ax,py-ay);const t=clamp((wx*vx+wy*vy)/den,0,1),qx=ax+vx*t,qy=ay+vy*t;return Math.hypot(px-qx,py-qy)}
+function hitMovableAnchor(x,y){let hit=null,best=Infinity;const pointRadius=Math.max(30,34*scale),railRadius=Math.max(17,20*scale);for(const a of anchors){if(!a.movable)continue;const n=nodes[a.id],f=nodes[frameNodeBySector[a.sec]];const inwardX=n.x-a.ux*18*scale,inwardY=n.y-a.uy*18*scale;const dPoint=Math.min(Math.hypot(n.x-x,n.y-y),Math.hypot(inwardX-x,inwardY-y));const dRail=pointSegmentDistance(x,y,n.x,n.y,f.x,f.y);const score=Math.min(dPoint,dRail*1.35);if((dPoint<=pointRadius||dRail<=railRadius)&&score<best){best=score;hit=a}}return hit}
+function interruptSpiderForWebEdit(){if(!spiderJourney)return;const J=spiderJourney,p=J.pos||nodes[J.current]||nodes[spiderNode];let candidates=[];if(Number.isInteger(J.current)&&J.current>=0)candidates.push(J.current);if(Number.isInteger(J.target)&&J.target>=0)candidates.push(J.target);if(!candidates.length)candidates=[spiderNode>=0?spiderNode:0];let best=candidates[0],bd=Infinity;for(const id of candidates){const q=nodes[id];if(!q)continue;const d=Math.hypot(q.x-p.x,q.y-p.y);if(d<bd){bd=d;best=id}}spiderNode=best;spiderJourney=null;spiderSenseMode='listen';goodSignals=0;spiderTarget=spiderNode===0?Math.PI/2:spiderAngle}
+function pulseDisplacementForEdge(e,now){
+  let disp=0;const T=effectiveTension(e);const slack=clamp((.035-T)/.026,0,1),tight=clamp((T-.22)/.16,0,1);
+  for(const p of pulses){const age=(now-p.start)/1000;const da=p.metrics.dist[e.a],db=p.metrics.dist[e.b],arr=Math.min(da,db),phase=age-arr;if(phase>-0.05&&phase<.42){const env=Math.sin(clamp((phase+.05)/.47,0,1)*Math.PI);const material=1+slack*1.15-tight*.30;disp+=Math.sin(phase*(slack>.35?35:54))*env*(p.isPrey?3.0:4.0)*scale*material}}
+  return disp
+}
+function drawThread(e,now){
+  const A=nodes[e.a],B=nodes[e.b],dx=B.x-A.x,dy=B.y-A.y,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len,T=effectiveTension(e);
+  const slack=clamp((.035-T)/.026,0,1),tight=clamp((T-.22)/.16,0,1),disp=pulseDisplacementForEdge(e,now);
+  let alpha=.47,lw=.48*scale;if(e.type===EDGE.RADIAL){alpha=.69;lw=.72*scale}else if(e.type===EDGE.FRAME){alpha=.72;lw=.94*scale}else if(e.type===EDGE.MOOR){alpha=.76;lw=1.02*scale}else{alpha=.48;lw=.50*scale}
+  alpha*=1-slack*.34;alpha+=tight*.12;
+  const gravitySag=slack*(e.type===EDGE.SPIRAL?2.5:(e.type===EDGE.RADIAL?6.5:9))*scale;
+  const strainTremor=tight*Math.sin(now*.055+e.a*1.37+e.b*.61)*.68*scale;
+  const looseWind=slack*Math.sin(now*.0021+e.a*.77+e.b*.31)*1.75*scale;
+  const cx=(A.x+B.x)/2+nx*(disp+strainTremor+looseWind),cy=(A.y+B.y)/2+ny*(disp+strainTremor+looseWind)+gravitySag;
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(cx,cy,B.x,B.y);ctx.strokeStyle=`rgba(229,220,196,${alpha*.16})`;ctx.lineWidth=lw*3.3;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(cx,cy,B.x,B.y);ctx.strokeStyle=`rgba(215,207,188,${alpha*.56})`;ctx.lineWidth=lw*1.42;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(cx,cy,B.x,B.y);ctx.strokeStyle=`rgba(244,240,225,${alpha})`;ctx.lineWidth=lw*(1-tight*.06);ctx.stroke();
+  if(slack>.42&&e.type!==EDGE.SPIRAL){ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(cx+nx*1.3*scale,cy+1.8*scale,B.x,B.y);ctx.strokeStyle=`rgba(232,228,210,${.10*slack})`;ctx.lineWidth=.42*scale;ctx.stroke()}
+}
+function drawBackdrop(now){
+  ctx.save();ctx.fillStyle='#05090a';ctx.fillRect(0,0,W,H);
+  if(bgReady){const iw=bgImage.naturalWidth||1672,ih=bgImage.naturalHeight||941,cover=Math.max(W/iw,H/ih),sw=W/cover,sh=H/cover,sx=(iw-sw)/2,sy=(ih-sh)/2;ctx.globalAlpha=.60;ctx.filter='blur(1.7px) brightness(.58) saturate(.82) contrast(1.08)';ctx.drawImage(bgImage,sx,sy,sw,sh,0,0,W,H);ctx.filter='none'}
+  const g=ctx.createRadialGradient(hub.x,hub.y,28*scale,hub.x,hub.y,315*scale);g.addColorStop(0,'rgba(3,9,10,.78)');g.addColorStop(.55,'rgba(3,9,10,.66)');g.addColorStop(.82,'rgba(3,9,10,.38)');g.addColorStop(1,'rgba(3,9,10,.10)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  let c=ctx.createLinearGradient(0,0,145*scale,80*scale);c.addColorStop(0,'rgba(3,8,9,.92)');c.addColorStop(1,'rgba(3,8,9,0)');ctx.fillStyle=c;ctx.fillRect(0,0,180*scale,105*scale);
+  c=ctx.createLinearGradient(W,0,W-130*scale,85*scale);c.addColorStop(0,'rgba(3,8,9,.90)');c.addColorStop(1,'rgba(3,8,9,0)');ctx.fillStyle=c;ctx.fillRect(W-170*scale,0,170*scale,110*scale);
+  c=ctx.createLinearGradient(0,H,175*scale,H-75*scale);c.addColorStop(0,'rgba(3,8,9,.92)');c.addColorStop(1,'rgba(3,8,9,0)');ctx.fillStyle=c;ctx.fillRect(0,H-100*scale,220*scale,100*scale);
+  const light=ctx.createRadialGradient(W*.54,H*.34,4,W*.54,H*.34,240*scale);light.addColorStop(0,'rgba(115,151,153,.12)');light.addColorStop(.55,'rgba(72,113,118,.045)');light.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=light;ctx.fillRect(0,0,W,H);
+  const v=ctx.createRadialGradient(W*.5,H*.48,Math.min(W,H)*.18,W*.5,H*.48,Math.max(W,H)*.62);v.addColorStop(.6,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=v;ctx.fillRect(0,0,W,H);ctx.restore()
+}
+function barkStroke(x1,y1,x2,y2,w){ctx.lineCap='round';ctx.strokeStyle='rgba(20,19,16,.94)';ctx.lineWidth=w*1.35;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.strokeStyle='rgba(87,67,42,.80)';ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.strokeStyle='rgba(151,112,62,.24)';ctx.lineWidth=Math.max(.7,w*.16);ctx.beginPath();ctx.moveTo(x1+1*scale,y1-1*scale);ctx.lineTo(x2+1*scale,y2-1*scale);ctx.stroke()}
+function drawEnvironment(){
+  ctx.save();for(const a of anchors){if(!a.movable)continue;const n=nodes[a.id],ox=a.ux,oy=a.uy;const innerX=a.baseX+ox*(anchorScalarRange.min-10)*scale,innerY=a.baseY+oy*(anchorScalarRange.min-10)*scale,outerX=a.baseX+ox*(anchorScalarRange.max+24)*scale,outerY=a.baseY+oy*(anchorScalarRange.max+24)*scale;barkStroke(innerX,innerY,outerX,outerY,7.8*scale);const px=-oy,py=ox,mx=outerX-ox*9*scale,my=outerY-oy*9*scale;barkStroke(mx,my,mx+px*11*scale+ox*6*scale,my+py*11*scale+oy*6*scale,3.0*scale);ctx.beginPath();ctx.arc(n.x,n.y,11.8*scale,0,Math.PI*2);ctx.fillStyle='rgba(8,8,7,.46)';ctx.fill()}ctx.restore()
+}
+function drawAnchor(a){
+  if(!a.movable)return;const n=nodes[a.id],now=performance.now();ctx.save();ctx.translate(n.x,n.y);let g=ctx.createRadialGradient(-3*scale,-4*scale,1,0,0,10*scale);g.addColorStop(0,'#9a7449');g.addColorStop(.48,'#5d432c');g.addColorStop(1,'#241b14');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,9.2*scale,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(217,183,122,.36)';ctx.lineWidth=.75*scale;for(let r=3.0;r<8.3;r+=2.3){ctx.beginPath();ctx.arc(0,0,r*scale,.3,Math.PI*1.72);ctx.stroke()}ctx.strokeStyle='rgba(238,235,218,.74)';ctx.lineWidth=.74*scale;for(let i=-2;i<=2;i++){const off=i*2.2*scale;ctx.beginPath();ctx.moveTo(-8.2*scale,off-2*scale);ctx.quadraticCurveTo(0,off+Math.sin(now*.001+i)*1.2*scale,8.3*scale,off+2*scale);ctx.stroke()}ctx.beginPath();ctx.arc(0,0,10.8*scale,0,Math.PI*2);ctx.strokeStyle=drag?.a===a?'rgba(235,204,142,.78)':'rgba(222,210,180,.24)';ctx.lineWidth=drag?.a===a?1.1*scale:.55*scale;ctx.stroke();ctx.restore()
+}
+function preyPos(){const A=nodes[prey.a],B=nodes[prey.b],f=prey.frac;return {x:A.x+(B.x-A.x)*f,y:A.y+(B.y-A.y)*f}}
+function drawFeltRadial(now){/* v0.3.4: no answer-line. Perception is shown only through the spider's body and movement. */}
+function drawMoth(now){
+  const n=preyPos(),pulse=caughtAtPrey?0:(.5+.5*Math.sin(now*.008));ctx.save();ctx.translate(n.x,n.y);ctx.rotate(-.30);ctx.globalAlpha=caughtAtPrey?.25:.96;ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=5*scale;const wing=ctx.createLinearGradient(-7*scale,-4*scale,8*scale,5*scale);wing.addColorStop(0,'#9a7448');wing.addColorStop(.52,'#c5a66c');wing.addColorStop(1,'#5f4730');ctx.fillStyle=wing;ctx.beginPath();ctx.moveTo(-1*scale,-1*scale);ctx.bezierCurveTo(-5*scale,-9*scale,-12*scale,-8*scale,-10*scale,1*scale);ctx.bezierCurveTo(-8*scale,7*scale,-3*scale,5*scale,0,2*scale);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(1*scale,-1*scale);ctx.bezierCurveTo(5*scale,-9*scale,12*scale,-8*scale,10*scale,1*scale);ctx.bezierCurveTo(8*scale,7*scale,3*scale,5*scale,0,2*scale);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='rgba(71,52,32,.55)';ctx.lineWidth=.55*scale;for(const side of [-1,1]){ctx.beginPath();ctx.moveTo(side*1*scale,0);ctx.lineTo(side*8*scale,-4*scale);ctx.moveTo(side*2*scale,2*scale);ctx.lineTo(side*8*scale,3*scale);ctx.stroke()}ctx.fillStyle='#493622';ctx.beginPath();ctx.ellipse(0,0,1.7*scale,5*scale,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(214,189,137,.75)';ctx.beginPath();ctx.moveTo(-.7*scale,-4*scale);ctx.quadraticCurveTo(-3*scale,-8*scale,-5*scale,-8*scale);ctx.moveTo(.7*scale,-4*scale);ctx.quadraticCurveTo(3*scale,-8*scale,5*scale,-8*scale);ctx.stroke();if(!caughtAtPrey){ctx.globalAlpha=.10+.12*pulse;ctx.strokeStyle='#d7b879';ctx.lineWidth=.65*scale;ctx.beginPath();ctx.arc(0,0,(10+3*pulse)*scale,0,Math.PI*2);ctx.stroke()}ctx.restore()
+}
+function spiderPos(){return spiderJourney?spiderJourney.pos:(caughtAtPrey?preyPos():nodes[spiderNode])}
+function nearestSectorForAngle(a){let best=0,err=Infinity;for(let sec=0;sec<N;sec++){const q=nodes[radialNode[sec][1]],th=Math.atan2(q.y-hub.y,q.x-hub.x),d=Math.abs(angDiff(th,a));if(d<err){err=d;best=sec}}return best}
+function currentLegSignal(sec,now){let hit=0;const id=radialNode[sec][1];for(const p of pulses){const age=(now-p.start)/1000,arr=p.metrics.dist[id],phase=age-arr;if(phase>-0.045&&phase<.30){const env=Math.sin(clamp((phase+.045)/.345,0,1)*Math.PI);hit=Math.max(hit,env*p.metrics.strength[id]*(p.isPrey?1:.72))}}return clamp(hit*2.4,0,1)}
+function drawSpider(){
+  const now=performance.now(),p=spiderPos(),mode=spiderSenseMode,bs=beliefStats(),listening=mode==='listen'||mode==='inspect',probing=mode==='probe',exploring=mode==='explore',committing=mode==='commit',returning=mode==='return',caught=mode==='caught',uncertain=(listening&&!caught)?clamp(1-bs.confidence,0,1):0,bodySway=listening?Math.sin(now*.0065)*.08*uncertain:0,gait=(exploring||committing||returning)?Math.sin(now*(committing?.022:.016)):0;
+  ctx.save();ctx.translate(p.x,p.y);ctx.rotate(spiderAngle+Math.PI/2+bodySway);const crouch=probing?.84:(committing?.92:1),stretch=probing?1.26:(listening?1.12:(committing?1.08:1));ctx.scale(1.46,1.46*crouch);ctx.shadowColor='rgba(0,0,0,.78)';ctx.shadowBlur=4.5*scale;ctx.lineCap='round';
+  for(let side of [-1,1])for(let i=0;i<4;i++){const yy=(-7+i*4.5)*scale,front=i<2,scan=listening?Math.sin(now*.008+i*1.7+side)*uncertain*1.5*scale:0,step=(exploring||committing||returning)?gait*(i%2?1:-1)*1.8*scale:0,localFootAngle=Math.atan2(yy+(i-1.5)*2*scale,side*(12+i)),worldFootAngle=spiderAngle+Math.PI/2+localFootAngle,sensed=(spiderNode===0||spiderJourney?.current===0)?currentLegSignal(nearestSectorForAngle(worldFootAngle),now):0,kick=sensed*(2.0+i*.16)*scale,reach=stretch*(committing&&front?1.08:1)*(1+sensed*.07),x0=side*2.1*scale,y0=yy*.42,x1=side*(6.9+i*.78)*scale*reach,y1=yy+scan+step-kick*.22,x2=side*(11.1+i*.92)*scale*reach,y2=yy+(i-1.5)*2*scale+scan-step*.32-kick,x3=side*(14.5+i*.9)*scale*reach,y3=y2+(i-1.5)*1.2*scale;ctx.strokeStyle='rgba(48,31,20,.95)';ctx.lineWidth=2.15*scale;ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.stroke();ctx.strokeStyle='rgba(184,130,72,.90)';ctx.lineWidth=.82*scale;ctx.beginPath();ctx.moveTo(x0,y0-.4*scale);ctx.lineTo(x1,y1-.4*scale);ctx.lineTo(x2,y2-.35*scale);ctx.lineTo(x3,y3);ctx.stroke()}
+  ctx.shadowBlur=5*scale;let ag=ctx.createRadialGradient(-1*scale,2*scale,1,0,4*scale,8*scale);ag.addColorStop(0,committing?'#c08b4f':'#aa7845');ag.addColorStop(.42,'#815633');ag.addColorStop(1,'#3a281c');ctx.fillStyle=ag;ctx.beginPath();ctx.ellipse(0,5.4*scale,5.3*scale,7.4*scale,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(38,26,18,.78)';ctx.lineWidth=.75*scale;ctx.beginPath();ctx.moveTo(-3.8*scale,2*scale);ctx.quadraticCurveTo(0,5*scale,3.8*scale,2*scale);ctx.moveTo(-4.1*scale,6*scale);ctx.quadraticCurveTo(0,8.6*scale,4.1*scale,6*scale);ctx.stroke();ctx.fillStyle='rgba(221,163,89,.78)';for(const [x,y,r] of [[-2.3,2.3,.8],[2.3,2.3,.8],[-2.8,6.3,.65],[2.8,6.3,.65],[0,9,.65]]){ctx.beginPath();ctx.arc(x*scale,y*scale,r*scale,0,Math.PI*2);ctx.fill()}let cg=ctx.createRadialGradient(-1*scale,-2.5*scale,.3,0,-1.2*scale,4.6*scale);cg.addColorStop(0,'#a97642');cg.addColorStop(1,'#3a291d');ctx.fillStyle=cg;ctx.beginPath();ctx.ellipse(0,-1.3*scale,3.7*scale,4.2*scale,0,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;if(caught){ctx.globalAlpha=.58;ctx.strokeStyle='rgba(235,232,215,.72)';ctx.lineWidth=.55*scale;for(let r=5;r<9;r+=2){ctx.beginPath();ctx.arc(0,0,r*scale,-.8,2.4);ctx.stroke()}}ctx.restore()
+}
+function drawDew(now){ctx.save();for(let sec=0;sec<N;sec++)for(let k=2;k<=K;k++){const id=radialNode[sec][k],n=nodes[id],h=((sec*37+k*71)%101)/101;if(h>.36)continue;const tw=.58+.42*Math.sin(now*.0018+sec*1.7+k*.8);ctx.beginPath();ctx.arc(n.x-.45*scale,n.y-.55*scale,(.42+h*.72)*scale,0,Math.PI*2);ctx.fillStyle=`rgba(245,239,218,${.18+.38*tw})`;ctx.fill()}ctx.restore()}
+function drawForegroundAtmosphere(){const g=ctx.createLinearGradient(0,H*.63,0,H);g.addColorStop(0,'rgba(4,8,8,0)');g.addColorStop(1,'rgba(3,6,6,.18)');ctx.fillStyle=g;ctx.fillRect(0,H*.60,W,H*.40)}
+function render(now){ctx.clearRect(0,0,W,H);drawBackdrop(now);drawEnvironment();ctx.lineCap='round';for(const e of edges)drawThread(e,now);drawDew(now);for(const a of anchors)drawAnchor(a);drawFeltRadial(now);drawMoth(now);drawSpider();drawForegroundAtmosphere();
+  if(debugMode){const p=perceive(prey),pp=preyPos(),ta=Math.atan2(pp.y-nodes[0].y,pp.x-nodes[0].x),s=structuralSafety();let ts=0,tse=Infinity;for(let j=0;j<N;j++){const q=nodes[radialNode[j][1]],a=Math.atan2(q.y-nodes[0].y,q.x-nodes[0].x),d=Math.abs(angDiff(a,ta));if(d<tse){tse=d;ts=j}}const bs=beliefStats();dbg.textContent=`truth(debug) ${(ta*180/Math.PI).toFixed(1)}° · radial ${ts}\nraw hub radial ${p.dominantSector}\nbelief top ${bs.top} ${(bs.topP*100).toFixed(1)}% · conf ${bs.confidence.toFixed(3)} · entropy ${bs.entropy.toFixed(3)}\nmode ${spiderSenseMode} · node ${spiderNode}\nmaxT ${s.max.toFixed(3)} minRad ${s.minRad.toFixed(3)} minMoor ${s.minMoor.toFixed(3)} safe ${s.safe}\ntrust adj ${signalTrust().adj.toFixed(3)} std ${signalTrust().std.toFixed(3)} ok ${signalTrust().trustworthy}\nsolved ${solved} · revision ${webRevision}\nanchors ${anchors.filter(a=>a.movable).map(a=>(((nodes[a.id].x-a.baseX)*a.ux+(nodes[a.id].y-a.baseY)*a.uy)/scale).toFixed(1)).join(' ')}`}
+}
+function tick(now){const dt=Math.min(.026,(now-lastT)/1000||.016);lastT=now;for(let i=0;i<4;i++)relax(dt/4,false);spiderAngle+=angDiff(spiderTarget,spiderAngle)*clamp(dt*4.4,0,1);updateJourney(dt);pulses=pulses.filter(p=>now-p.start<p.life);if(now>=webSettlingUntil)preyTimer-=dt*1000;if(preyTimer<=0&&!spiderJourney&&!solved&&lastPreyResponseRevision!==webRevision){pluck(prey,true);preyTimer=1e9}render(now);requestAnimationFrame(tick)}
+function resize(){W=innerWidth;H=innerHeight;/* v0.2.2 safe playfield: include the full draggable mooring envelope, not only the web body. At 780×360 this keeps the lowest anchor comfortably above the physical edge. */scale=Math.min(W/780,H/438);canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);build(true)}
+canvas.addEventListener('pointerdown',e=>{if(solved)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;const hit=hitMovableAnchor(x,y);if(hit){interruptSpiderForWebEdit();AUDIO.cue('grab',.48);const n=nodes[hit.id],startScalar=((n.x-hit.baseX)*hit.ux+(n.y-hit.baseY)*hit.uy)/scale;drag={a:hit,startX:x,startY:y,moved:0,startScalar,pointerId:e.pointerId};canvas.setPointerCapture(e.pointerId);e.preventDefault()}else{if(spiderJourney)return;drag={a:null,startX:x,startY:y,moved:0,pointerId:e.pointerId}}});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;drag.moved=Math.max(drag.moved,Math.hypot(x-drag.startX,y-drag.startY));if(drag.a){const a=drag.a,n=nodes[a.id],dx=x-a.baseX,dy=y-a.baseY;const scalar=clamp((dx*a.ux+dy*a.uy)/scale,anchorScalarRange.min,anchorScalarRange.max);n.x=a.baseX+a.ux*scalar*scale;n.y=a.baseY+a.uy*scalar*scale;n.vx=n.vy=0;goodSignals=0;AUDIO.cue('drag',.22)}});
+canvas.addEventListener('pointerup',e=>{if(!drag)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(!drag.a&&drag.moved<12*scale){const id=nearestWebNode(x,y);if(id>=0){pluck(id,false);showMessage('Je voelt hoe dit deel het signaal doorgeeft.',700)}}if(drag&&drag.a){const a=drag.a,n=nodes[a.id],endScalar=((n.x-a.baseX)*a.ux+(n.y-a.baseY)*a.uy)/scale,delta=Math.abs(endScalar-drag.startScalar);nodes.forEach(q=>{if(!q.fixed){q.vx*=.25;q.vy*=.25}});if(delta>=.55){webRevision++;webSettlingUntil=performance.now()+760;preyTimer=980;goodSignals=0;AUDIO.cue('release',.5);showMessage('De spin wacht op het nieuwe signaal.',650)}else{n.x=a.baseX+a.ux*drag.startScalar*scale;n.y=a.baseY+a.uy*drag.startScalar*scale;n.vx=n.vy=0}}if(drag&&drag.pointerId!=null&&canvas.hasPointerCapture?.(drag.pointerId))canvas.releasePointerCapture(drag.pointerId);drag=null});
+canvas.addEventListener('pointercancel',e=>{if(drag&&drag.pointerId!=null&&canvas.hasPointerCapture?.(drag.pointerId))canvas.releasePointerCapture(drag.pointerId);drag=null});
+document.getElementById('reset').addEventListener('click',()=>build(true)); againBtn.addEventListener('click',()=>build(true));
+addEventListener('resize',resize);
+window.__livingWeb={
+ state(){const p=perceive(prey),pp=preyPos(),ta=Math.atan2(pp.y-nodes[0].y,pp.x-nodes[0].x),s=structuralSafety(),bs=beliefStats();let trueSector=0,trueSectorErr=Infinity;for(let j=0;j<N;j++){const q=nodes[radialNode[j][1]],a=Math.atan2(q.y-nodes[0].y,q.x-nodes[0].x),d=Math.abs(angDiff(a,ta));if(d<trueSectorErr){trueSectorErr=d;trueSector=j}}return {trueAngle:ta,trueSector,rawDominantSector:p.dominantSector,rawDominance:p.dominance,signalStrength:p.signalStrength,safety:s,trust:signalTrust(),belief:{...bs,values:Array.from(belief)},spiderNode,spiderSector:sectorForNode(spiderNode),mode:spiderSenseMode,anchors:anchors.filter(a=>a.movable).map(a=>({scalar:((nodes[a.id].x-a.baseX)*a.ux+(nodes[a.id].y-a.baseY)*a.uy)/scale,screenX:nodes[a.id].x,screenY:nodes[a.id].y,baseX:a.baseX,baseY:a.baseY,ux:a.ux,uy:a.uy})),solved,webRevision,lastPreyResponseRevision,motion:spiderJourney?{kind:spiderJourney.kind,phase:spiderJourney.phase,current:spiderJourney.current,target:spiderJourney.target,steps:spiderJourney.steps,probes:spiderJourney.probes,committed:spiderJourney.committed,returning:spiderJourney.returning,trail:[...spiderJourney.trail]}:null,trace:[...decisionTrace]}}
+ ,setScalars(arr){spiderJourney=null;spiderNode=0;solved=false;caughtAtPrey=false;decisionTrace=[];webRevision++;lastPreyResponseRevision=-1;nodes.forEach(n=>{if(!n.fixed&&Number.isFinite(n.restX)){n.x=n.restX;n.y=n.restY;n.vx=n.vy=0}});anchors.filter(a=>a.movable).forEach((a,i)=>{const n=nodes[a.id],v=clamp(Number(arr[i])||0,anchorScalarRange.min,anchorScalarRange.max);n.x=a.baseX+a.ux*v*scale;n.y=a.baseY+a.uy*v*scale;n.vx=n.vy=0});for(let i=0;i<1600;i++)relax(.012,true);nodes.forEach(n=>{n.vx=n.vy=0});resetBelief();return this.state()}
+ ,setOffsets(arr){return this.setScalars(arr.map((v,i)=>typeof v==='number'?v:((v.x||0)*anchors.filter(a=>a.movable)[i].ux+(v.y||0)*anchors.filter(a=>a.movable)[i].uy)))}
+ ,healthy(){return this.setScalars(healthyScalars)}
+ ,start(){build(true);return this.state()}
+ ,preyPulse(){pluck(prey,true)}
+ ,simulate(){return previewBeliefRun()}
+ ,diagnosticSector(){return {sector:chooseDiagnosticSector(),tension:radialMeanTension(chooseDiagnosticSector())}}
+ ,beliefPreview(){const old=Array.from(belief),oldRev=beliefRevision,oldTop=lastBeliefTop,oldStable=stableBeliefCount;resetBelief();const st=updateBelief(graphMetrics(prey),0,false);const out={...st,values:Array.from(belief)};belief.set(old);beliefRevision=oldRev;lastBeliefTop=oldTop;stableBeliefCount=oldStable;return out}
+ ,setPreyFrac(f){prey.frac=clamp(f,.05,.95);webRevision++;lastPreyResponseRevision=-1;resetBelief();return this.state()}
+ ,radialTensions(){return Array.from({length:N},(_,s)=>Array.from({length:K},(_,k)=>{const e=edgeBetween(radialNode[s][k],radialNode[s][k+1]);return effectiveTension(e)}))}
+ ,advance(seconds=1){for(let t=0;t<seconds;t+=.02){for(let i=0;i<4;i++)relax(.005,false);spiderAngle+=angDiff(spiderTarget,spiderAngle)*.08;updateJourney(.02)}return this.state()}
+};
+resize();setTimeout(()=>{const h=document.querySelector('.hint');if(h)h.style.opacity='0'},5200);setTimeout(()=>{const g=document.querySelector('.goal');if(g){g.style.transition='opacity 1.2s';g.style.opacity='.18'}},9000);requestAnimationFrame(tick);
+})();
+</script>
+
+<script src="../../shared/continuum-shell.js"></script>
+<script>ContinuumShell.mount({level:6,title:'Living Web',objective:'De wind trok het web uit evenwicht. Herstel wat de spin niet meer kan vertrouwen.',resetSelector:'#reset',hide:['.kicker','.home','.reset']});</script>
+</body>
+</html>

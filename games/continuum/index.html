@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#080c0d">
+<title>CONTINUUM — World 1 · v0.2.2</title>
+<style>
+:root{color-scheme:dark;--ink:#f1eadc;--gold:#d3b46f;--line:rgba(255,255,255,.10)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080c0d;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+body{background:radial-gradient(circle at 50% -5%,#182022 0,#0a0e10 44%,#070a0b 100%)}
+.world{position:fixed;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr);padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));gap:8px}
+.worldHead{min-height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 11px;border:1px solid rgba(215,184,116,.10);border-radius:16px;background:linear-gradient(180deg,rgba(20,27,28,.68),rgba(9,14,15,.48));box-shadow:inset 0 1px rgba(255,255,255,.025);backdrop-filter:blur(10px)}
+.brand small{display:block;font-size:8px;font-weight:850;letter-spacing:.22em;color:rgba(214,184,116,.72);text-transform:uppercase}.brand h1{margin:3px 0 0;font:500 italic 24px/1 Georgia,"Times New Roman",serif;letter-spacing:-.02em}.headHint{font:500 italic 12px/1.2 Georgia,"Times New Roman",serif;color:rgba(239,232,218,.56);text-align:right}
+.grid{min-height:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.card{position:relative;min-width:0;min-height:0;overflow:hidden;border-radius:18px;border:1px solid rgba(255,255,255,.095);text-decoration:none;color:inherit;background:#101517;isolation:isolate;box-shadow:0 10px 34px rgba(0,0,0,.18);outline:none}
+.card::before{content:"";position:absolute;inset:0;background-position:center;background-size:cover;transform:scale(1.008);transition:transform .55s cubic-bezier(.2,.75,.2,1),filter .3s ease;z-index:-3}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,7,8,.04) 18%,rgba(4,7,8,.18) 47%,rgba(4,7,8,.88) 100%);z-index:-2}
+.card.flower::before{background-image:url("assets/menu/de-bloem.svg");background-position:50% 42%}.card.mirror::before{background-image:url("assets/menu/spiegelwereld.svg");background-position:50% 46%}.card.flame::before{background-image:url("assets/menu/wakende-vlam.svg");background-position:50% 49%}.card.lock::before{background-image:url("assets/menu/de-schutsluis.svg");background-position:50% 48%}.card.garden::before{background-image:url("assets/menu/de-verdronken-tuin.svg");background-position:50% 49%}.card.web::before{background-image:linear-gradient(rgba(4,9,8,.05),rgba(4,9,8,.32)),url("assets/menu/living-web.webp");background-position:center;background-size:cover}
+.card:hover::before,.card:focus-visible::before{transform:scale(1.055);filter:brightness(1.08) saturate(1.04)}
+.card:focus-visible{box-shadow:0 0 0 2px rgba(236,213,160,.8),0 10px 34px rgba(0,0,0,.22)}
+.cardTop{position:absolute;top:14px;left:14px;right:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}.levelNo{font-size:7px;font-weight:850;letter-spacing:.19em;text-transform:uppercase;color:rgba(241,226,193,.72);text-shadow:0 2px 10px #000}.enter{opacity:0;transform:translateX(-5px);font-size:18px;color:rgba(241,226,193,.82);transition:.25s}.card:hover .enter,.card:focus-visible .enter{opacity:1;transform:none}
+.copy{position:absolute;left:16px;right:14px;bottom:16px}.copy strong{display:block;font:500 italic clamp(19px,1.7vw,28px)/1.03 Georgia,"Times New Roman",serif;text-shadow:0 2px 16px rgba(0,0,0,.82);letter-spacing:-.015em}.copy span{display:block;margin-top:7px;font-size:8px;line-height:1.28;letter-spacing:.035em;color:rgba(235,230,218,.58);text-shadow:0 2px 9px #000}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}.worldHead{min-height:52px}.brand h1{font-size:21px}.copy strong{font-size:19px}.copy span{font-size:7.5px}}
+@media(max-height:430px) and (orientation:landscape){.world{gap:5px;padding:max(5px,env(safe-area-inset-top)) max(5px,env(safe-area-inset-right)) max(5px,env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left))}.worldHead{min-height:43px;border-radius:13px;padding:0 9px}.brand{display:flex;align-items:baseline;gap:10px}.brand small{font-size:6.5px}.brand h1{font-size:17px;margin:0}.headHint{font-size:9px}.grid{gap:5px}.card{border-radius:13px}.cardTop{top:8px;left:10px;right:10px}.levelNo{font-size:6px}.copy{left:11px;right:10px;bottom:9px}.copy strong{font-size:16px}.copy span{display:none}}
+@media(orientation:portrait){html,body{overflow:auto}.world{position:relative;min-height:100dvh}.worldHead{position:sticky;top:6px;z-index:5}.grid{grid-template-columns:1fr 1fr;grid-auto-rows:minmax(220px,32vh)}.headHint{display:none}.copy strong{font-size:22px}}
+@media(max-width:520px) and (orientation:portrait){.grid{grid-template-columns:1fr;grid-auto-rows:220px}}
+@media(prefers-reduced-motion:reduce){.card::before,.enter{transition:none}}
+</style>
+</head>
+<body>
+<main class="world">
+  <header class="worldHead">
+    <div class="brand"><small>CONTINUUM · WORLD 1</small><h1>Zes levende wetten</h1></div>
+    <div class="headHint">Kies een wereld.</div>
+  </header>
+  <section class="grid" aria-label="World 1 levels">
+    <a class="card flower" href="games/de-bloem/index.html" aria-label="Level 1, De Bloem">
+      <div class="cardTop"><span class="levelNo">Level 1</span><span class="enter" aria-hidden="true">›</span></div>
+      <div class="copy"><strong>De Bloem</strong><span>één vorm · vier krachten</span></div>
+    </a>
+    <a class="card mirror" href="games/spiegelwereld/index.html" aria-label="Level 2, Spiegelwereld">
+      <div class="cardTop"><span class="levelNo">Level 2</span><span class="enter" aria-hidden="true">›</span></div>
+      <div class="copy"><strong>Spiegelwereld</strong><span>licht · water · gedeelde grens</span></div>
+    </a>
+    <a class="card flame" href="games/wakende-vlam/index.html" aria-label="Level 3, De Wakende Vlam">
+      <div class="cardTop"><span class="levelNo">Level 3</span><span class="enter" aria-hidden="true">›</span></div>
+      <div class="copy"><strong>De Wakende Vlam</strong><span>vuur · leer · pad door toestand</span></div>
+    </a>
+    <a class="card lock" href="games/de-schutsluis/index.html" aria-label="Level 4, De Schutsluis">
+      <div class="cardTop"><span class="levelNo">Level 4</span><span class="enter" aria-hidden="true">›</span></div>
+      <div class="copy"><strong>De Schutsluis</strong><span>water · vis · geschiedenis</span></div>
+    </a>
+    <a class="card garden" href="games/de-verdronken-tuin/index.html" aria-label="Level 5, De Verdronken Tuin">
+      <div class="cardTop"><span class="levelNo">Level 5</span><span class="enter" aria-hidden="true">›</span></div>
+      <div class="copy"><strong>De Verdronken Tuin</strong><span>water · licht · groei · geschiedenis</span></div>
+    </a>
+    <a class="card web" href="games/living-web/index.html" aria-label="Level 6, Living Web">
+      <div class="cardTop"><span class="levelNo">Level 6</span><span class="enter" aria-hidden="true">›</span></div>
+      <div class="copy"><strong>Living Web</strong><span>zijde · spanning · trilling · waarneming</span></div>
+    </a>
+  </section>
+</main>
+</body>
+</html>

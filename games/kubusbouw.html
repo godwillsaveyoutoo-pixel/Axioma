@@ -1,0 +1,2820 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#081225">
+<title>AXIOMA · Kubusbouw v0.6.2 — Smartphone</title>
+<style>
+:root{font-family:Inter,ui-rounded,"Avenir Next","Segoe UI",system-ui,sans-serif;--ink:#f4f7ff;--muted:#97a6c4;--navy:#081225;--teal:#55dfd3;--violet:#9678e5;--gold:#efc365;--line:rgba(157,188,245,.14);--rail:clamp(224px,31vw,304px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--navy);color:var(--ink)}button{font:inherit;color:inherit;touch-action:manipulation}button:disabled{opacity:.38}
+.game{position:fixed;inset:0;width:100dvw;height:100dvh;display:grid;grid-template-rows:42px minmax(0,1fr);overflow:hidden;background:var(--navy)}
+.top{display:grid;grid-template-columns:38px minmax(0,1fr) auto 36px 36px;align-items:center;gap:4px;padding:0 max(5px,env(safe-area-inset-right)) 0 max(5px,env(safe-area-inset-left));background:#f7f0df;color:#17325c;border-bottom:1px solid rgba(23,50,92,.12);z-index:20}.home,.restart,.fullscreen{width:34px;height:34px;border:0;background:transparent;border-radius:8px;font-weight:1000;font-size:18px;display:grid;place-items:center}.home{color:#5d46a8}.restart,.fullscreen{color:#176f78}.home:active,.restart:active,.fullscreen:active{background:rgba(33,71,117,.08)}
+.title{min-width:0;display:flex;align-items:baseline;gap:7px;white-space:nowrap;overflow:hidden}.title small{font-size:8px;font-weight:1000;letter-spacing:.08em;color:#188c89;flex:none}.title strong{font-size:13px;line-height:1;overflow:hidden;text-overflow:ellipsis}.progress{display:flex;align-items:baseline;gap:2px;padding:0 4px;white-space:nowrap}.progress b{font-size:13px;color:#6040aa}.progress span{font-size:8px;color:#6f7890}
+.body{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) var(--rail);overflow:hidden}.stage{position:relative;min-width:0;min-height:0;overflow:hidden;background:radial-gradient(620px 320px at 47% 20%,rgba(86,93,180,.20),transparent 58%),radial-gradient(520px 250px at 50% 78%,rgba(38,178,168,.08),transparent 65%),linear-gradient(165deg,#111b36 0%,#091327 64%,#060d1b 100%)}.stage:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 28%,rgba(0,0,0,.13))}.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:pointer}
+.stage-label,.stage-note{position:absolute;top:6px;z-index:3;pointer-events:none;font-size:7px;font-weight:1000;letter-spacing:.08em;color:#baf6ef;text-shadow:0 1px 8px rgba(0,0,0,.8)}.stage-label{left:8px}.stage-note{right:8px;max-width:58%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#9cadc8;font-weight:800;letter-spacing:.02em;text-align:right}.depth-legend{position:absolute;left:8px;bottom:7px;z-index:3;display:flex;align-items:center;gap:4px;padding:3px 6px;background:rgba(5,12,27,.58);border:1px solid rgba(145,174,229,.08);font-size:6px;font-weight:900;color:#7f8dab;pointer-events:none}.depth-legend b{color:#e4bb64}.readout{position:absolute;right:8px;bottom:8px;z-index:4;display:none;text-align:right}.readout.show{display:block}.readout small{font-size:7px;color:#8cebe2;font-weight:1000}.readout strong{display:block;font-size:28px;color:#ffd76d;line-height:.9}.readout span{display:block;font-size:7px;color:#c5cee3;max-width:160px}
+.workspace{min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto auto;background:linear-gradient(180deg,#101d38,#0a1429);border-left:1px solid var(--line);overflow:hidden}.mission{padding:5px 7px 6px;border-bottom:1px solid var(--line);min-height:42px}.mission .id{font-size:6px;font-weight:1000;letter-spacing:.08em;color:#65dfd5}.mission h1{font-size:13px;line-height:1.05;margin:0 0 2px}.mission p{font-size:8px;line-height:1.18;color:#9eabc3;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.views{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;overflow:hidden;border-bottom:1px solid var(--line)}.views.single-view{grid-template-columns:1fr}.views.two-views{grid-template-columns:repeat(2,1fr)}.views.three-views{grid-template-columns:repeat(3,1fr)}.views.has-pred{grid-template-columns:repeat(2,1fr)}
+.view{min-width:0;min-height:0;display:grid;grid-template-rows:19px minmax(0,1fr);place-items:center;padding:3px 2px;border-right:1px solid rgba(157,188,245,.09);background:rgba(255,255,255,.015)}.view:last-child{border-right:0}.view.pred{grid-column:1/-1;grid-template-columns:minmax(0,1fr) 112px;grid-template-rows:1fr;padding:5px 8px;border-top:1px solid rgba(157,188,245,.10);background:rgba(119,84,190,.08)}.viewhead{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-width:0}.view.pred .viewhead{align-items:flex-start}.viewhead b{font-size:7px;letter-spacing:.08em;color:#cabaff;white-space:nowrap}.viewhead span{font-size:5.5px;color:#7687a7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:min(62px,90%);aspect-ratio:1;padding:2px;background:#18233c}.view.pred .grid3{width:102px}.vcell,.predcell{position:relative;border:0;border-radius:3px;background:#f6f8fc;box-shadow:inset 0 0 0 1px rgba(72,89,125,.12);padding:0;cursor:pointer;min-width:0;min-height:0}.vcell.target{background:linear-gradient(145deg,#a98cf0,#7652c2)}.vcell.live:after{content:"";position:absolute;inset:27%;border-radius:50%;background:#50ddd1;box-shadow:0 0 7px rgba(80,221,209,.7)}.vcell.live:not(.target):after{background:#efa64d}.vcell.miss{outline:2px solid #55e8db;outline-offset:0}.plan-cell.plan-edit{outline:2px solid #ffd36f;outline-offset:0}.predcell.on{background:#20b8ad}.predcell.err{outline:2px solid #f0a244}
+.view-legend{height:17px;display:flex;justify-content:center;gap:7px;align-items:center;border-bottom:1px solid var(--line);font-size:5.5px;font-weight:1000;letter-spacing:.05em;color:#7183a3}.view-legend span{display:inline-flex;align-items:center;gap:3px}.view-legend i{width:6px;height:6px;display:inline-block}.view-legend .gold{border:1px solid #ffc761;background:rgba(255,199,97,.1)}.view-legend .violet{background:#8d6ddd}.view-legend .teal{background:#51d8cd}.hint{display:none}.feedback{min-height:28px;padding:4px 7px;border-bottom:1px solid var(--line);font-size:7px;line-height:1.22;color:#9fabc2;display:flex;align-items:center}.feedback.good{color:#91e7cb;background:rgba(28,111,85,.16)}.feedback.bad{color:#ffd28a;background:rgba(140,83,13,.16)}
+#controls{min-height:0;padding:5px 6px 6px;display:grid;gap:4px;align-content:end;overflow:hidden;background:rgba(3,10,24,.22)}.layer-title{display:none}.round-card{display:grid;grid-template-columns:auto 1fr;gap:1px 6px;align-items:center;padding:0 1px}.round-card small{font-size:5.5px;color:#6ddbd2;font-weight:1000;letter-spacing:.07em;grid-row:1}.round-card strong{font-size:10px;color:#f2d47c;line-height:1;grid-row:2}.round-card span{font-size:6px;color:#8f9dbc;line-height:1.1;grid-row:1/3;grid-column:2}.build-tip{font-size:6px;line-height:1.15;color:#72d7cf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.build-tip br{display:none}.build-tip b{color:#dffdfa}.assist-link{min-height:24px;border:1px solid var(--line);background:transparent;color:#8fa1c1;font-size:6px;font-weight:1000;letter-spacing:.06em}.assist-inline{display:none;grid-template-columns:repeat(3,1fr);gap:3px}.assist-inline.show{display:grid}.assist-inline button{min-height:26px;border:1px solid var(--line);background:#162541;color:#8494b3;font-size:6px;font-weight:1000}.assist-inline button.on{background:#237d83;color:white}.layers{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}.layers button{min-height:31px;border:1px solid var(--line);background:#162541;color:#8293b2;font-size:6px;font-weight:1000;padding:2px}.layers button.on{background:linear-gradient(145deg,#705bbd,#287f89);color:#fff}.layers b{display:inline;margin-right:3px}.actions{display:grid;grid-template-columns:.72fr 1.28fr;gap:4px}.btn{min-height:34px;border:1px solid rgba(151,183,255,.16);background:#15243f;color:#a8eae4;font-size:7px;font-weight:1000;letter-spacing:.02em}.btn.primary{background:linear-gradient(135deg,#17b6aa,#087b8c);color:#fff}.btn.gold{background:linear-gradient(145deg,#edc260,#ad762e);color:#24190a}.scaleq{display:flex;align-items:baseline;justify-content:space-between;gap:6px}.scaleq small{font-size:7px;color:#79ddd4;font-weight:1000}.scaleq strong{font-size:8px}.scaleopts{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.scaleopts button{min-height:38px;border:1px solid var(--line);background:#172640;color:#d8ceff;font-size:12px;font-weight:1000}.choice2,.choice3{display:grid;gap:4px}.choice2{grid-template-columns:repeat(2,1fr)}.choice3{grid-template-columns:repeat(3,1fr)}.choice2 button,.choice3 button,.scaleq{border:1px solid var(--line);background:#15243f;color:#d8ceff}.donebox{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;align-items:center;color:#93e6ca;font-size:7px}.donebox strong{line-height:1.15}.donebox .btn{min-width:92px}
+.depth-picker{position:absolute;left:50%;bottom:7px;transform:translate(-50%,8px);z-index:10;display:flex;align-items:center;gap:3px;padding:4px;background:#081426;border:1px solid rgba(100,231,218,.22);opacity:0;pointer-events:none;transition:.14s}.depth-picker.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}.depth-picker-title{display:none}.depth-picker button:not(.close-depth){min-width:54px;min-height:32px;border:1px solid var(--line);background:#172640;color:#99a9c6;font-weight:1000}.depth-picker button.active{background:#267d84!important;color:white!important}.depth-picker strong{display:block;font-size:6px}.depth-picker small{display:block;font-size:5.5px}.close-depth{width:28px;height:28px;border:1px solid var(--line);background:#15243f;color:#9aabc8}
+.complete{position:fixed;inset:42px 0 0;z-index:50;display:none;background:linear-gradient(160deg,#111c37,#081225)}.complete.show{display:grid;place-items:center}.card{width:100%;height:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:1fr auto;align-items:center;gap:10px;padding:22px;color:#f5f7ff}.card .check{font-size:54px;color:#65e4d4;grid-row:1/3}.card p{font-size:8px;color:#83d8d0;font-weight:1000;letter-spacing:.1em;margin:0}.card h2{font-size:28px;margin:4px 0}.facts{display:flex;gap:8px}.facts span{display:grid;place-items:center;min-width:70px;padding:7px;background:#142340}.facts b{font-size:16px;color:#f0ca69}.facts small{font-size:6px;color:#90a0be}.completeBtns{grid-column:2/4;display:flex;justify-content:flex-end;gap:6px}.completeBtns button{min-height:38px;border:1px solid var(--line);background:#142340;color:#a7e9e2;font-weight:1000;padding:0 16px}.completeBtns .gold{background:#c8953e;color:#211609}
+body.mode-plan .stage{display:none}body.mode-plan .body{grid-template-columns:1fr}body.mode-plan .workspace{border-left:0;grid-template-rows:auto minmax(0,1fr) 18px 30px auto}body.mode-plan .views{grid-template-columns:repeat(3,1fr)}body.mode-plan .view{padding:6px}body.mode-plan .grid3{width:min(132px,22vw)}body.mode-plan #controls{grid-template-columns:minmax(0,1fr) auto;align-items:end}body.mode-plan #controls .round-card{max-width:260px}body.mode-plan #controls .build-tip{display:none}body.mode-plan #controls .actions{min-width:150px}
+body.mode-predict .mission{min-height:31px;padding-block:4px}body.mode-predict .mission p{display:none}body.mode-predict .views{grid-template-rows:58px minmax(0,1fr)}body.mode-predict .view:not(.pred){padding:2px}body.mode-predict .view:not(.pred) .grid3{width:44px}body.mode-predict .view.pred{min-height:76px}body.mode-predict #controls{padding-top:3px}body.mode-predict #controls .hint{display:block!important;font-size:6px;line-height:1.15;margin:0!important;color:#91a0be}body.mode-predict #controls .actions{grid-template-columns:1fr}
+@media(max-height:390px){.game{grid-template-rows:38px minmax(0,1fr)}.top{grid-template-columns:34px minmax(0,1fr) auto 32px 32px}.home,.restart,.fullscreen{width:30px;height:30px}.title small{display:none}.title strong{font-size:12px}.progress b{font-size:12px}.mission{min-height:36px;padding:4px 6px}.mission h1{font-size:12px}.mission p{font-size:7px;-webkit-line-clamp:1}.feedback{min-height:24px;padding:3px 6px;font-size:6.5px}.view-legend{height:15px}.grid3{width:min(58px,88%)}.view.pred .grid3{width:92px}#controls{padding:4px 5px}.build-tip{display:none}.assist-link{min-height:21px}.actions{gap:3px}.btn{min-height:31px;font-size:6.5px}.scaleopts button{min-height:34px}.depth-legend{bottom:5px}.stage-label,.stage-note{top:5px}.complete{inset:38px 0 0}.card{padding:14px}.card h2{font-size:22px}}
+@media(orientation:portrait){.game{grid-template-rows:42px minmax(0,1fr)}.body{grid-template-columns:1fr;grid-template-rows:minmax(0,58%) minmax(0,42%)}.stage{grid-row:1}.workspace{grid-row:2;border-left:0;border-top:1px solid var(--line);grid-template-rows:auto minmax(0,1fr) 17px auto auto}.views{grid-template-columns:repeat(3,1fr)}.mission p{-webkit-line-clamp:1}.feedback{min-height:26px}.depth-legend{display:none}}
+</style>
+
+<style id="scaleAssemblyV050Shell">
+/* v0.5.0 — Website entry, smartphone ergonomics, responsive high-res shell */
+:root{--sa-accent:#55dfd3;--sa-violet:#9678e5;--sa-gold:#efc365;--sa-deep:#07101f;--sa-cream:#f7f0df}
+body{overscroll-behavior:none}
+.shell-home .game,.shell-menu .game{visibility:hidden;pointer-events:none}
+.sa-landing,.sa-levels,.sa-rotate{display:none}
+.shell-home .sa-landing{display:block}.shell-menu .sa-levels{display:grid}
+.sa-landing,.sa-levels{position:fixed;inset:0;z-index:3000;overflow:hidden;color:#f4f7ff;background:
+ radial-gradient(circle at 72% 35%,rgba(86,223,211,.12),transparent 28%),
+ radial-gradient(circle at 28% 76%,rgba(150,120,229,.16),transparent 32%),
+ linear-gradient(135deg,#07101f 0%,#0b1730 58%,#081225 100%)}
+.sa-landing:before,.sa-levels:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.44;background-image:linear-gradient(rgba(142,174,220,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(142,174,220,.045) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(90deg,transparent,#000 26%,#000)}
+.sa-home-inner{position:relative;z-index:2;width:100%;height:100%;display:grid;grid-template-columns:minmax(300px,.88fr) minmax(400px,1.12fr);align-items:center;gap:clamp(24px,5vw,84px);padding:max(30px,env(safe-area-inset-top)) clamp(38px,5.5vw,88px) max(28px,env(safe-area-inset-bottom))}
+.sa-copy{max-width:620px}.sa-kicker{display:flex;align-items:center;gap:10px;color:#71e3d9;font-size:11px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase}.sa-kicker:before{content:"";width:34px;height:2px;background:var(--sa-gold)}
+.sa-copy h1{margin:13px 0 12px;font-size:clamp(54px,6.5vw,96px);line-height:.88;letter-spacing:-.06em;font-weight:950}.sa-copy h1 span{color:#a88cf0}.sa-lead{max-width:39ch;margin:0;color:#b1bfd5;font-size:clamp(14px,1.45vw,20px);line-height:1.42;font-weight:680}
+.sa-home-actions{display:flex;align-items:center;gap:16px;margin-top:28px;flex-wrap:wrap}.sa-primary,.sa-secondary{min-height:54px;border:0;font-weight:1000;letter-spacing:.055em;cursor:pointer;touch-action:manipulation}.sa-primary{min-width:184px;padding:0 25px;background:linear-gradient(135deg,#66e5d9,#2eb8b2);color:#071d26;box-shadow:0 7px 0 #167b81,0 17px 34px rgba(30,151,150,.16);border-radius:5px}.sa-secondary{padding:0 8px;background:transparent;color:#e9d28f;border-bottom:1px solid rgba(239,195,101,.46)}.sa-primary:active{transform:translateY(2px);box-shadow:0 5px 0 #167b81}.sa-primary:disabled{opacity:.5}
+.sa-progress{margin-top:22px;display:grid;grid-template-columns:auto minmax(100px,250px);align-items:center;gap:10px;width:min(420px,88%);font-size:10px;font-weight:900;color:#8798b6}.sa-progress b{color:#d6e4ec}.sa-progress-track{height:3px;background:rgba(164,191,231,.16);overflow:hidden}.sa-progress-track i{display:block;width:0;height:100%;background:linear-gradient(90deg,#58dfd3,#9b7be4);transition:width .25s ease}.sa-home-note{margin-top:12px;color:#637493;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.sa-hero{position:relative;width:100%;height:min(73vh,620px);min-height:300px}.sa-hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;touch-action:none}.sa-hero-orientation{position:absolute;left:9%;right:9%;bottom:10%;z-index:2;display:flex;justify-content:space-between;pointer-events:none;color:#9dadc7;font-size:9px;font-weight:1000;letter-spacing:.14em;text-shadow:0 2px 8px rgba(0,0,0,.8)}
+.sa-levels{grid-template-rows:auto minmax(0,1fr);padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}.sa-levels-head{position:relative;z-index:2;min-height:52px;display:grid;grid-template-columns:54px minmax(0,1fr) 120px;align-items:center;border-bottom:1px solid rgba(154,183,229,.16);gap:8px}.sa-back{width:48px;height:48px;border:0;background:transparent;color:#dce7ee;font-size:30px}.sa-level-heading small{display:block;color:#65dfd5;font-size:8px;font-weight:1000;letter-spacing:.14em}.sa-level-heading h2{margin:1px 0 0;font-size:19px}.sa-level-heading p{margin:3px 0 0;font-size:9px;color:#7f90ad}.sa-level-resume{height:42px;border:1px solid rgba(96,221,210,.24);background:rgba(32,111,116,.22);color:#b9f2eb;font-size:9px;font-weight:1000}
+.sa-level-grid{position:relative;z-index:2;min-height:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:5px;padding-top:8px}.sa-level-card{position:relative;min-width:0;min-height:0;border:1px solid rgba(145,173,219,.14);background:linear-gradient(160deg,rgba(22,36,67,.96),rgba(11,22,45,.96));color:#c4cee0;text-align:left;padding:8px 8px 7px;overflow:hidden;cursor:pointer}.sa-level-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:#40506d}.sa-level-card.done:before{background:#55dfd3}.sa-level-card.current{border-color:rgba(239,195,101,.48);background:linear-gradient(160deg,rgba(54,46,82,.96),rgba(18,29,52,.96))}.sa-level-card.current:before{background:#efc365}.sa-level-card.locked{opacity:.42;cursor:default}.sa-level-card .n{font-size:7px;font-weight:1000;color:#7890b5;letter-spacing:.1em}.sa-level-card b{display:block;margin-top:4px;font-size:10px;line-height:1.06;color:#f1f4f8;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.sa-level-card .status{position:absolute;right:6px;bottom:5px;font-size:10px;color:#5b6c8d}.sa-level-card.done .status{color:#62e1d6}.sa-level-card.current .status{color:#efc365}
+.sa-top-reveal{display:none}.sa-rotate{position:fixed;inset:0;z-index:4000;background:linear-gradient(145deg,#07101f,#102345);color:#f4f7ff;place-items:center;text-align:center;padding:28px}.sa-rotate div{display:grid;gap:8px}.sa-rotate strong{font-size:24px}.sa-rotate span{font-size:13px;color:#9db0ca;max-width:28ch}.sa-rotate i{font-style:normal;font-size:44px;color:#efc365}
+@media(orientation:portrait){body.shell-playing .sa-rotate{display:grid}.shell-home .sa-rotate,.shell-menu .sa-rotate{display:none}.sa-home-inner{grid-template-columns:1fr;grid-template-rows:auto minmax(180px,34vh);align-content:center;gap:18px;padding:42px 24px 28px}.sa-copy h1{font-size:clamp(54px,16vw,80px)}.sa-lead{font-size:15px}.sa-hero{height:100%;min-height:190px;opacity:.72}.sa-levels{overflow:auto}.sa-levels-head{position:sticky;top:0;background:#081225;z-index:4;grid-template-columns:52px minmax(0,1fr);padding-bottom:5px}.sa-level-resume{display:none}.sa-level-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:82px;padding-bottom:20px}.sa-level-heading p{display:none}}
+
+/* Smartphone landscape: the 3D chamber gets the whole height. Navigation floats on demand. */
+@media(max-height:440px) and (orientation:landscape){
+  :root{--rail:clamp(258px,38vw,310px)}
+  .game{grid-template-rows:minmax(0,1fr)}.body{grid-row:1;height:100dvh}
+  .top{position:fixed;left:0;right:0;top:0;height:44px;z-index:1400;grid-template-columns:44px minmax(0,1fr) auto 44px 44px;transform:translateY(calc(-100% - env(safe-area-inset-top)));pointer-events:none;transition:transform .18s ease,box-shadow .18s ease;padding-top:env(safe-area-inset-top)}
+  .home,.restart,.fullscreen{width:42px;height:42px;font-size:19px}
+  .game.chrome-open .top{transform:translateY(0);pointer-events:auto;box-shadow:0 7px 20px rgba(0,0,0,.24)}
+  .sa-top-reveal{display:block;position:fixed;z-index:1390;left:50%;top:0;transform:translateX(-50%);width:72px;height:27px;border:0;background:transparent;padding:0}.sa-top-reveal:before{content:"";position:absolute;left:50%;top:2px;transform:translateX(-50%);width:34px;height:3px;background:rgba(238,242,251,.43);box-shadow:0 1px 5px rgba(0,0,0,.35)}.game.chrome-open .sa-top-reveal{pointer-events:none}.game.chrome-open .sa-top-reveal:before{opacity:0}.shell-home .sa-top-reveal,.shell-menu .sa-top-reveal{display:none}
+  .stage-label,.stage-note{font-size:7.5px}.stage-note{max-width:66%}.depth-legend{font-size:6.5px;padding:4px 7px}
+  .workspace{grid-template-rows:auto minmax(0,1fr) 18px auto auto}.mission{min-height:44px;padding:5px 7px}.mission .id{font-size:7px}.mission h1{font-size:13px}.mission p{font-size:8px;-webkit-line-clamp:2;line-height:1.16}
+  .view{grid-template-rows:20px minmax(0,1fr);padding:3px}.viewhead b{font-size:8px}.viewhead span{font-size:6.2px}.grid3{width:min(82px,90%);gap:3px;padding:3px}.single-view .grid3{width:min(116px,72%)}.three-views .grid3{width:min(76px,88%)}.vcell,.predcell{min-width:24px;min-height:24px;border-radius:4px}.view.pred{grid-template-columns:minmax(0,1fr) 114px;padding:5px 8px}.view.pred .grid3{width:106px}.views.has-pred{grid-template-rows:minmax(72px,.9fr) minmax(86px,1.1fr)}
+  .view-legend{height:18px;font-size:6.2px;gap:9px}.view-legend i{width:7px;height:7px}
+  .feedback{min-height:31px;padding:4px 7px;font-size:7.5px;line-height:1.18}
+  #controls{padding:4px 6px 6px;gap:4px}.build-tip{display:none}.round-card{min-height:23px}.round-card small{font-size:6px}.round-card strong{font-size:10px}.round-card span{font-size:6.5px}.assist-link{min-height:28px;font-size:6.5px}.assist-inline button{min-height:30px;font-size:6.5px}.layers button{min-height:36px;font-size:7px}.btn{min-height:44px;font-size:7.5px}.actions{gap:5px}.scaleopts button{min-height:44px;font-size:13px}.donebox{font-size:7.5px}.donebox .btn{min-width:104px}
+  .depth-picker{bottom:9px;padding:5px;gap:4px}.depth-picker button:not(.close-depth){min-width:62px;min-height:44px}.depth-picker strong{font-size:7px}.depth-picker small{font-size:6px}.close-depth{width:40px;height:40px}
+  body.mode-plan .workspace{grid-template-rows:auto minmax(0,1fr) 18px 31px auto}body.mode-plan .grid3{width:min(150px,23vw)}body.mode-plan .vcell{min-width:28px;min-height:28px}
+  body.mode-predict .views{grid-template-rows:68px minmax(0,1fr)}body.mode-predict .view:not(.pred) .grid3{width:54px}body.mode-predict .view.pred{min-height:92px}
+  .complete{inset:0}.card{padding:18px}.card h2{font-size:24px}.completeBtns button{min-height:44px}
+  .sa-home-inner{grid-template-columns:minmax(270px,.86fr) minmax(330px,1.14fr);gap:22px;padding:18px 34px}.sa-copy h1{font-size:clamp(46px,7vw,60px);margin:9px 0 8px}.sa-kicker{font-size:9px}.sa-lead{font-size:11.5px;line-height:1.26}.sa-home-actions{display:grid;grid-template-columns:154px auto;justify-content:start;gap:12px;margin-top:13px}.sa-primary{min-width:154px;padding-inline:16px}.sa-primary,.sa-secondary{min-height:44px}.sa-secondary{padding-inline:2px}.sa-progress{margin-top:11px;font-size:9px}.sa-home-note{margin-top:7px;font-size:7.5px}.sa-hero{height:90%;min-height:250px}.sa-levels{padding:8px 10px}.sa-levels-head{min-height:44px;grid-template-columns:48px 1fr 105px}.sa-back{width:42px;height:42px}.sa-level-heading h2{font-size:16px}.sa-level-heading p{display:none}.sa-level-resume{height:38px}.sa-level-grid{gap:4px;padding-top:6px}.sa-level-card{padding:6px}.sa-level-card b{font-size:9.5px}.sa-level-card .n{font-size:6.5px}
+}
+@media(max-width:680px) and (max-height:440px) and (orientation:landscape){:root{--rail:clamp(252px,40vw,274px)}.mission p{font-size:7.5px}.grid3{width:min(76px,90%)}.three-views .grid3{width:min(70px,88%)}.vcell,.predcell{min-width:24px;min-height:24px}.btn{font-size:7px}.round-card span{display:none}}
+
+/* Large displays: scale the UI with the chamber instead of leaving a 304px postage-stamp rail. */
+@media(min-width:1000px) and (min-height:560px) and (orientation:landscape){
+  :root{--rail:clamp(360px,28vw,520px)}.game{grid-template-rows:clamp(54px,5.6vh,72px) minmax(0,1fr)}
+  .top{grid-template-columns:clamp(48px,4vw,62px) minmax(0,1fr) auto clamp(48px,4vw,62px) clamp(48px,4vw,62px);gap:8px;padding-inline:clamp(10px,1vw,18px)}.home,.restart,.fullscreen{width:clamp(44px,4.2vh,58px);height:clamp(44px,4.2vh,58px);font-size:clamp(20px,1.5vw,27px)}.title small{font-size:clamp(9px,.68vw,12px)}.title strong{font-size:clamp(16px,1.1vw,21px)}.progress b{font-size:clamp(16px,1.1vw,21px)}.progress span{font-size:clamp(9px,.65vw,12px)}
+  .mission{min-height:clamp(62px,6.5vh,88px);padding:clamp(9px,.8vh,13px) clamp(12px,1vw,18px)}.mission .id{font-size:clamp(8px,.58vw,11px)}.mission h1{font-size:clamp(18px,1.3vw,25px)}.mission p{font-size:clamp(11px,.82vw,15px);line-height:1.28}
+  .view{grid-template-rows:clamp(27px,2.6vh,36px) minmax(0,1fr);padding:clamp(5px,.45vw,8px)}.viewhead b{font-size:clamp(10px,.72vw,13px)}.viewhead span{font-size:clamp(8px,.58vw,11px)}.grid3{width:min(clamp(112px,9vw,168px),88%);gap:clamp(3px,.25vw,5px);padding:clamp(3px,.25vw,5px)}.single-view .grid3{width:min(clamp(160px,13vw,230px),75%)}.view.pred{grid-template-columns:minmax(0,1fr) clamp(160px,12vw,220px);padding:clamp(8px,.7vw,12px)}.view.pred .grid3{width:clamp(148px,11vw,205px)}.vcell,.predcell{min-width:32px;min-height:32px;border-radius:5px}
+  .view-legend{height:clamp(25px,2.5vh,34px);font-size:clamp(8px,.58vw,11px);gap:clamp(10px,.8vw,16px)}.view-legend i{width:10px;height:10px}.feedback{min-height:clamp(44px,4.4vh,60px);padding:clamp(7px,.7vh,10px) clamp(11px,.9vw,16px);font-size:clamp(10px,.74vw,14px)}
+  #controls{padding:clamp(8px,.75vh,12px) clamp(10px,.8vw,15px);gap:clamp(5px,.45vh,8px)}.round-card small{font-size:clamp(8px,.58vw,11px)}.round-card strong{font-size:clamp(13px,.9vw,17px)}.round-card span{font-size:clamp(9px,.66vw,12px)}.build-tip{font-size:clamp(8px,.58vw,11px)}.assist-link{min-height:clamp(34px,3.4vh,46px);font-size:clamp(8px,.58vw,11px)}.assist-inline button,.layers button{min-height:clamp(40px,4vh,54px);font-size:clamp(9px,.64vw,12px)}.btn{min-height:clamp(48px,4.8vh,64px);font-size:clamp(10px,.72vw,14px)}.scaleq small,.scaleq strong{font-size:clamp(10px,.7vw,13px)}.scaleopts button{min-height:clamp(50px,5vh,66px);font-size:clamp(16px,1.1vw,22px)}.donebox{font-size:clamp(10px,.7vw,13px)}
+  .stage-label,.stage-note{top:10px;font-size:clamp(9px,.62vw,12px)}.stage-label{left:12px}.stage-note{right:12px}.depth-legend{left:12px;bottom:10px;font-size:clamp(8px,.55vw,10px);padding:5px 8px}.readout{right:14px;bottom:13px}.readout small{font-size:clamp(9px,.62vw,12px)}.readout strong{font-size:clamp(38px,2.6vw,52px)}.readout span{font-size:clamp(9px,.62vw,12px);max-width:240px}
+  .depth-picker button:not(.close-depth){min-width:clamp(76px,5.6vw,104px);min-height:clamp(46px,4.5vh,60px)}.depth-picker strong{font-size:clamp(9px,.62vw,12px)}.depth-picker small{font-size:clamp(8px,.55vw,10px)}
+  .sa-home-inner{grid-template-columns:minmax(400px,.88fr) minmax(560px,1.12fr);gap:clamp(46px,5vw,100px);padding:clamp(50px,5vw,92px)}.sa-copy h1{font-size:clamp(76px,6.2vw,120px)}.sa-lead{font-size:clamp(18px,1.35vw,26px)}.sa-kicker{font-size:clamp(12px,.82vw,16px)}.sa-primary,.sa-secondary{min-height:clamp(60px,5.5vh,78px);font-size:clamp(13px,.9vw,17px)}.sa-primary{min-width:clamp(200px,14vw,270px)}.sa-progress{font-size:clamp(11px,.75vw,14px)}.sa-hero{height:min(77vh,780px)}
+  .sa-levels{padding:clamp(16px,1.2vw,24px)}.sa-levels-head{min-height:clamp(64px,6vh,82px);grid-template-columns:clamp(58px,4.5vw,76px) 1fr clamp(130px,10vw,180px)}.sa-back{width:clamp(50px,4.3vh,64px);height:clamp(50px,4.3vh,64px)}.sa-level-heading h2{font-size:clamp(22px,1.6vw,31px)}.sa-level-heading p{font-size:clamp(10px,.72vw,14px)}.sa-level-grid{gap:clamp(6px,.5vw,10px);padding-top:clamp(10px,.8vh,14px)}.sa-level-card{padding:clamp(10px,.8vw,15px)}.sa-level-card .n{font-size:clamp(8px,.56vw,11px)}.sa-level-card b{font-size:clamp(12px,.86vw,16px)}.sa-level-card .status{font-size:clamp(11px,.78vw,15px)}
+}
+@media(prefers-reduced-motion:reduce){.top,.sa-primary,.sa-progress-track i{transition:none!important}.sa-arrow{animation:none!important}}
+</style>
+
+
+<style id="kubusbouwV060UX">
+/* v0.6 — quieter smartphone UI, explicit multi-part exercises */
+.sa-cube-top{fill:#c4b0f6;opacity:1}.sa-cube-front{fill:#8d6adb;opacity:1}.sa-cube-side{fill:#6547ae;opacity:1}
+.stage-note:empty,.feedback:empty{display:none}
+.stage-orientation{position:absolute;z-index:4;left:12px;right:12px;bottom:6px;display:flex;justify-content:space-between;pointer-events:none;color:rgba(214,225,244,.56);font-size:7px;font-weight:1000;letter-spacing:.12em;text-shadow:0 1px 7px rgba(0,0,0,.8)}
+.build-tutorial{position:absolute;z-index:18;left:50%;bottom:24px;transform:translate(-50%,10px);width:min(310px,72%);display:none;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:center;padding:9px 10px;background:rgba(9,18,39,.95);border:1px solid rgba(102,229,217,.32);box-shadow:0 12px 30px rgba(0,0,0,.28)}
+.build-tutorial.show{display:grid;transform:translate(-50%,0)}.build-tutorial strong{grid-column:1;font-size:11px;color:#f5d47e}.build-tutorial span{grid-column:1;font-size:10px;line-height:1.25;color:#d7e1f0}.build-tutorial button{grid-column:2;grid-row:1/3;min-width:50px;min-height:44px;border:0;background:#1b8c8d;color:white;font-weight:1000;font-size:9px}
+.mission{min-height:58px;padding:7px 9px 8px}.mission .id{font-size:7px;letter-spacing:.1em}.mission h1{margin:3px 0 0;font-size:14px;line-height:1.18;color:#f6f8ff}.mission p{display:none!important}
+.viewhead b{font-size:8px}.viewhead span{display:none}
+.feedback{min-height:0;padding:6px 9px;font-size:8.5px;line-height:1.25}
+.round-card{grid-template-columns:78px minmax(0,1fr);gap:2px 8px;padding:2px 1px 4px}.round-card small{font-size:7px;grid-row:1;color:#73e1d8}.round-card strong{font-size:11px;grid-row:2}.round-card span{font-size:8px;line-height:1.18;grid-row:1/3;grid-column:2;color:#bdc9dc}.phase-card{padding:6px 7px;background:rgba(150,120,229,.09);border-left:3px solid #efc365}.phase-card small{font-size:8px;color:#efc365}.phase-card span{font-size:9px;color:#eef2fa}
+#controls{padding-top:6px}.actions{gap:6px}.btn{font-size:8px}
+body.mode-plan .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}body.mode-predict .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}
+@media(max-height:440px) and (orientation:landscape){
+  .mission{min-height:60px;padding:7px 9px}.mission .id{font-size:7px}.mission h1{font-size:14px;line-height:1.18}
+  .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}
+  .feedback{min-height:0;padding:5px 8px;font-size:8px}
+  .round-card small{font-size:7px}.round-card strong{font-size:11px}.round-card span{font-size:8.5px}.phase-card span{font-size:9px}
+  .stage-orientation{bottom:6px;font-size:7px}.build-tutorial{bottom:22px;width:min(330px,76%)}.build-tutorial strong{font-size:11px}.build-tutorial span{font-size:10px}
+  body.mode-plan .workspace,body.mode-predict .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}
+}
+@media(max-width:680px) and (max-height:440px) and (orientation:landscape){
+  .mission{min-height:62px}.mission h1{font-size:13.5px}.round-card{grid-template-columns:70px minmax(0,1fr)}.phase-card span{font-size:8.5px}
+}
+@media(min-width:1000px) and (min-height:560px) and (orientation:landscape){
+  .mission{min-height:clamp(72px,7.5vh,98px)}.mission .id{font-size:clamp(9px,.65vw,12px)}.mission h1{font-size:clamp(18px,1.25vw,24px)}
+  .round-card small{font-size:clamp(9px,.62vw,12px)}.round-card strong{font-size:clamp(14px,.95vw,18px)}.round-card span{font-size:clamp(10px,.72vw,14px)}
+  .stage-orientation{font-size:clamp(9px,.62vw,12px)}
+}
+</style>
+
+<style id="scaleAssemblyV062LevelMenu">
+/* v0.6.2 — refined level route: fewer cards, clearer progression, A20 landscape first */
+.sa-levels{grid-template-rows:auto minmax(0,1fr)}
+.sa-levels-head{border-bottom:1px solid rgba(154,183,229,.13)}
+.sa-level-heading small{color:#6fe2d8}.sa-level-heading h2{letter-spacing:-.02em}.sa-level-heading p{color:#7f90ad}
+.sa-level-resume{border:0;border-left:1px solid rgba(101,223,213,.22);background:transparent;color:#bdf4ef;letter-spacing:.08em}
+.sa-level-resume:active{background:rgba(85,223,211,.08)}
+.sa-level-layout{position:relative;z-index:2;min-height:0;display:grid;grid-template-columns:minmax(0,1.65fr) minmax(218px,.72fr);padding-top:8px}
+.sa-level-grid{min-height:0;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(4,minmax(0,1fr))!important;gap:0!important;padding:0 14px 0 0!important;border-right:1px solid rgba(154,183,229,.13)}
+.sa-level-row{min-width:0;min-height:0;display:grid;grid-template-columns:104px minmax(0,1fr);align-items:center;border-bottom:1px solid rgba(154,183,229,.10)}
+.sa-level-row:last-child{border-bottom:0}
+.sa-level-group{min-width:0;padding:0 12px 0 4px}.sa-level-group small{display:block;font-size:7px;font-weight:1000;letter-spacing:.12em;color:#5fdcd3}.sa-level-group b{display:block;margin-top:3px;font-size:10px;line-height:1.05;color:#e7edf7}.sa-level-group span{display:block;margin-top:3px;font-size:6.5px;line-height:1.1;color:#71829f}
+.sa-level-track{position:relative;min-width:0;display:flex;align-items:center;gap:7px}.sa-level-track:before{content:"";position:absolute;left:19px;right:19px;top:50%;height:1px;background:linear-gradient(90deg,rgba(85,223,211,.26),rgba(150,120,229,.20));transform:translateY(-50%);pointer-events:none}
+.sa-level-node{position:relative;z-index:1;flex:0 0 42px;width:42px;height:42px;border:1px solid rgba(145,173,219,.18);border-radius:7px;background:#101d36;color:#93a3bf;display:grid;place-items:center;padding:0;font-size:11px;font-weight:1000;cursor:pointer;box-shadow:0 0 0 3px #0a152b}
+.sa-level-node span{line-height:1}.sa-level-node.done{background:#102d34;border-color:rgba(85,223,211,.42);color:#bff8f1}.sa-level-node.done:after{content:"✓";position:absolute;right:-3px;top:-4px;width:14px;height:14px;display:grid;place-items:center;border-radius:50%;background:#56ded2;color:#082129;font-size:8px;box-shadow:0 0 0 2px #0a152b}.sa-level-node.current:before{content:"";position:absolute;left:50%;bottom:-7px;width:5px;height:5px;border-radius:50%;background:#efc365;transform:translateX(-50%);box-shadow:0 0 8px rgba(239,195,101,.72)}
+.sa-level-node.selected{border-color:#efc365;color:#fff;background:linear-gradient(145deg,#4c3d74,#18334d);box-shadow:0 0 0 2px rgba(239,195,101,.17),0 0 0 4px #0a152b}.sa-level-node:active{transform:translateY(1px)}
+.sa-level-detail{min-width:0;min-height:0;padding:7px 4px 8px 18px;display:flex;flex-direction:column;justify-content:center}.sa-detail-kicker{font-size:7px;font-weight:1000;letter-spacing:.13em;color:#67ded4}.sa-level-detail h3{margin:5px 0 5px;font-size:20px;line-height:1.02;letter-spacing:-.035em;color:#f4f7ff}.sa-detail-copy{margin:0;max-width:30ch;font-size:9px;line-height:1.3;color:#9aabc4}.sa-detail-meta{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:7px;font-weight:900;color:#7485a3}.sa-detail-state{display:inline-flex;align-items:center;gap:4px}.sa-detail-state i{width:6px;height:6px;border-radius:50%;background:#556784}.sa-detail-state.done i{background:#55dfd3}.sa-detail-state.current i{background:#efc365}.sa-level-play{margin-top:12px;width:min(180px,100%);min-height:42px;border:0;border-radius:5px;background:linear-gradient(135deg,#65e4d8,#2bb8b1);color:#07202a;font-size:9px;font-weight:1000;letter-spacing:.08em;box-shadow:0 5px 0 #167b81}.sa-level-play:active{transform:translateY(2px);box-shadow:0 3px 0 #167b81}.sa-level-play small{display:block;margin-top:1px;font-size:6px;letter-spacing:.02em;color:#17464d}
+@media(max-height:440px) and (orientation:landscape){
+  .sa-levels{padding:8px 10px}.sa-levels-head{min-height:44px}.sa-level-layout{padding-top:5px;grid-template-columns:minmax(0,1.72fr) minmax(210px,.68fr)}.sa-level-grid{padding-right:10px!important}.sa-level-row{grid-template-columns:96px minmax(0,1fr)}.sa-level-group{padding-right:8px}.sa-level-group small{font-size:6.5px}.sa-level-group b{font-size:9px}.sa-level-group span{font-size:6px}.sa-level-track{gap:6px}.sa-level-node{flex-basis:40px;width:40px;height:40px;font-size:10px;border-radius:6px}.sa-level-detail{padding:4px 2px 5px 14px}.sa-level-detail h3{font-size:17px;margin:4px 0}.sa-detail-copy{font-size:8px;line-height:1.24}.sa-detail-meta{margin-top:7px}.sa-level-play{margin-top:9px;min-height:40px}
+}
+@media(max-width:680px) and (max-height:440px) and (orientation:landscape){
+  .sa-level-layout{grid-template-columns:minmax(0,1fr) 198px}.sa-level-row{grid-template-columns:84px minmax(0,1fr)}.sa-level-group span{display:none}.sa-level-track{gap:5px}.sa-level-node{flex-basis:37px;width:37px;height:37px}.sa-level-detail{padding-left:10px}.sa-level-detail h3{font-size:15px}.sa-detail-copy{font-size:7.5px}.sa-level-play{min-height:38px}
+}
+@media(orientation:portrait){
+  .sa-levels{overflow:auto}.sa-level-layout{grid-template-columns:1fr;grid-template-rows:auto auto;overflow:visible}.sa-level-grid{grid-template-rows:repeat(4,68px)!important;border-right:0;border-bottom:1px solid rgba(154,183,229,.13);padding:6px 0 10px!important}.sa-level-row{grid-template-columns:82px minmax(0,1fr)}.sa-level-track{gap:6px;overflow-x:auto;padding:3px 6px 3px 0;scrollbar-width:none}.sa-level-track::-webkit-scrollbar{display:none}.sa-level-node{flex-basis:42px}.sa-level-detail{min-height:150px;padding:14px 4px 20px}.sa-level-detail h3{font-size:22px}.sa-level-play{width:100%;max-width:260px}
+}
+@media(min-width:1000px) and (min-height:560px) and (orientation:landscape){
+  .sa-level-layout{grid-template-columns:minmax(0,1.7fr) minmax(300px,.72fr);padding-top:12px}.sa-level-grid{padding-right:22px!important}.sa-level-row{grid-template-columns:clamp(132px,10vw,180px) minmax(0,1fr)}.sa-level-group small{font-size:clamp(8px,.58vw,11px)}.sa-level-group b{font-size:clamp(12px,.85vw,16px)}.sa-level-group span{font-size:clamp(8px,.56vw,10px)}.sa-level-track{gap:clamp(9px,.7vw,13px)}.sa-level-node{flex-basis:clamp(48px,3.8vw,62px);width:clamp(48px,3.8vw,62px);height:clamp(48px,3.8vw,62px);font-size:clamp(12px,.9vw,16px);border-radius:8px}.sa-level-detail{padding-left:clamp(22px,2vw,36px)}.sa-level-detail h3{font-size:clamp(25px,2vw,36px)}.sa-detail-copy{font-size:clamp(11px,.78vw,14px)}.sa-detail-meta{font-size:clamp(8px,.58vw,11px)}.sa-level-play{min-height:clamp(48px,4.6vh,62px);font-size:clamp(10px,.72vw,13px);width:min(230px,100%)}
+}
+</style>
+</head>
+<body class="shell-home">
+<section class="sa-landing" id="saLanding" aria-label="Kubusbouw startscherm">
+  <div class="sa-home-inner">
+    <div class="sa-copy">
+      <div class="sa-kicker">AXIOMA · RUIMTELIJK INZICHT</div>
+      <h1>Kubus<br><span>bouw</span></h1>
+      <p class="sa-lead">Bouw 3D-vormen uit kubussen. Lees voor-, boven- en zijaanzichten en ontdek wat een 2D-tekening wel — en niet — over een ruimtelijk model vertelt.</p>
+      <div class="sa-home-actions">
+        <button class="sa-primary" id="saStart" disabled>START</button>
+        <button class="sa-secondary" id="saChoose">KIES LEVEL</button>
+      </div>
+      <div class="sa-progress"><span id="saProgressText">0 van 22 voltooid</span><span class="sa-progress-track"><i id="saProgressFill"></i></span></div>
+      <div class="sa-home-note">Liggend spelen · voortgang wordt op dit toestel bewaard</div>
+    </div>
+    <div class="sa-hero" aria-hidden="true">
+      <canvas id="saHeroCanvas" aria-hidden="true"></canvas>
+      <div class="sa-hero-orientation"><span>VOOR</span><span>ZIJ</span></div>
+    </div>
+  </div>
+</section>
+<section class="sa-levels" id="saLevels" aria-label="Kies een Kubusbouw-oefening">
+  <div class="sa-levels-head">
+    <button class="sa-back" id="saLevelsBack" aria-label="Terug">‹</button>
+    <div class="sa-level-heading"><small>22 OEFENINGEN · 4 REEKSEN</small><h2>Bouwroute</h2><p>Kies een oefening of ga verder waar je gebleven bent.</p></div>
+    <button class="sa-level-resume" id="saResume">VERDER</button>
+  </div>
+  <div class="sa-level-layout">
+    <div class="sa-level-grid" id="saLevelGrid"></div>
+    <aside class="sa-level-detail" id="saLevelDetail" aria-live="polite"></aside>
+  </div>
+</section>
+<section class="sa-rotate" aria-label="Draai je telefoon"><div><i>↻</i><strong>Draai je telefoon</strong><span>Kubusbouw gebruikt de breedte van je scherm om het 3D-model en de aanzichten tegelijk leesbaar te houden.</span></div></section>
+
+<main class="game">
+<header class="top"><button class="home" id="home" aria-label="Startscherm">⌂</button><div class="title"><small>KUBUSBOUW</small><strong id="title"></strong></div><div class="progress"><b id="levelNo"></b><span>/22</span></div><button class="fullscreen" id="fullscreen" aria-label="Volledig scherm">⛶</button><button class="restart" id="restart" aria-label="Herstart level">↻</button></header>
+<section class="body">
+<section class="stage"><canvas id="canvas" aria-label="3D bouwkamer"></canvas><div class="stage-label" id="stageLabel"></div><div class="stage-note" id="stageNote"></div><div class="stage-orientation" aria-hidden="true"><span>VOOR</span><span>ZIJ</span></div><div class="build-tutorial" id="buildTutorial" role="dialog" aria-label="Bouwen"><strong>Zo bouw je</strong><span>Tik of sleep om een kubus te plaatsen. Houd een kubus even vast om de bovenste weg te nemen.</span><button type="button" id="closeBuildTutorial">OK</button></div><div class="depth-picker" id="depthPicker" aria-live="polite"></div><div class="readout" id="readout"><small></small><strong></strong><span></span></div></section>
+<aside class="workspace"><section class="mission"><div class="id" id="levelId"></div><h1 id="missionTitle"></h1><p id="instruction"></p></section><section class="views" id="views"></section><div class="feedback" id="feedback"></div><div id="controls"></div><div class="hint" id="hint"></div></aside>
+</section>
+<section class="complete" id="complete"><div class="card"><div class="check">✓</div><div><p>AXIOMA · KUBUSBOUW</p><h2>Ruimtelijk denken voltooid.</h2></div><div class="facts"><span><b>22</b><small>oefeningen</small></span><span><b>3D</b><small>modellen</small></span><span><b>3</b><small>aanzichten</small></span></div><div class="completeBtns"><button id="again">Speel opnieuw</button><button class="gold" id="backHome">Terug naar start</button></div></div></section>
+</main>
+<script id="scaleAssemblyV050ShellJS">
+(() => {
+  'use strict';
+  const LEVEL_META = [{"i":0,"id":"SA01","title":"Eén kubus","task":"build_unique"},{"i":1,"id":"SA02","title":"Eerste structuur","task":"build_unique"},{"i":2,"id":"SA03","title":"Diepte telt","task":"build_unique"},{"i":3,"id":"SA04","title":"Verbouw 5 kubussen","task":"build_variant"},{"i":4,"id":"SA05","title":"Verbouw 6 kubussen","task":"build_variant"},{"i":5,"id":"SA06","title":"Verbouw 7 kubussen","task":"build_variant"},{"i":6,"id":"SA07","title":"Wat ziet ZIJ?","task":"predict_hidden_view"},{"i":7,"id":"SA08","title":"Wat ziet VOOR?","task":"predict_hidden_view"},{"i":8,"id":"SA09","title":"Lees het model: VOOR","task":"draw_view"},{"i":9,"id":"SA10","title":"Lees het model: BOVEN","task":"draw_view"},{"i":10,"id":"SA11","title":"Lees het model: ZIJ","task":"draw_view"},{"i":11,"id":"SA12","title":"Eén kubus ontbreekt","task":"repair"},{"i":12,"id":"SA13","title":"Eén kubus te veel","task":"repair"},{"i":13,"id":"SA14","title":"VOOR blijft hetzelfde","task":"preserve_change"},{"i":14,"id":"SA15","title":"BOVEN blijft hetzelfde","task":"preserve_change"},{"i":15,"id":"SA16","title":"ZIJ blijft hetzelfde","task":"preserve_change"},{"i":16,"id":"SA17","title":"Bouw zuiniger","task":"minimal"},{"i":17,"id":"SA18","title":"Vul verborgen ruimte","task":"maximal"},{"i":18,"id":"SA19","title":"Herstel de bouwtekening","task":"plan_repair"},{"i":19,"id":"SA20","title":"Bewijs het verschil","task":"build_variant_predict"},{"i":20,"id":"SA21","title":"Drie aanzichten","task":"build_unique"},{"i":21,"id":"SA22","title":"Volledige reconstructie","task":"build_unique"}];
+  const LEVEL_GROUPS = [
+    {label:'REEKS 1',title:'Bouwen',sub:'Van kubus naar structuur',start:0,end:5},
+    {label:'REEKS 2',title:'Aanzichten',sub:'Kijken, lezen, voorspellen',start:6,end:10},
+    {label:'REEKS 3',title:'Herstellen',sub:'Verander zonder de eis te breken',start:11,end:15},
+    {label:'REEKS 4',title:'Reconstructie',sub:'Ambiguïteit en volledige bouw',start:16,end:21},
+  ];
+  const TASK_COPY = {
+    build_unique:'Bouw een 3D-model dat exact bij de gegeven aanzichten past.',
+    build_variant:'Maak een andere geldige bouw met dezelfde voorwaarden.',
+    predict_hidden_view:'Voorspel het ontbrekende aanzicht vóór je controleert.',
+    draw_view:'Lees het 3D-model en teken het gevraagde aanzicht.',
+    repair:'Herstel het model met één gerichte wijziging.',
+    preserve_change:'Verander de bouw terwijl het opgegeven aanzicht gelijk blijft.',
+    minimal:'Vind een geldige bouw met zo weinig mogelijk kubussen.',
+    maximal:'Vul verborgen ruimte zonder de zichtbare aanzichten te veranderen.',
+    plan_repair:'Herstel eerst de bouwtekening en gebruik die daarna om te bouwen.',
+    build_variant_predict:'Bouw een alternatief en bewijs het verschil met een aanzicht.',
+  };
+  const PROGRESS_KEY = 'axioma.scaleAssembly.v0.5.progress';
+  const $ = (s) => document.querySelector(s);
+  const game = $('.game');
+  const start = $('#saStart');
+  const choose = $('#saChoose');
+  const grid = $('#saLevelGrid');
+  const detail = $('#saLevelDetail');
+  const resume = $('#saResume');
+  const reveal = document.createElement('button');
+  reveal.className = 'sa-top-reveal'; reveal.type = 'button'; reveal.setAttribute('aria-label','Toon navigatie');
+  game.appendChild(reveal);
+  let hideTimer = 0;
+  let progress = readProgress();
+  let selectedLevel = progress.lastLevel;
+  let ready = false;
+
+  function readProgress(){
+    try{
+      const raw=JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}');
+      return {completed:Array.isArray(raw.completed)?raw.completed:[],lastLevel:Number.isInteger(raw.lastLevel)?raw.lastLevel:0,total:LEVEL_META.length};
+    }catch{return {completed:[],lastLevel:0,total:LEVEL_META.length};}
+  }
+  function normalize(p){
+    const completed=[...new Set((p?.completed||[]).filter(i=>Number.isInteger(i)&&i>=0&&i<LEVEL_META.length))].sort((a,b)=>a-b);
+    return {completed,lastLevel:Math.max(0,Math.min(LEVEL_META.length-1,Number(p?.lastLevel)||0)),total:LEVEL_META.length};
+  }
+  function renderProgress(){
+    progress=normalize(window.ScaleAssemblyAPI?.getProgress?.()||readProgress());
+    const n=progress.completed.length;
+    $('#saProgressText').textContent=`${n} van ${LEVEL_META.length} voltooid`;
+    $('#saProgressFill').style.width=`${n/LEVEL_META.length*100}%`;
+    start.textContent=n?'VERDER':'START';
+    resume.textContent=n?'VERDER':'START';
+    start.disabled=!ready;
+    renderLevels();
+  }
+  function renderLevels(){
+    if(!grid)return;
+    const done=new Set(progress.completed);
+    selectedLevel=Math.max(0,Math.min(LEVEL_META.length-1,Number.isInteger(selectedLevel)?selectedLevel:progress.lastLevel));
+    grid.innerHTML=LEVEL_GROUPS.map(group=>{
+      const nodes=LEVEL_META.slice(group.start,group.end+1).map((l,offset)=>{
+        const i=group.start+offset;
+        const isDone=done.has(i), current=i===progress.lastLevel, selected=i===selectedLevel;
+        const cls=['sa-level-node',isDone?'done':'',current?'current':'',selected?'selected':''].filter(Boolean).join(' ');
+        return `<button class="${cls}" data-level="${i}" aria-label="Level ${i+1}: ${l.title}" aria-pressed="${selected?'true':'false'}"><span>${String(i+1).padStart(2,'0')}</span></button>`;
+      }).join('');
+      return `<section class="sa-level-row"><div class="sa-level-group"><small>${group.label}</small><b>${group.title}</b><span>${group.sub}</span></div><div class="sa-level-track">${nodes}</div></section>`;
+    }).join('');
+    grid.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{selectedLevel=Number(b.dataset.level);renderLevels();});
+
+    const level=LEVEL_META[selectedLevel];
+    const group=LEVEL_GROUPS.find(g=>selectedLevel>=g.start&&selectedLevel<=g.end);
+    const isDone=done.has(selectedLevel), isCurrent=selectedLevel===progress.lastLevel;
+    const stateClass=isDone?'done':isCurrent?'current':'';
+    const stateText=isDone?'Voltooid':isCurrent?'Hier ben je':'Nog niet gespeeld';
+    if(detail){
+      detail.innerHTML=`<div class="sa-detail-kicker">${group?.title||'KUBUSBOUW'} · LEVEL ${String(selectedLevel+1).padStart(2,'0')}</div><h3>${level.title}</h3><p class="sa-detail-copy">${TASK_COPY[level.task]||'Ruimtelijke oefening met kubussen en aanzichten.'}</p><div class="sa-detail-meta"><span>OEFENING ${selectedLevel+1} / ${LEVEL_META.length}</span><span>·</span><span class="sa-detail-state ${stateClass}"><i></i>${stateText}</span></div><button class="sa-level-play" id="saLevelPlay">SPEEL LEVEL<small>${level.id}</small></button>`;
+      detail.querySelector('#saLevelPlay').onclick=()=>enterGame(selectedLevel);
+    }
+  }
+  async function immersive(){
+    const mobile=matchMedia('(pointer:coarse)').matches || innerHeight<500;
+    if(!mobile)return;
+    try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen?.();}catch{}
+    try{await screen.orientation?.lock?.('landscape');}catch{}
+  }
+  function setShell(mode){
+    document.body.classList.toggle('shell-home',mode==='home');
+    document.body.classList.toggle('shell-menu',mode==='menu');
+    document.body.classList.toggle('shell-playing',mode==='play');
+    closeChrome();
+  }
+  function showHome(){progress=normalize(window.ScaleAssemblyAPI?.getProgress?.()||readProgress());renderProgress();setShell('home');}
+  function showLevels(){progress=normalize(window.ScaleAssemblyAPI?.getProgress?.()||readProgress());selectedLevel=progress.lastLevel;renderProgress();setShell('menu');}
+  async function enterGame(index=progress.lastLevel){
+    if(!ready || !window.ScaleAssemblyAPI)return;
+    window.ScaleAssemblyAPI.loadLevel(index);
+    progress=normalize(window.ScaleAssemblyAPI.getProgress());
+    renderProgress();
+    setShell('play');
+    await immersive();
+    setTimeout(()=>window.dispatchEvent(new Event('resize')),60);
+  }
+  function openChrome(auto=true){
+    if(!document.body.classList.contains('shell-playing'))return;
+    game.classList.add('chrome-open');
+    clearTimeout(hideTimer);
+    if(auto)hideTimer=setTimeout(closeChrome,2400);
+  }
+  function closeChrome(){game.classList.remove('chrome-open');clearTimeout(hideTimer);}
+  reveal.onclick=()=>openChrome(true);
+  let edgeStart=null;
+  addEventListener('pointerdown',e=>{if(document.body.classList.contains('shell-playing')&&e.clientY<=22)edgeStart={y:e.clientY,id:e.pointerId};},{passive:true});
+  addEventListener('pointerup',e=>{if(!edgeStart||e.pointerId!==edgeStart.id)return;const dy=e.clientY-edgeStart.y;edgeStart=null;if(dy>24)openChrome(true);},{passive:true});
+  $('.top')?.addEventListener('pointerup',e=>{if(e.clientY<12)closeChrome();},{passive:true});
+  start.onclick=()=>enterGame(progress.lastLevel);
+  choose.onclick=showLevels;
+  $('#saLevelsBack').onclick=showHome;
+  resume.onclick=()=>enterGame(progress.lastLevel);
+  addEventListener('scaleassembly:home',showHome);
+  addEventListener('scaleassembly:progress',e=>{progress=normalize(e.detail);renderProgress();});
+  addEventListener('scaleassembly:ready',e=>{ready=true;progress=normalize(e.detail);renderProgress();});
+  document.addEventListener('fullscreenchange',()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),50));
+
+  const params=new URLSearchParams(location.search);
+  const q=Number(params.get('level'));
+  if(Number.isInteger(q)&&q>=1&&q<=LEVEL_META.length){
+    const wait=()=>window.ScaleAssemblyAPI?enterGame(q-1):setTimeout(wait,20); wait();
+  } else {
+    setShell('home'); renderProgress();
+  }
+})();
+</script>
+
+
+<script id="scaleAssemblyBundledCore">(() => {
+  window.AxiomaBridge = window.AxiomaBridge || {
+    configure() {},
+    complete() {},
+    home() {
+      window.dispatchEvent(new CustomEvent('scaleassembly:home'));
+    },
+  };
+})();
+
+;
+const DEFAULT_SIZE = 3;
+
+function indexOf(x, y, z, size = DEFAULT_SIZE) {
+  return x + size * (y + size * z);
+}
+
+function emptyOccupancy(size = DEFAULT_SIZE) {
+  return Array(size ** 3).fill(false);
+}
+
+function occupancyFromCoords(coords, size = DEFAULT_SIZE) {
+  const occupancy = emptyOccupancy(size);
+  for (const [x, y, z] of coords) {
+    if ([x, y, z].some((value) => !Number.isInteger(value) || value < 0 || value >= size)) {
+      throw new Error(`Illegal voxel coordinate: ${x},${y},${z}`);
+    }
+    occupancy[indexOf(x, y, z, size)] = true;
+  }
+  return occupancy;
+}
+
+function coordsFromOccupancy(occupancy, size = DEFAULT_SIZE) {
+  const coords = [];
+  for (let z = 0; z < size; z += 1) {
+    for (let y = 0; y < size; y += 1) {
+      for (let x = 0; x < size; x += 1) {
+        if (occupancy[indexOf(x, y, z, size)]) coords.push([x, y, z]);
+      }
+    }
+  }
+  return coords;
+}
+
+function cloneOccupancy(occupancy) {
+  return [...occupancy];
+}
+
+/**
+ * Converts logical depth to the Three.js world-Z used by ScaleChamber.
+ * Logical z=0 is VOOR; the camera sits on +world-Z, so the render depth is mirrored.
+ */
+function worldDepthFromModelZ(z, size = DEFAULT_SIZE, unit = 1) {
+  return -((z - (size - 1) / 2) * unit);
+}
+
+function countVoxels(occupancy) {
+  return occupancy.reduce((total, value) => total + (value ? 1 : 0), 0);
+}
+
+function blankView(size) {
+  return Array.from({ length: size }, () => Array(size).fill(false));
+}
+
+/**
+ * Canonical displayed projection orientation:
+ * FRONT: rows top-to-bottom are y=size-1..0; columns are x=0..size-1.
+ * TOP: rows top-to-bottom are z=size-1 (back)..0 (front); columns are x.
+ * SIDE (right side): rows top-to-bottom are y=size-1..0; columns are z=0 (front)..size-1 (back).
+ *
+ * Internal z runs front -> back. ScaleChamber mirrors z only for 3D rendering because
+ * the camera sits on +world-Z; this keeps the mathematical projections and the visible
+ * chamber in the same human-facing orientation.
+ */
+function projectOccupancy(occupancy, size = DEFAULT_SIZE) {
+  if (!Array.isArray(occupancy) || occupancy.length !== size ** 3) {
+    throw new Error(`Occupancy must contain exactly ${size ** 3} cells.`);
+  }
+
+  const front = blankView(size);
+  const top = blankView(size);
+  const side = blankView(size);
+
+  for (let z = 0; z < size; z += 1) {
+    for (let y = 0; y < size; y += 1) {
+      for (let x = 0; x < size; x += 1) {
+        if (!occupancy[indexOf(x, y, z, size)]) continue;
+        front[size - 1 - y][x] = true;
+        top[size - 1 - z][x] = true;
+        side[size - 1 - y][z] = true;
+      }
+    }
+  }
+
+  return { front, top, side };
+}
+
+function viewsEqual(left, right) {
+  if (!left || !right || left.length !== right.length) return false;
+  return left.every((row, rowIndex) =>
+    row.length === right[rowIndex].length &&
+    row.every((value, columnIndex) => value === right[rowIndex][columnIndex]),
+  );
+}
+
+function modelMatchesViews(occupancy, targetViews, givenViews, size = DEFAULT_SIZE) {
+  if (!isSupported(occupancy, size)) return false;
+  const projected = projectOccupancy(occupancy, size);
+  return givenViews.every((view) => viewsEqual(projected[view], targetViews[view]));
+}
+
+function isSupported(occupancy, size = DEFAULT_SIZE) {
+  for (let z = 0; z < size; z += 1) {
+    for (let y = 1; y < size; y += 1) {
+      for (let x = 0; x < size; x += 1) {
+        if (
+          occupancy[indexOf(x, y, z, size)] &&
+          !occupancy[indexOf(x, y - 1, z, size)]
+        ) return false;
+      }
+    }
+  }
+  return true;
+}
+
+function projectionRay(view, row, column, size = DEFAULT_SIZE) {
+  const result = [];
+  if (view === "front") {
+    const x = column;
+    const y = size - 1 - row;
+    for (let z = 0; z < size; z += 1) result.push([x, y, z]);
+  } else if (view === "top") {
+    const x = column;
+    const z = size - 1 - row;
+    for (let y = 0; y < size; y += 1) result.push([x, y, z]);
+  } else if (view === "side") {
+    const z = column;
+    const y = size - 1 - row;
+    for (let x = 0; x < size; x += 1) result.push([x, y, z]);
+  } else {
+    throw new Error(`Unknown view: ${view}`);
+  }
+  return result;
+}
+
+function silhouetteHeight(view, column, size) {
+  let height = 0;
+  let foundGap = false;
+  for (let y = 0; y < size; y += 1) {
+    const filled = view[size - 1 - y][column];
+    if (filled && foundGap) return -1;
+    if (filled) height += 1;
+    else foundGap = true;
+  }
+  return height;
+}
+
+function topValue(top, x, z, size) {
+  return top[size - 1 - z][x];
+}
+
+function occupancyFromHeights(heights, size) {
+  const occupancy = emptyOccupancy(size);
+  for (let z = 0; z < size; z += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const height = heights[x + size * z];
+      for (let y = 0; y < height; y += 1) {
+        occupancy[indexOf(x, y, z, size)] = true;
+      }
+    }
+  }
+  return occupancy;
+}
+
+/**
+ * Searches supported models as column-height assignments, at most (size+1)^(size²),
+ * instead of brute-forcing 2^(size³) independent voxels.
+ */
+function solveViews({
+  targetViews,
+  givenViews,
+  size = DEFAULT_SIZE,
+  limit = 2,
+}) {
+  const usesFront = givenViews.includes("front");
+  const usesTop = givenViews.includes("top");
+  const usesSide = givenViews.includes("side");
+  const frontHeights = usesFront
+    ? Array.from({ length: size }, (_, x) => silhouetteHeight(targetViews.front, x, size))
+    : null;
+  const sideHeights = usesSide
+    ? Array.from({ length: size }, (_, z) => silhouetteHeight(targetViews.side, z, size))
+    : null;
+
+  if (frontHeights?.some((height) => height < 0) || sideHeights?.some((height) => height < 0)) {
+    return [];
+  }
+
+  const cells = [];
+  for (let z = 0; z < size; z += 1) {
+    for (let x = 0; x < size; x += 1) cells.push([x, z]);
+  }
+
+  const domains = cells.map(([x, z]) => {
+    if (usesTop) return topValue(targetViews.top, x, z, size)
+      ? Array.from({ length: size }, (_, index) => index + 1)
+      : [0];
+    const maxByFront = frontHeights ? frontHeights[x] : size;
+    const maxBySide = sideHeights ? sideHeights[z] : size;
+    const maximum = Math.min(maxByFront, maxBySide);
+    return Array.from({ length: maximum + 1 }, (_, value) => value);
+  });
+
+  const heights = Array(size * size).fill(0);
+  const solutions = [];
+
+  function canStillReachRequiredMaximum(nextIndex) {
+    if (frontHeights) {
+      for (let x = 0; x < size; x += 1) {
+        const required = frontHeights[x];
+        let current = 0;
+        let futureCanReach = false;
+        for (let z = 0; z < size; z += 1) {
+          const cellIndex = z * size + x;
+          if (cellIndex < nextIndex) current = Math.max(current, heights[cellIndex]);
+          else if (domains[cellIndex].includes(required)) futureCanReach = true;
+        }
+        if (current > required || (current < required && !futureCanReach)) return false;
+      }
+    }
+    if (sideHeights) {
+      for (let z = 0; z < size; z += 1) {
+        const required = sideHeights[z];
+        let current = 0;
+        let futureCanReach = false;
+        for (let x = 0; x < size; x += 1) {
+          const cellIndex = z * size + x;
+          if (cellIndex < nextIndex) current = Math.max(current, heights[cellIndex]);
+          else if (domains[cellIndex].includes(required)) futureCanReach = true;
+        }
+        if (current > required || (current < required && !futureCanReach)) return false;
+      }
+    }
+    return true;
+  }
+
+  function visit(index) {
+    if (solutions.length >= limit) return;
+    if (index === cells.length) {
+      const occupancy = occupancyFromHeights(heights, size);
+      if (modelMatchesViews(occupancy, targetViews, givenViews, size)) solutions.push(occupancy);
+      return;
+    }
+
+    for (const height of domains[index]) {
+      heights[index] = height;
+      if (canStillReachRequiredMaximum(index + 1)) visit(index + 1);
+      if (solutions.length >= limit) return;
+    }
+  }
+
+  visit(0);
+  return solutions;
+}
+
+function exposedFaceCount(occupancy, size = DEFAULT_SIZE) {
+  const directions = [
+    [1, 0, 0], [-1, 0, 0], [0, 1, 0],
+    [0, -1, 0], [0, 0, 1], [0, 0, -1],
+  ];
+  let faces = 0;
+  for (const [x, y, z] of coordsFromOccupancy(occupancy, size)) {
+    for (const [dx, dy, dz] of directions) {
+      const nx = x + dx;
+      const ny = y + dy;
+      const nz = z + dz;
+      if (
+        nx < 0 || ny < 0 || nz < 0 || nx >= size || ny >= size || nz >= size ||
+        !occupancy[indexOf(nx, ny, nz, size)]
+      ) faces += 1;
+    }
+  }
+  return faces;
+}
+
+function scaleOccupancy(occupancy, size, factor) {
+  if (!Number.isInteger(factor) || factor < 1) throw new Error("Scale factor must be a positive integer.");
+  const scaledSize = size * factor;
+  const scaled = emptyOccupancy(scaledSize);
+  for (const [x, y, z] of coordsFromOccupancy(occupancy, size)) {
+    for (let dz = 0; dz < factor; dz += 1) {
+      for (let dy = 0; dy < factor; dy += 1) {
+        for (let dx = 0; dx < factor; dx += 1) {
+          scaled[indexOf(x * factor + dx, y * factor + dy, z * factor + dz, scaledSize)] = true;
+        }
+      }
+    }
+  }
+  return { occupancy: scaled, size: scaledSize };
+}
+
+function minimumCubeCount({ targetViews, givenViews, size = DEFAULT_SIZE }) {
+  const solutions = solveViews({ targetViews, givenViews, size, limit: Number.POSITIVE_INFINITY });
+  return solutions.length ? Math.min(...solutions.map(countVoxels)) : null;
+}
+
+function maximumCubeCount({ targetViews, givenViews, size = DEFAULT_SIZE }) {
+  const solutions = solveViews({ targetViews, givenViews, size, limit: Number.POSITIVE_INFINITY });
+  return solutions.length ? Math.max(...solutions.map(countVoxels)) : null;
+}
+
+
+;
+function columns(entries) {
+  const coords = [];
+  for (const [x, z, height] of entries) {
+    for (let y = 0; y < height; y += 1) coords.push([x, y, z]);
+  }
+  return coords;
+}
+
+function cloneViews(views) {
+  return Object.fromEntries(Object.entries(views).map(([name, grid]) => [name, grid.map((row) => [...row])]));
+}
+
+function makeLevel(config) {
+  const exampleOccupancy = occupancyFromCoords(config.exampleCoords, 3);
+  const targetViews = projectOccupancy(exampleOccupancy, 3);
+  const level = {
+    size: 3,
+    givenViews: ["front", "top"],
+    targetViews,
+    ...config,
+    exampleOccupancy,
+  };
+  if (config.initialCoords) level.initialOccupancy = occupancyFromCoords(config.initialCoords, 3);
+  if (config.flawedEdit) {
+    const flawedViews = cloneViews(targetViews);
+    const [view, row, column] = config.flawedEdit;
+    flawedViews[view][row][column] = !flawedViews[view][row][column];
+    level.flawedViews = flawedViews;
+  }
+  return level;
+}
+
+// v0.4.8 campaign principle:
+// Every important claim is proved by doing something spatial: build, rebuild,
+// draw a view, repair a model, preserve one projection while changing another,
+// or optimize hidden volume. No "one or many?" multiple-choice round remains.
+const LEVELS = [
+  makeLevel({
+    id: "SA01", title: "Eén kubus",
+    instruction: "Bouw het model bij VOOR en BOVEN.",
+    hint: "Tik in de kamer om te bouwen.", task: "build_unique",
+    exampleCoords: columns([[1, 1, 1]]),
+  }),
+  makeLevel({
+    id: "SA02", title: "Eerste structuur",
+    instruction: "Laat VOOR en BOVEN tegelijk kloppen.",
+    hint: "Een kubus kan achter een andere kubus verborgen staan.", task: "build_unique",
+    exampleCoords: columns([[0, 0, 2], [1, 1, 1], [2, 2, 1]]),
+  }),
+  makeLevel({
+    id: "SA03", title: "Diepte telt",
+    instruction: "Bouw op verschillende dieptes tot beide aanzichten kloppen.",
+    hint: "Tik op een vak van een aanzicht om zijn kijklijn te zien.", task: "build_unique",
+    exampleCoords: columns([[0, 0, 2], [1, 2, 3], [2, 1, 1]]),
+  }),
+
+  makeLevel({
+    id: "SA04", title: "Verbouw 5 kubussen",
+    instruction: "Bouw 5 kubussen die bij VOOR en BOVEN passen.",
+    variantInstruction: "Verbouw dezelfde 5 kubussen. Minstens 2 stapels moeten anders.",
+    hint: "VOOR en BOVEN moeten hetzelfde blijven.", task: "build_variant",
+    cubeBudget: 5, minChangedColumns: 2,
+    exampleCoords: columns([[0, 0, 2], [0, 1, 1], [1, 0, 1], [1, 1, 1]]),
+  }),
+  makeLevel({
+    id: "SA05", title: "Verbouw 6 kubussen",
+    instruction: "Bouw 6 kubussen die bij de aanzichten passen.",
+    variantInstruction: "Verbouw dezelfde 6 kubussen. Minstens 3 stapels moeten anders.",
+    hint: "Verander meerdere stapels, niet alleen één verborgen blok.", task: "build_variant",
+    cubeBudget: 6, minChangedColumns: 3,
+    exampleCoords: columns([[0, 0, 2], [1, 0, 1], [0, 1, 1], [1, 1, 2]]),
+  }),
+  makeLevel({
+    id: "SA06", title: "Verbouw 7 kubussen",
+    instruction: "Bouw 7 kubussen die bij de aanzichten passen.",
+    variantInstruction: "Verbouw dezelfde 7 kubussen. Minstens 4 stapels moeten anders.",
+    hint: "De aanzichten blijven vast. Alleen jouw 3D-model verandert.", task: "build_variant",
+    cubeBudget: 7, minChangedColumns: 4,
+    exampleCoords: columns([[0, 0, 2], [0, 2, 1], [1, 1, 2], [1, 2, 1], [2, 0, 1]]),
+  }),
+
+  makeLevel({
+    id: "SA07", title: "Wat ziet ZIJ?",
+    instruction: "Bouw een geldig model. Teken daarna ZIJ.",
+    hint: "De zijscan hangt af van waar jij de kubussen in de diepte zet.", task: "predict_hidden_view",
+    hiddenView: "side",
+    exampleCoords: columns([[0, 0, 2], [0, 2, 1], [1, 1, 2], [2, 2, 1]]),
+  }),
+  makeLevel({
+    id: "SA08", title: "Wat ziet VOOR?",
+    instruction: "Bouw met BOVEN en ZIJ. Teken daarna VOOR.",
+    hint: "Nu is niet ZIJ maar VOOR verborgen.", task: "predict_hidden_view",
+    givenViews: ["top", "side"], hiddenView: "front",
+    exampleCoords: columns([[0, 0, 2], [0, 1, 1], [1, 2, 2], [2, 0, 1]]),
+  }),
+
+  makeLevel({
+    id: "SA09", title: "Lees het model: VOOR",
+    instruction: "Teken het VOOR-aanzicht van het 3D-model.",
+    hint: "Van VOOR vallen kubussen achter elkaar op dezelfde kijklijn samen.", task: "draw_view",
+    givenViews: [], drawView: "front",
+    exampleCoords: columns([[0, 0, 2], [1, 1, 1], [2, 2, 2]]),
+  }),
+  makeLevel({
+    id: "SA10", title: "Lees het model: BOVEN",
+    instruction: "Teken het BOVEN-aanzicht van het 3D-model.",
+    hint: "Van boven zie je welke grondplaatsen bezet zijn.", task: "draw_view",
+    givenViews: [], drawView: "top",
+    exampleCoords: columns([[0, 0, 3], [1, 0, 1], [1, 2, 2], [2, 1, 1]]),
+  }),
+  makeLevel({
+    id: "SA11", title: "Lees het model: ZIJ",
+    instruction: "Teken het ZIJ-aanzicht van het 3D-model.",
+    hint: "Kijk van rechts naar links door de stapels.", task: "draw_view",
+    givenViews: [], drawView: "side",
+    exampleCoords: columns([[0, 0, 1], [0, 2, 2], [1, 1, 3], [2, 0, 2]]),
+  }),
+
+  makeLevel({
+    id: "SA12", title: "Eén kubus ontbreekt",
+    instruction: "Voeg precies 1 kubus toe zodat VOOR en BOVEN kloppen.",
+    hint: "Zoek eerst welke kijklijn te klein is.", task: "repair",
+    exactActions: 1,
+    exampleCoords: columns([[0, 0, 2], [1, 1, 2], [2, 2, 1]]),
+    initialCoords: columns([[0, 0, 2], [1, 1, 1], [2, 2, 1]]),
+  }),
+  makeLevel({
+    id: "SA13", title: "Eén kubus te veel",
+    instruction: "Neem precies 1 kubus weg zodat beide aanzichten kloppen.",
+    hint: "Een fout blok maakt minstens één projectie te groot.", task: "repair",
+    exactActions: 1,
+    exampleCoords: columns([[0, 0, 2], [1, 1, 1]]),
+    initialCoords: columns([[0, 0, 2], [1, 1, 1], [2, 2, 1]]),
+  }),
+
+  makeLevel({
+    id: "SA14", title: "VOOR blijft hetzelfde",
+    instruction: "Verander BOVEN. VOOR moet hetzelfde blijven.",
+    hint: "Verplaatsen in de diepte kan VOOR onveranderd laten.", task: "preserve_change",
+    preserveView: "front", changeView: "top", givenViews: ["front", "top"],
+    initialCoords: columns([[0, 0, 2], [1, 1, 1]]),
+    exampleCoords: columns([[0, 2, 2], [1, 0, 1]]),
+  }),
+  makeLevel({
+    id: "SA15", title: "BOVEN blijft hetzelfde",
+    instruction: "Verander ZIJ. BOVEN moet hetzelfde blijven.",
+    hint: "BOVEN ziet wel de plaats van een stapel, maar niet altijd zijn hoogte.", task: "preserve_change",
+    preserveView: "top", changeView: "side", givenViews: ["top", "side"],
+    initialCoords: columns([[0, 0, 1], [2, 1, 1]]),
+    exampleCoords: columns([[0, 0, 2], [2, 1, 1]]),
+  }),
+  makeLevel({
+    id: "SA16", title: "ZIJ blijft hetzelfde",
+    instruction: "Verander VOOR. ZIJ moet hetzelfde blijven.",
+    hint: "Denk nu omgekeerd: welke verplaatsing ziet ZIJ niet?", task: "preserve_change",
+    preserveView: "side", changeView: "front", givenViews: ["side", "front"],
+    initialCoords: columns([[0, 0, 2], [2, 1, 1]]),
+    exampleCoords: columns([[1, 0, 2], [2, 1, 1]]),
+  }),
+
+  makeLevel({
+    id: "SA17", title: "Bouw zuiniger",
+    instruction: "Bouw eerst 12 kubussen die bij de aanzichten passen.",
+    optimizeInstruction: "Behoud dezelfde aanzichten met zo weinig mogelijk kubussen.",
+    hint: "Een verborgen kubus kan soms weg zonder dat een aanzicht verandert.", task: "minimal",
+    startCubeCount: 12,
+    exampleCoords: columns([[0, 0, 3], [0, 1, 1], [0, 2, 1], [1, 0, 2], [1, 2, 1], [2, 1, 2]]),
+  }),
+  makeLevel({
+    id: "SA18", title: "Vul verborgen ruimte",
+    instruction: "Voeg zoveel mogelijk kubussen toe. VOOR en BOVEN moeten hetzelfde blijven.",
+    hint: "Je mag alleen ruimte vullen die in beide aanzichten verborgen blijft.", task: "maximal",
+    initialCoords: [[0,0,0],[1,0,0],[0,0,1],[2,0,1],[2,1,1],[0,0,2],[1,0,2],[0,1,2],[1,1,2],[0,2,2]],
+    exampleCoords: columns([[0, 0, 3], [0, 1, 1], [0, 2, 1], [1, 0, 2], [1, 2, 1], [2, 1, 2]]),
+  }),
+
+  makeLevel({
+    id: "SA19", title: "Herstel de bouwtekening",
+    instruction: "Eén vak is fout. Verander precies 1 vak zodat het plan bouwbaar wordt.",
+    buildInstruction: "Bouw nu het 3D-model van je herstelde plan.",
+    hint: "Een goed plan moet in alle drie de richtingen tegelijk mogelijk zijn.", task: "plan_repair",
+    givenViews: ["front", "top", "side"], flawedEdit: ["front", 0, 1],
+    exampleCoords: columns([[0, 0, 2], [0, 1, 1], [1, 0, 1], [1, 1, 1]]),
+  }),
+
+  makeLevel({
+    id: "SA20", title: "Bewijs het verschil",
+    instruction: "Bouw 6 kubussen die bij BOVEN en VOOR passen.",
+    variantInstruction: "Verbouw dezelfde 6 kubussen. BOVEN en VOOR blijven gelijk, maar ZIJ moet veranderen.",
+    predictionInstruction: "Teken ZIJ van je tweede model.",
+    hint: "Twee modellen kunnen voor twee scans gelijk lijken en voor de derde verschillen.", task: "build_variant_predict",
+    hiddenView: "side", cubeBudget: 6, minChangedColumns: 3,
+    exampleCoords: columns([[0, 0, 2], [1, 0, 1], [0, 1, 1], [1, 1, 2]]),
+  }),
+
+  makeLevel({
+    id: "SA21", title: "Drie aanzichten",
+    instruction: "Bouw het model bij VOOR, BOVEN en ZIJ.",
+    hint: "De derde scan legt veel verborgen vrijheid vast.", task: "build_unique",
+    givenViews: ["front", "top", "side"],
+    exampleCoords: columns([[0, 0, 2], [0, 2, 1], [1, 1, 2], [1, 2, 1], [2, 0, 1]]),
+  }),
+  makeLevel({
+    id: "SA22", title: "Volledige reconstructie",
+    instruction: "Bouw de volledige 3D-vorm uit de drie aanzichten.",
+    hint: "Gebruik de drie richtingen samen; geen enkel aanzicht vertelt het hele verhaal.", task: "build_unique",
+    givenViews: ["front", "top", "side"],
+    exampleCoords: [[1,0,0],[2,0,0],[0,0,1],[1,0,1],[0,1,1],[0,2,1],[0,0,2],[0,1,2],[0,2,2]],
+  }),
+];
+
+function columnHeight(occupancy, x, z, size = 3) {
+  let h = 0;
+  for (let y = 0; y < size; y += 1) if (occupancy[indexOf(x, y, z, size)]) h += 1;
+  return h;
+}
+
+function changedColumns(a, b, size = 3) {
+  let changed = 0;
+  for (let z = 0; z < size; z += 1) {
+    for (let x = 0; x < size; x += 1) {
+      if (columnHeight(a, x, z, size) !== columnHeight(b, x, z, size)) changed += 1;
+    }
+  }
+  return changed;
+}
+
+function voxelDifference(a, b) {
+  let n = 0;
+  for (let i = 0; i < a.length; i += 1) if (!!a[i] !== !!b[i]) n += 1;
+  return n;
+}
+
+function viewDifference(a, b) {
+  let n = 0;
+  for (let r = 0; r < a.length; r += 1) for (let c = 0; c < a[r].length; c += 1) if (a[r][c] !== b[r][c]) n += 1;
+  return n;
+}
+
+function planOneCellFixes(level) {
+  const fixes = [];
+  for (const view of level.givenViews) {
+    for (let r = 0; r < level.size; r += 1) {
+      for (let c = 0; c < level.size; c += 1) {
+        const candidate = cloneViews(level.flawedViews);
+        candidate[view][r][c] = !candidate[view][r][c];
+        if (solveViews({ targetViews: candidate, givenViews: level.givenViews, size: level.size, limit: 1 }).length) fixes.push([view, r, c]);
+      }
+    }
+  }
+  return fixes;
+}
+
+function validateLevels() {
+  const results = [];
+  for (const level of LEVELS) {
+    const solutions = level.task === "draw_view"
+      ? [level.exampleOccupancy]
+      : solveViews({
+          targetViews: level.targetViews,
+          givenViews: level.givenViews,
+          size: level.size,
+          limit: Number.POSITIVE_INFINITY,
+        });
+
+    let valid = solutions.length > 0 || level.task === "draw_view";
+    let variantSolutions = null;
+    let variantReachable = null;
+    let hiddenDiffPair = null;
+    let planFixes = null;
+
+    if (level.task === "build_unique") valid = solutions.length === 1;
+
+    if (level.task === "build_variant" || level.task === "build_variant_predict") {
+      variantSolutions = solutions.filter((solution) => countVoxels(solution) === level.cubeBudget);
+      variantReachable = variantSolutions.length >= 2 && variantSolutions.every((solution, i) =>
+        variantSolutions.some((other, j) => i !== j && changedColumns(solution, other, level.size) >= level.minChangedColumns),
+      );
+      if (level.task === "build_variant_predict") {
+        hiddenDiffPair = variantSolutions.some((solution, i) => variantSolutions.some((other, j) =>
+          i !== j &&
+          changedColumns(solution, other, level.size) >= level.minChangedColumns &&
+          !viewsEqual(projectOccupancy(solution, level.size)[level.hiddenView], projectOccupancy(other, level.size)[level.hiddenView]),
+        ));
+      }
+      valid = valid && variantReachable && (level.task !== "build_variant_predict" || hiddenDiffPair);
+    }
+
+    if (level.task === "predict_hidden_view") valid = solutions.length >= 2 && !!level.hiddenView && !level.givenViews.includes(level.hiddenView);
+
+    if (level.task === "draw_view") valid = !!level.drawView && level.givenViews.length === 0;
+
+    if (level.task === "repair") {
+      valid = !!level.initialOccupancy && voxelDifference(level.initialOccupancy, level.exampleOccupancy) === level.exactActions;
+    }
+
+    if (level.task === "preserve_change") {
+      const startViews = projectOccupancy(level.initialOccupancy, level.size);
+      valid = !!level.initialOccupancy &&
+        viewsEqual(startViews[level.preserveView], level.targetViews[level.preserveView]) &&
+        !viewsEqual(startViews[level.changeView], level.targetViews[level.changeView]);
+    }
+
+    if (level.task === "minimal") {
+      const startSolutions = solutions.filter((solution) => countVoxels(solution) === level.startCubeCount);
+      valid = solutions.length >= 2 && startSolutions.length >= 1;
+    }
+
+    if (level.task === "maximal") {
+      const max = maximumCubeCount({ targetViews: level.targetViews, givenViews: level.givenViews, size: level.size });
+      valid = !!level.initialOccupancy &&
+        level.givenViews.every((v) => viewsEqual(projectOccupancy(level.initialOccupancy, level.size)[v], level.targetViews[v])) &&
+        countVoxels(level.initialOccupancy) < max;
+    }
+
+    if (level.task === "plan_repair") {
+      const flawedSolutions = solveViews({ targetViews: level.flawedViews, givenViews: level.givenViews, size: level.size, limit: 1 });
+      planFixes = planOneCellFixes(level);
+      valid = flawedSolutions.length === 0 && planFixes.length === 1;
+    }
+
+    results.push({
+      id: level.id,
+      task: level.task,
+      valid,
+      solutions: solutions.length,
+      variantSolutions: variantSolutions?.length ?? null,
+      variantReachable,
+      hiddenDiffPair,
+      planFixes: planFixes?.length ?? null,
+      exampleCubes: countVoxels(level.exampleOccupancy),
+      minimum: ["minimal", "maximal"].includes(level.task)
+        ? minimumCubeCount({ targetViews: level.targetViews, givenViews: level.givenViews, size: level.size })
+        : null,
+      maximum: level.task === "maximal"
+        ? maximumCubeCount({ targetViews: level.targetViews, givenViews: level.givenViews, size: level.size })
+        : null,
+    });
+  }
+  return results;
+}
+
+const LEVEL_VALIDATION = validateLevels();
+
+;
+const TAU = Math.PI * 2;
+
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function mix(a, b, t) { return a + (b - a) * t; }
+function easeOutBack(t) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+function vSub(a, b) { return [a[0]-b[0], a[1]-b[1], a[2]-b[2]]; }
+function vDot(a, b) { return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
+function vCross(a, b) { return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
+function vNorm(a) {
+  const l = Math.hypot(a[0], a[1], a[2]) || 1;
+  return [a[0]/l, a[1]/l, a[2]/l];
+}
+
+// Column-major matrices, OpenGL convention.
+function mat4Mul(a, b) {
+  const out = new Float32Array(16);
+  for (let c=0;c<4;c++) for (let r=0;r<4;r++) {
+    out[c*4+r] = a[0*4+r]*b[c*4+0] + a[1*4+r]*b[c*4+1] + a[2*4+r]*b[c*4+2] + a[3*4+r]*b[c*4+3];
+  }
+  return out;
+}
+function lookAt(eye, target, up) {
+  const z = vNorm(vSub(eye, target));
+  const x = vNorm(vCross(up, z));
+  const y = vCross(z, x);
+  return new Float32Array([
+    x[0], y[0], z[0], 0,
+    x[1], y[1], z[1], 0,
+    x[2], y[2], z[2], 0,
+    -vDot(x, eye), -vDot(y, eye), -vDot(z, eye), 1,
+  ]);
+}
+function ortho(left, right, bottom, top, near, far) {
+  const lr = 1/(left-right), bt=1/(bottom-top), nf=1/(near-far);
+  return new Float32Array([
+    -2*lr,0,0,0,
+    0,-2*bt,0,0,
+    0,0,2*nf,0,
+    (left+right)*lr,(top+bottom)*bt,(far+near)*nf,1,
+  ]);
+}
+function transformPoint(m, p) {
+  const x=p[0],y=p[1],z=p[2],w=1;
+  const ox=m[0]*x+m[4]*y+m[8]*z+m[12]*w;
+  const oy=m[1]*x+m[5]*y+m[9]*z+m[13]*w;
+  const oz=m[2]*x+m[6]*y+m[10]*z+m[14]*w;
+  const ow=m[3]*x+m[7]*y+m[11]*z+m[15]*w || 1;
+  return [ox/ow,oy/ow,oz/ow];
+}
+
+function hexRgb(hex) {
+  return [((hex>>16)&255)/255, ((hex>>8)&255)/255, (hex&255)/255];
+}
+
+function shader(gl, type, src) {
+  const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)||"shader compile failed");
+  return s;
+}
+function program(gl, vs, fs) {
+  const p=gl.createProgram(); gl.attachShader(p,shader(gl,gl.VERTEX_SHADER,vs)); gl.attachShader(p,shader(gl,gl.FRAGMENT_SHADER,fs)); gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)||"program link failed");
+  return p;
+}
+
+const CUBE_VS = `
+attribute vec3 aPosition;
+attribute vec3 aNormal;
+attribute vec4 aColor;
+uniform mat4 uViewProj;
+varying vec3 vNormal;
+varying vec4 vColor;
+void main(){
+  gl_Position=uViewProj*vec4(aPosition,1.0);
+  vNormal=aNormal;
+  vColor=aColor;
+}`;
+const CUBE_FS = `
+precision mediump float;
+varying vec3 vNormal;
+varying vec4 vColor;
+void main(){
+  vec3 n=normalize(vNormal);
+  vec3 key=normalize(vec3(-0.45,0.92,0.62));
+  vec3 fill=normalize(vec3(0.60,0.20,-0.75));
+  float kd=max(dot(n,key),0.0);
+  float soft=kd*0.5+0.5;
+  soft*=soft;
+  float fd=max(dot(n,fill),0.0);
+  float top=max(n.y,0.0);
+  vec3 h=normalize(key+normalize(vec3(0.5,0.55,0.65)));
+  float spec=pow(max(dot(n,h),0.0),28.0)*(0.10+0.12*top);
+  float shade=0.30+soft*0.46+fd*0.10+top*0.10;
+  vec3 c=vColor.rgb*shade+spec*vec3(1.0,0.97,0.9);
+  c+=vec3(0.05,0.05,0.12)*(1.0-kd);
+  gl_FragColor=vec4(c,vColor.a);
+}`;
+const FLAT_VS = `
+attribute vec3 aPosition;
+uniform mat4 uViewProj;
+void main(){gl_Position=uViewProj*vec4(aPosition,1.0);}`;
+const FLAT_FS = `
+precision mediump float;
+uniform vec4 uColor;
+void main(){gl_FragColor=uColor;}`;
+
+function pushTri(out, normal, color, a,b,c) {
+  for (const p of [a,b,c]) out.push(p[0],p[1],p[2],normal[0],normal[1],normal[2],color[0],color[1],color[2],color[3]);
+}
+
+function addVoxelAO(out,cx,cy,cz,half,color,solid){
+  const F=[
+    [[1,0,0],[0,1,0],[0,0,1]],[[-1,0,0],[0,1,0],[0,0,1]],
+    [[0,1,0],[1,0,0],[0,0,1]],[[0,-1,0],[1,0,0],[0,0,1]],
+    [[0,0,1],[1,0,0],[0,1,0]],[[0,0,-1],[1,0,0],[0,1,0]]
+  ];
+  for(const [n,u,v] of F){
+    const P=[],A=[];
+    for(const [su,sv] of [[-1,-1],[1,-1],[1,1],[-1,1]]){
+      P.push([
+        cx+n[0]*half+su*u[0]*half+sv*v[0]*half,
+        cy+n[1]*half+su*u[1]*half+sv*v[1]*half,
+        cz+n[2]*half+su*u[2]*half+sv*v[2]*half
+      ]);
+      const s1=solid(n[0]+su*u[0],n[1]+su*u[1],n[2]+su*u[2]);
+      const s2=solid(n[0]+sv*v[0],n[1]+sv*v[1],n[2]+sv*v[2]);
+      const cn=solid(n[0]+su*u[0]+sv*v[0],n[1]+su*u[1]+sv*v[1],n[2]+su*u[2]+sv*v[2]);
+      A.push(s1&&s2?0.42:1-0.19*((s1?1:0)+(s2?1:0)+(cn?1:0)));
+    }
+    const idx=(A[0]+A[2]>=A[1]+A[3])?[0,1,2,0,2,3]:[1,2,3,1,3,0];
+    for(const i of idx){
+      out.push(P[i][0],P[i][1],P[i][2],n[0],n[1],n[2],
+        color[0]*A[i],color[1]*A[i],color[2]*A[i],color[3]);
+    }
+  }
+}
+function addBox(out, cx,cy,cz, sx,sy,sz, color) {
+  const x0=cx-sx/2,x1=cx+sx/2,y0=cy-sy/2,y1=cy+sy/2,z0=cz-sz/2,z1=cz+sz/2;
+  const faces=[
+    [[1,0,0],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]],
+    [[-1,0,0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[x0,y0,z0]],
+    [[0,1,0],[x0,y1,z0],[x0,y1,z1],[x1,y1,z1],[x1,y1,z0]],
+    [[0,-1,0],[x0,y0,z1],[x0,y0,z0],[x1,y0,z0],[x1,y0,z1]],
+    [[0,0,1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[x0,y0,z1]],
+    [[0,0,-1],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[x1,y0,z0]],
+  ];
+  for(const [n,a,b,c,d] of faces){pushTri(out,n,color,a,b,c);pushTri(out,n,color,a,c,d);}
+}
+function addQuad(out, a,b,c,d, n, color){pushTri(out,n,color,a,b,c);pushTri(out,n,color,a,c,d);}
+function addLine(out,a,b){out.push(a[0],a[1],a[2],b[0],b[1],b[2]);}
+
+function pointInPoly(x,y,pts){
+  let inside=false;
+  for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+    const xi=pts[i].x,yi=pts[i].y,xj=pts[j].x,yj=pts[j].y;
+    if(((yi>y)!=(yj>y))&&(x<(xj-xi)*(y-yi)/((yj-yi)||1e-9)+xi)) inside=!inside;
+  }
+  return inside;
+}
+
+class ScaleWebGLRenderer {
+  constructor(canvas,{force2D=false}={}){
+    this.canvas=canvas;
+    this.gl=force2D?null:canvas.getContext("webgl",{alpha:true,antialias:true,premultipliedAlpha:false,preserveDrawingBuffer:false,powerPreference:"low-power"});
+    this.available=!!this.gl;
+    this.ctx2d=this.available?null:canvas.getContext("2d");
+    this.dpr=1; this.width=1; this.height=1; this.viewProj=null; this.hits=[]; this.hover=null; this.lastState=null;
+    this.motion=null; this.removing=null; this.scanStart=0; this.scanKey=""; this.raf=0; this.running=false;
+    this.cameraSettleStart=performance.now(); this.cameraLevelKey=""; this.scaleGrowStart=0; this.lastScaleStage=0;
+    this.cameraStep=0; this.cameraFrom=0; this.cameraTo=0; this.cameraTurnStart=0;
+    if(!this.available) return;
+    const gl=this.gl;
+    this.cubeProgram=program(gl,CUBE_VS,CUBE_FS);
+    this.flatProgram=program(gl,FLAT_VS,FLAT_FS);
+    this.cubeBuffer=gl.createBuffer(); this.flatBuffer=gl.createBuffer(); this.lineBuffer=gl.createBuffer();
+    this.cubeLoc={
+      pos:gl.getAttribLocation(this.cubeProgram,"aPosition"), normal:gl.getAttribLocation(this.cubeProgram,"aNormal"), color:gl.getAttribLocation(this.cubeProgram,"aColor"), vp:gl.getUniformLocation(this.cubeProgram,"uViewProj"),
+    };
+    this.flatLoc={pos:gl.getAttribLocation(this.flatProgram,"aPosition"),vp:gl.getUniformLocation(this.flatProgram,"uViewProj"),color:gl.getUniformLocation(this.flatProgram,"uColor")};
+    gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+  }
+  resize(){
+    if(!this.available) return false;
+    const r=this.canvas.getBoundingClientRect(); const dpr=Math.min(window.devicePixelRatio||1,2);
+    const w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));
+    const changed=w!==this.canvas.width||h!==this.canvas.height;
+    if(changed){this.canvas.width=w;this.canvas.height=h;}
+    this.dpr=dpr;this.width=r.width||1;this.height=r.height||1;this.gl.viewport(0,0,w,h);
+    return changed;
+  }
+  camera(size){
+    const aspect=this.width/this.height;
+    const base=Math.max(4.85,size*1.42+0.58);
+    const settleT=this.cameraSettleStart?clamp((performance.now()-this.cameraSettleStart)/420,0,1):1;
+    const settle=mix(1.045,1,easeOutCubic(settleT));
+    const viewH=base*settle;
+    const viewW=viewH*aspect;
+    const target=[0,(size-1)*0.34,0];
+    let yaw=this.cameraTo;
+    if(this.cameraTurnStart){
+      const t=clamp((performance.now()-this.cameraTurnStart)/340,0,1);
+      yaw=mix(this.cameraFrom,this.cameraTo,easeOutCubic(t));
+      if(t>=1)this.cameraTurnStart=0; else this.ensureLoop();
+    }
+    const bx=5.8,bz=7.0,cs=Math.cos(yaw),sn=Math.sin(yaw);
+    const rx=bx*cs+bz*sn, rz=-bx*sn+bz*cs;
+    const dir=vNorm([rx,4.4,rz]);
+    const eye=[target[0]+dir[0]*12,target[1]+dir[1]*12,target[2]+dir[2]*12];
+    const view=lookAt(eye,target,[0,1,0]);
+    const proj=ortho(-viewW/2,viewW/2,-viewH/2,viewH/2,-40,40);
+    this.viewProj=mat4Mul(proj,view);
+    return this.viewProj;
+  }
+  setCameraStep(step){
+    const next=clamp(Math.round(step),-1,1);
+    if(next===this.cameraStep)return next;
+    const current=this.cameraTurnStart?mix(this.cameraFrom,this.cameraTo,clamp((performance.now()-this.cameraTurnStart)/340,0,1)):this.cameraTo;
+    this.cameraFrom=current;this.cameraStep=next;this.cameraTo=next*0.52;this.cameraTurnStart=performance.now();this.hover=null;this.ensureLoop();
+    return next;
+  }
+  rotateCamera(delta){return this.setCameraStep(this.cameraStep+delta);}
+  screen(p){
+    const q=transformPoint(this.viewProj,p);
+    return {x:(q[0]*.5+.5)*this.width,y:(1-(q[1]*.5+.5))*this.height,z:q[2]};
+  }
+  logicalWorld(x,y,z,size){return [x-(size-1)/2,y,worldDepthFromModelZ(z,size)];}
+  cellPoly(x,y,z,size){
+    const wz=worldDepthFromModelZ(z,size);
+    const x0=x-(size-1)/2-.5,x1=x-(size-1)/2+.5,y0=y-.5,y1=y+.5;
+    return [[x0,y0,wz],[x1,y0,wz],[x1,y1,wz],[x0,y1,wz]].map(p=>this.screen(p));
+  }
+  horizontalPoly(x,worldY,z,size,half=.44){
+    const wx=x-(size-1)/2,wz=worldDepthFromModelZ(z,size);
+    return [
+      [wx-half,worldY,wz-half],[wx+half,worldY,wz-half],
+      [wx+half,worldY,wz+half],[wx-half,worldY,wz+half],
+    ].map(p=>this.screen(p));
+  }
+  cubeSidePolys(x,y,z,size,half=.44){
+    const [wx,wy,wz]=this.logicalWorld(x,y,z,size), lo=wy-half, hi=wy+half;
+    const faces=[
+      [[wx-half,lo,wz-half],[wx-half,lo,wz+half],[wx-half,hi,wz+half],[wx-half,hi,wz-half]],
+      [[wx+half,lo,wz-half],[wx+half,hi,wz-half],[wx+half,hi,wz+half],[wx+half,lo,wz+half]],
+      [[wx-half,lo,wz-half],[wx-half,hi,wz-half],[wx+half,hi,wz-half],[wx+half,lo,wz-half]],
+      [[wx-half,lo,wz+half],[wx+half,lo,wz+half],[wx+half,hi,wz+half],[wx-half,hi,wz+half]],
+    ];
+    return faces.map(face=>face.map(p=>this.screen(p)));
+  }
+  pickCandidates(x,y){
+    const found=[];
+    for(const h of this.hits){if(pointInPoly(x,y,h.pts))found.push(h);}
+    found.sort((a,b)=>{
+      const ac=this.screen(this.logicalWorld(a.x,a.y,a.z,3));
+      const bc=this.screen(this.logicalWorld(b.x,b.y,b.z,3));
+      return ac.z-bc.z;
+    });
+    return found;
+  }
+  pick(x,y){
+    const found=this.pickCandidates(x,y);if(!found.length)return null;
+    const preferred=found.find(h=>h.z===(this.lastState?.selectedLayer??0));
+    return preferred||found[0];
+  }
+  directTouchTargets(kind="place"){
+    const s=this.lastState,size=s?.level?.size||3;
+    if(!s||!s.building||!s.directDepth||size!==3)return [];
+    const occ=s.occupancy,out=[];
+    for(let z=0;z<3;z++)for(let x=0;x<3;x++){
+      let h=0;while(h<3&&occ[indexOf(x,h,z,3)])h++;
+      if(kind==="place"&&h<3){
+        const [wx,,wz]=this.logicalWorld(x,0,z,3);
+        const surfaceY=h===0?-.425:(h-1)+.455;
+        const q=this.screen([wx,surfaceY,wz]);
+        out.push({x,y:h,z,kind:"place",screenX:q.x,screenY:q.y,screenZ:q.z});
+      }
+      if(kind==="remove"&&h>0){
+        const y=h-1,q=this.screen(this.logicalWorld(x,y,z,3));
+        out.push({x,y,z,kind:"remove",screenX:q.x,screenY:q.y,screenZ:q.z});
+      }
+    }
+    return out;
+  }
+  nearestTouchCandidate(x,y,kind="place",radius=58,preferKey=""){
+    const all=this.directTouchTargets(kind);if(!all.length)return null;
+    const rr=radius*radius;
+    const scored=all.map(h=>{const dx=x-h.screenX,dy=y-h.screenY;return {...h,d2:dx*dx+dy*dy};}).filter(h=>h.d2<=rr).sort((a,b)=>a.d2-b.d2||a.screenZ-b.screenZ);
+    if(!scored.length)return null;
+    if(preferKey){
+      const preferred=scored.find(h=>`${h.x},${h.y},${h.z}`===preferKey);
+      if(preferred&&preferred.d2<=scored[0].d2+18*18)return preferred;
+    }
+    return scored[0];
+  }
+  setHoverCandidate(h,touch=false){
+    const next=h?{...h,touch}:null;
+    const key=next?`${next.x},${next.y},${next.z},${next.kind||""},${touch?1:0}`:"";
+    const old=this.hover?`${this.hover.x},${this.hover.y},${this.hover.z},${this.hover.kind||""},${this.hover.touch?1:0}`:"";
+    if(key!==old){this.hover=next;this.draw();}
+    return next;
+  }
+  setHover(x,y){const found=this.pickCandidates(x,y);const h=this.lastState?.directDepth?(found.length===1?found[0]:null):this.pick(x,y);return this.setHoverCandidate(h,false);}
+  clearHover(){if(this.hover){this.hover=null;this.draw();}}
+  animatePlacement(x,y,z,removing=false){
+    const now=performance.now();
+    if(removing)this.removing={x,y,z,start:now}; else this.motion={x,y,z,start:now};
+    this.ensureLoop();
+  }
+  ensureLoop(){if(this.running)return;this.running=true;const tick=()=>{this.draw();if(this.isAnimating()){this.raf=requestAnimationFrame(tick)}else{this.running=false;this.raf=0;}};this.raf=requestAnimationFrame(tick);}
+  isAnimating(){
+    const now=performance.now();
+    if(this.motion&&now-this.motion.start<330)return true;
+    if(this.removing&&now-this.removing.start<230)return true;
+    if(this.scanStart&&now-this.scanStart<900)return true;
+    if(this.cameraSettleStart&&now-this.cameraSettleStart<440)return true;
+    if(this.cameraTurnStart&&now-this.cameraTurnStart<360)return true;
+    if(this.scaleGrowStart&&now-this.scaleGrowStart<1750)return true;
+    if(this.lastState?.highlightedRay)return true;
+    if(this.lastState?.celebrateStart&&now-this.lastState.celebrateStart<950)return true;
+    return false;
+  }
+  render(state){
+    const levelKey=state.level?.id||"";
+    if(levelKey&&levelKey!==this.cameraLevelKey){this.cameraLevelKey=levelKey;this.cameraSettleStart=performance.now();this.ensureLoop();}
+    if(state.scaleStage===3&&this.lastScaleStage!==3){this.scaleGrowStart=performance.now();this.ensureLoop();}
+    if(state.scaleStage!==3&&this.lastScaleStage===3)this.scaleGrowStart=0;
+    this.lastScaleStage=state.scaleStage||0;
+    const scanKey=state.scanDirection?`${levelKey}:${state.scanDirection}`:"";
+    if(scanKey&&scanKey!==this.scanKey){this.scanKey=scanKey;this.scanStart=performance.now();this.ensureLoop();}
+    if(!scanKey)this.scanKey="";
+    this.lastState=state;this.draw();
+  }
+  draw(){
+    const s=this.lastState;if(!s)return;
+    if(!this.available){this.drawFallback(s);return;}
+    this.resize();
+    const gl=this.gl, level=s.level;
+    let occ=s.occupancy,size=level.size||3;
+    if(level.task==="scale"&&s.scaleStage===3&&s.scaled){occ=s.scaled.occupancy;size=s.scaled.size;}
+    this.camera(size);
+    gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    this.drawEnvironment(size,s);
+    this.drawCubes(occ,size,s);
+    this.drawOverlays(occ,size,s);
+    this.buildHits(size,s);
+  }
+  drawFallback(s){
+    const ctx=this.ctx2d;if(!ctx)return;const r=this.canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);if(!r.width||!r.height)return;
+    this.canvas.width=Math.round(r.width*dpr);this.canvas.height=Math.round(r.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,r.width,r.height);
+    let occ=s.occupancy,size=s.level.size||3;if(s.level.task==="scale"&&s.scaleStage===3&&s.scaled){occ=s.scaled.occupancy;size=s.scaled.size;}
+    const W=r.width,H=r.height,u=Math.min(W/(size*2.35+2.2),H/(size*1.6+2.7)),ex={x:u*.86,y:u*.34},ez={x:-u*.86,y:u*.34},ey={x:0,y:-u*.9},ox=W*.5,oy=H*.70-(size-1)*u*.06;
+    const P=(x,y,z)=>({x:ox+(x-(size-1)/2)*ex.x+(z-(size-1)/2)*ez.x,y:oy+(x-(size-1)/2)*ex.y+(z-(size-1)/2)*ez.y+y*ey.y});
+    const poly=(pts,fill,stroke,lw=1)=>{ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}};
+    for(let z=0;z<size;z++)for(let x=0;x<size;x++){const a=P(x-.5,-.5,z-.5),b=P(x+.5,-.5,z-.5),c=P(x+.5,-.5,z+.5),d=P(x-.5,-.5,z+.5);poly([a,b,c,d],"rgba(26,34,73,.76)","rgba(151,169,219,.22)");}
+    this.hits=[];if(size===3&&s.building){const z=s.selectedLayer;for(let y=0;y<3;y++)for(let x=0;x<3;x++){const a=P(x-.5,y-.5,z),b=P(x+.5,y-.5,z),c=P(x+.5,y+.5,z),d=P(x-.5,y+.5,z);poly([a,b,c,d],"rgba(73,215,203,.035)","rgba(104,238,226,.34)",1.1);this.hits.push({x,y,z,pts:[a,b,c,d]});}}
+    const coords=[];for(let z=0;z<size;z++)for(let y=0;y<size;y++)for(let x=0;x<size;x++)if(occ[indexOf(x,y,z,size)])coords.push([x,y,z]);coords.sort((a,b)=>(a[0]+a[2])-(b[0]+b[2])||a[1]-b[1]);
+    const cube=(x,y,z)=>{const p=P(x-.44,y-.44,z-.44),px=P(x+.44,y-.44,z-.44),pz=P(x-.44,y-.44,z+.44),py=P(x-.44,y+.44,z-.44),pxy=P(x+.44,y+.44,z-.44),pzy=P(x-.44,y+.44,z+.44),q=P(x+.44,y+.44,z+.44);poly([py,pxy,q,pzy],"#b39af6","rgba(238,232,255,.7)");poly([p,py,pzy,pz],"#6848b6","rgba(223,214,255,.5)");poly([p,px,pxy,py],"#8561d2","rgba(223,214,255,.5)");};coords.forEach(q=>cube(...q));
+    if(!this.available){ctx.fillStyle="rgba(218,229,247,.72)";ctx.font="700 9px system-ui";ctx.textAlign="right";ctx.fillText("2.5D compatibiliteitsmodus",W-15,H-14);}
+  }
+  drawEnvironment(size,s){
+    const half=size/2;
+
+    // v0.4.4: a physical block-building table replaces the old glass/wireframe cage.
+    // The floor is the permanent spatial reference; vertical guides only appear contextually.
+    const base=[];
+    addBox(base,0,-.72,0,size+1.12,.42,size+1.12,[.055,.070,.135,1]);
+    addBox(base,0,-.505,0,size+.34,.055,size+.34,[.105,.125,.220,1]);
+    this.drawCubeBatch(base,true);
+
+    // Raised floor tiles: the small gaps do the work of a grid without drawing a wireframe.
+    const tiles=[];
+    for(let z=0;z<size;z++)for(let x=0;x<size;x++){
+      const wx=x-(size-1)/2, wz=worldDepthFromModelZ(z,size);
+      const depth=size>1?z/(size-1):0;
+      const checker=(x+z)%2?-.008:.008;
+      const c=[
+        .105 + checker + (1-depth)*.012,
+        .125 + checker + (1-depth)*.018,
+        .205 + checker + depth*.018,
+        1
+      ];
+      addBox(tiles,wx,-.466,wz,.92,.050,.92,c);
+    }
+    this.drawCubeBatch(tiles,true);
+
+    // A solid rim makes the board feel manufactured rather than holographic.
+    const rim=[];
+    const r=half+.22, y=-.438, t=.070, h=.075;
+    addBox(rim,0,y,-r,size+.52,h,t,[.10,.13,.235,1]);
+    addBox(rim,0,y, r,size+.52,h,t,[.085,.105,.195,1]);
+    addBox(rim,-r,y,0,t,h,size+.52,[.095,.12,.215,1]);
+    addBox(rim, r,y,0,t,h,size+.52,[.08,.10,.185,1]);
+    // Warm orientation notch at the near edge; no floating depth markers.
+    addBox(rim,0,y+.018,-r-.018,.76,.035,.045,[.74,.48,.16,.86]);
+    this.drawCubeBatch(rim,true);
+
+    if(size===3&&s.building){
+      // Depth remains readable on the floor itself. These are material bands, not controls.
+      // They are deliberately subtle and never rise into a transparent wall.
+      const depthBands=[];
+      const cols=[
+        [.17,.29,.31,.17],
+        [.20,.16,.32,.115],
+        [.13,.16,.29,.085]
+      ];
+      for(let z=0;z<3;z++){
+        const wz=worldDepthFromModelZ(z,3);
+        addQuad(depthBands,[-1.46,-.432,wz+.43],[1.46,-.432,wz+.43],[1.46,-.432,wz-.43],[-1.46,-.432,wz-.43],[0,1,0],cols[z]);
+      }
+      this.drawCubeBatch(depthBands,false);
+
+      // If the accessibility depth assist is being used, show only a small floor rail.
+      if(!s.directDepth){
+        const wz=worldDepthFromModelZ(s.selectedLayer,3);
+        const rail=[];
+        addBox(rail,0,-.405,wz,2.90,.026,.035,[.34,.90,.84,.62]);
+        this.drawCubeBatch(rail,false);
+      }
+
+      // Four low corner feet anchor the build area without enclosing it.
+      const feet=[];
+      for(const x of [-1.52,1.52])for(const z of [-1.52,1.52]){
+        addBox(feet,x,-.355,z,.16,.17,.16,[.50,.34,.13,.78]);
+      }
+      this.drawCubeBatch(feet,true);
+    }
+  }
+  drawCubes(occ,size,s){
+    const now=performance.now();const data=[];
+    const base=hexRgb(0x9a79ed),active=hexRgb(0xb69fff),teal=hexRgb(0x5ce4d8),gold=hexRgb(0xffc761);
+    const scaleGrow=(s.level.task==="scale"&&s.scaleStage===3&&this.scaleGrowStart)?clamp((now-this.scaleGrowStart)/1650,0,1):1;
+    for(let z=0;z<size;z++)for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+      if(!occ[indexOf(x,y,z,size)])continue;
+      if(scaleGrow<1){const denom=Math.max(1,3*(size-1));const order=(x+y+z)/denom;if(order>scaleGrow*1.18)continue;}
+      let [wx,wy,wz]=this.logicalWorld(x,y,z,size);let scale=1,alpha=1;
+      if(size===3&&this.motion&&this.motion.x===x&&this.motion.y===y&&this.motion.z===z){
+        const t=clamp((now-this.motion.start)/300,0,1); const e=easeOutBack(t); wy += (1-e)*.48; scale=mix(.78,1,e); if(t>=1)this.motion=null;
+      }
+      let col=(size===3&&!s.directDepth&&s.selectedLayer===z&&s.building)?active:base;
+      if(size===3&&s.building&&!s.directDepth&&z!==s.selectedLayer)col=[col[0]*.82,col[1]*.83,col[2]*.90];
+      if(size===3&&s.building&&s.directDepth){const df=1-z*.045;col=[col[0]*df,col[1]*df,col[2]*mix(1,.94,z/2)];}
+      if(size===3&&s.highlightedRay&&projectionRay(s.highlightedRay.view,s.highlightedRay.row,s.highlightedRay.column,3).some(q=>q[0]===x&&q[1]===y&&q[2]===z))col=teal;
+      if(s.celebrateStart){const t=clamp((now-s.celebrateStart)/900,0,1);if(t<1){const center=(x+y+z)/Math.max(1,3*(size-1));const wave=clamp(1-Math.abs(center-t*1.25)*3.2,0,1)*Math.sin(t*Math.PI);col=[mix(col[0],1,wave*.68),mix(col[1],.79,wave*.68),mix(col[2],.30,wave*.68)];this.ensureLoop();}}
+      const solid=(dx,dy,dz)=>{const X=x+dx,Y=y+dy,Z=z+dz;return X>=0&&Y>=0&&Z>=0&&X<size&&Y<size&&Z<size&&!!occ[indexOf(X,Y,Z,size)];};
+      addVoxelAO(data,wx,wy,wz,.44*scale,[col[0],col[1],col[2],alpha],solid);
+    }
+    if(this.removing){
+      const t=clamp((now-this.removing.start)/210,0,1); if(t<1){const [wx,wy0,wz]=this.logicalWorld(this.removing.x,this.removing.y,this.removing.z,3);const e=easeOutCubic(t),sc=1-e*.68;addBox(data,wx,wy0+e*.25,wz,.88*sc,.88*sc,.88*sc,[gold[0],gold[1],gold[2],1-t]);} else this.removing=null;
+    }
+    this.drawCubeBatch(data,true);
+    // Crisp seams keep touching voxels legible without expensive post-processing.
+    const seams=[];
+    for(let z=0;z<size;z++)for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+      if(!occ[indexOf(x,y,z,size)])continue;
+      const [wx,wy,wz]=this.logicalWorld(x,y,z,size),h=.445;
+      const p=[[wx-h,wy-h,wz-h],[wx+h,wy-h,wz-h],[wx+h,wy+h,wz-h],[wx-h,wy+h,wz-h],[wx-h,wy-h,wz+h],[wx+h,wy-h,wz+h],[wx+h,wy+h,wz+h],[wx-h,wy+h,wz+h]];
+      for(const [a,b] of [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]])addLine(seams,p[a],p[b]);
+    }
+    this.drawLines(seams,[0.10,0.075,0.19,0.28]);
+
+    const shadow=[];
+    for(let z=0;z<size;z++)for(let x=0;x<size;x++)if(occ[indexOf(x,0,z,size)]){
+      const [wx,,wz]=this.logicalWorld(x,0,z,size);addQuad(shadow,[wx-.38,-.425,wz-.38],[wx+.38,-.425,wz-.38],[wx+.38,-.425,wz+.38],[wx-.38,-.425,wz+.38],[0,1,0],[0.01,0.012,0.035,.38]);
+    }
+    this.drawCubeBatch(shadow,false);
+  }
+  drawOverlays(occ,size,s){
+    // Direct-depth mode uses the geometry itself as the control surface.
+    // A faint snap pad marks every currently placeable column: on the floor for
+    // the first cube, or on top of the current stack for the next cube.
+    // This replaces the old invisible vertical hit planes that made only the
+    // front and right edge reliably tappable.
+    if(size===3&&s.building&&s.directDepth&&!s.depthPreview){
+      const pads=[];
+      for(let z=0;z<3;z++)for(let x=0;x<3;x++){
+        let h=0;
+        while(h<3&&occ[indexOf(x,h,z,3)])h++;
+        if(h>=3)continue;
+        const [wx,,wz]=this.logicalWorld(x,0,z,3);
+        const py=h===0?-.425:(h-1)+.455;
+        addBox(pads,wx,py,wz,.56,.018,.56,[.20,.94,.82,h===0?.075:.095]);
+      }
+      this.drawCubeBatch(pads,false);
+    }
+    if(size===3&&s.building&&s.depthPreview?.candidates?.length){
+      const selected=s.depthPreview.selectedKey;
+      for(const h of s.depthPreview.candidates){
+        const key=`${h.x},${h.y},${h.z}`,chosen=key===selected;
+        const occupied=!!occ[indexOf(h.x,h.y,h.z,3)],supported=h.y===0||!!occ[indexOf(h.x,h.y-1,h.z,3)];
+        const [wx,wy,wz]=this.logicalWorld(h.x,h.y,h.z,3);
+        const fill=chosen?(occupied?[1,.76,.30,.22]:(supported?[.25,1,.88,.22]:[1,.34,.37,.18])):[.55,.43,.92,.055];
+        const ghost=[];addBox(ghost,wx,wy,wz,chosen?.93:.89,chosen?.93:.89,chosen?.93:.89,fill);this.drawCubeBatch(ghost,false);
+        const outline=[],q=chosen?.50:.47,pts=[[wx-q,wy-q,wz-q],[wx+q,wy-q,wz-q],[wx+q,wy+q,wz-q],[wx-q,wy+q,wz-q],[wx-q,wy-q,wz+q],[wx+q,wy-q,wz+q],[wx+q,wy+q,wz+q],[wx-q,wy+q,wz+q]];
+        for(const [a,b] of [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]])addLine(outline,pts[a],pts[b]);
+        this.drawLines(outline,chosen?(occupied?[1,.82,.43,.95]:(supported?[.42,1,.91,.98]:[1,.42,.44,.95])):[.68,.56,.98,.34]);
+      }
+    }
+    if(size===3&&s.building&&this.hover&&!s.depthPreview){
+      const h=this.hover,occupied=occ[indexOf(h.x,h.y,h.z,3)],supported=h.y===0||occ[indexOf(h.x,h.y-1,h.z,3)];
+      const [wx,wy,wz]=this.logicalWorld(h.x,h.y,h.z,3);const c=occupied?[1,.76,.32,.28]:(supported?[.32,1,.86,.26]:[1,.34,.36,.22]);
+      if(h.touch&&h.kind==="place"){
+        const py=h.y===0?-.425:(h.y-1)+.455,halo=[];
+        addBox(halo,wx,py+.010,wz,.80,.024,.80,[.20,.95,.84,.19]);
+        this.drawCubeBatch(halo,false);
+      }
+      const ghost=[];addBox(ghost,wx,wy,wz,.91,.91,.91,c);this.drawCubeBatch(ghost,false);
+      const outline=[];const s2=.49;const pts=[[wx-s2,wy-s2,wz-s2],[wx+s2,wy-s2,wz-s2],[wx+s2,wy+s2,wz-s2],[wx-s2,wy+s2,wz-s2],[wx-s2,wy-s2,wz+s2],[wx+s2,wy-s2,wz+s2],[wx+s2,wy+s2,wz+s2],[wx-s2,wy+s2,wz+s2]];for(const [a,b] of [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]])addLine(outline,pts[a],pts[b]);this.drawLines(outline,occupied?[1,.82,.43,.8]:(supported?[.45,1,.91,.85]:[1,.42,.44,.8]));
+    }
+    if(size===3&&s.highlightedRay){
+      const pulse=.6+.4*Math.sin(performance.now()/220);
+      const line=[],ray=projectionRay(s.highlightedRay.view,s.highlightedRay.row,s.highlightedRay.column,3);const first=ray[0],last=ray[ray.length-1];const a=this.logicalWorld(first[0],first[1],first[2],3),b=this.logicalWorld(last[0],last[1],last[2],3);addLine(line,a,b);this.drawLines(line,[.38,1,.93,.98]);
+      const cells=[];for(const q of ray){const [wx,wy,wz]=this.logicalWorld(q[0],q[1],q[2],3);addBox(cells,wx,wy,wz,.94,.94,.94,[.25,1,.91,.09]);}this.drawCubeBatch(cells,false);
+      const glow=[];for(const q of ray){const [wx,wy,wz]=this.logicalWorld(q[0],q[1],q[2],3);addBox(glow,wx,wy,wz,1.055,1.055,1.055,[.16,.9,.85,.085*pulse]);}
+      const gl=this.gl;gl.blendFunc(gl.SRC_ALPHA,gl.ONE);this.drawCubeBatch(glow,false);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);this.ensureLoop();
+    }
+    if(s.scanDirection&&this.scanStart){
+      const t=clamp((performance.now()-this.scanStart)/850,0,1);if(t<1){
+        const p=easeOutCubic(t),plane=[];const half=size/2;let a,b,c,d,n;
+        if(s.scanDirection==="front"){const z=mix(half+1,-half-1,p);a=[-half,-.5,z];b=[half,-.5,z];c=[half,size-.5,z];d=[-half,size-.5,z];n=[0,0,1];}
+        else if(s.scanDirection==="top"){const y=mix(size+.5,-1,p);a=[-half,y,-half];b=[half,y,-half];c=[half,y,half];d=[-half,y,half];n=[0,1,0];}
+        else {const x=mix(half+1,-half-1,p);a=[x,-.5,-half];b=[x,-.5,half];c=[x,size-.5,half];d=[x,size-.5,-half];n=[1,0,0];}
+        addQuad(plane,a,b,c,d,n,[.24,1,.91,.18]);this.drawCubeBatch(plane,false);
+        const trail=[];const lag=.28;
+        if(s.scanDirection==="front"){const z=mix(half+1,-half-1,clamp(p-lag,0,1));addQuad(trail,[-half,-.5,z],[half,-.5,z],[half,size-.5,z],[-half,size-.5,z],[0,0,1],[.24,1,.91,.055]);}
+        else if(s.scanDirection==="top"){const y=mix(size+.5,-1,clamp(p-lag,0,1));addQuad(trail,[-half,y,-half],[half,y,-half],[half,y,half],[-half,y,half],[0,1,0],[.24,1,.91,.05]);}
+        else {const x=mix(half+1,-half-1,clamp(p-lag,0,1));addQuad(trail,[x,-.5,-half],[x,-.5,half],[x,size-.5,half],[x,size-.5,-half],[1,0,0],[.24,1,.91,.05]);}
+        this.drawCubeBatch(trail,false);this.ensureLoop();
+      }
+    }
+    if(s.level.task==="scale"&&s.scaleRunning&&s.scaleStage>0&&s.scaleStage<3){this.drawScaleDemo(size,s);}
+  }
+  drawScaleDemo(size,s){
+    const k=s.level.scaleFactor||2, gold=[1,.78,.29,.95];const lines=[];
+    // Place demonstration above/right of the base model but still in the same 3D chamber.
+    const x0=1.8,y0=1.15,z0=-.5;
+    if(s.scaleStage===1){
+      addLine(lines,[x0,y0,z0],[x0+k,y0,z0]);
+      for(let i=0;i<=k;i++)addLine(lines,[x0+i,y0-.12,z0],[x0+i,y0+.12,z0]);
+      this.drawLines(lines,gold);
+    }else{
+      for(let i=0;i<=k;i++){addLine(lines,[x0+i,y0,z0],[x0+i,y0,z0-k]);addLine(lines,[x0,y0,z0-i],[x0+k,y0,z0-i]);}
+      this.drawLines(lines,gold);
+      const tiles=[];for(let a=0;a<k;a++)for(let b=0;b<k;b++)addQuad(tiles,[x0+a+.04,y0-.01,z0-b-.04],[x0+a+.96,y0-.01,z0-b-.04],[x0+a+.96,y0-.01,z0-b-.96],[x0+a+.04,y0-.01,z0-b-.96],[0,1,0],[1,.71,.22,.08]);this.drawCubeBatch(tiles,false);
+    }
+  }
+  buildHits(size,s){
+    this.hits=[];
+    if(size!==3||!s.building)return;
+
+    if(!s.directDepth){
+      // Compatibility/accessibility mode keeps the proven deterministic layer plane.
+      const z=s.selectedLayer;
+      for(let y=0;y<3;y++)for(let x=0;x<3;x++){
+        const pts=this.cellPoly(x,y,z,3),center=this.screen(this.logicalWorld(x,y,z,3));
+        this.hits.push({x,y,z,pts,screenZ:center.z});
+      }
+      this.hits.sort((a,b)=>a.screenZ-b.screenZ);
+      return;
+    }
+
+    const occ=s.occupancy;
+    // Surface picking: every x/z column exposes exactly one build surface and,
+    // where present, the side faces of the top removable cube.  The complete
+    // 3x3 floor is therefore tappable; deeper rows are not hidden behind an
+    // abstract vertical hit plane.
+    for(let z=0;z<3;z++)for(let x=0;x<3;x++){
+      let h=0;
+      while(h<3&&occ[indexOf(x,h,z,3)])h++;
+
+      if(h<3){
+        const surfaceY=h===0?-.425:(h-1)+.455;
+        const pts=this.horizontalPoly(x,surfaceY,z,3,.46);
+        const center=this.screen(this.logicalWorld(x,Math.max(0,h-.5),z,3));
+        this.hits.push({x,y:h,z,kind:"place",pts,screenZ:center.z});
+      }
+
+      if(h>0){
+        const y=h-1;
+        const center=this.screen(this.logicalWorld(x,y,z,3));
+        for(const pts of this.cubeSidePolys(x,y,z,3,.445)){
+          this.hits.push({x,y,z,kind:"remove",pts,screenZ:center.z});
+        }
+      }
+    }
+    this.hits.sort((a,b)=>a.screenZ-b.screenZ);
+  }
+  drawCubeBatch(data,depthWrite=true){
+    if(!data.length)return;const gl=this.gl,stride=10*4;gl.useProgram(this.cubeProgram);gl.uniformMatrix4fv(this.cubeLoc.vp,false,this.viewProj);gl.bindBuffer(gl.ARRAY_BUFFER,this.cubeBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(this.cubeLoc.pos);gl.vertexAttribPointer(this.cubeLoc.pos,3,gl.FLOAT,false,stride,0);
+    gl.enableVertexAttribArray(this.cubeLoc.normal);gl.vertexAttribPointer(this.cubeLoc.normal,3,gl.FLOAT,false,stride,3*4);
+    gl.enableVertexAttribArray(this.cubeLoc.color);gl.vertexAttribPointer(this.cubeLoc.color,4,gl.FLOAT,false,stride,6*4);
+    gl.depthMask(depthWrite);gl.drawArrays(gl.TRIANGLES,0,data.length/10);gl.depthMask(true);
+  }
+  drawLines(data,color){
+    if(!data.length)return;const gl=this.gl;gl.useProgram(this.flatProgram);gl.uniformMatrix4fv(this.flatLoc.vp,false,this.viewProj);gl.uniform4fv(this.flatLoc.color,new Float32Array(color));gl.bindBuffer(gl.ARRAY_BUFFER,this.lineBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(this.flatLoc.pos);gl.vertexAttribPointer(this.flatLoc.pos,3,gl.FLOAT,false,3*4,0);gl.depthMask(false);gl.drawArrays(gl.LINES,0,data.length/3);gl.depthMask(true);
+  }
+}
+
+function createScaleRenderer(canvas,options={}){return new ScaleWebGLRenderer(canvas,options);}
+
+// v0.6.1 — The landing page now renders the real in-game 2.5D board and cubes.
+// No separate SVG/DALL-E imitation: this is the same renderer used during play,
+// showing an actual campaign model (SA22 · Volledige reconstructie).
+let saHomeRenderer = null;
+function drawSaHomeHero(){
+  const canvas = document.getElementById("saHeroCanvas");
+  if (!canvas || !document.body.classList.contains("shell-home")) return;
+  const heroLevel = LEVELS[21] || LEVELS[LEVELS.length - 1];
+  if (!heroLevel) return;
+  if (!saHomeRenderer) {
+    try {
+      saHomeRenderer = createScaleRenderer(canvas);
+    } catch (error) {
+      console.warn("Startscherm-WebGL niet beschikbaar; gebruik 2.5D compatibiliteitsrenderer.", error);
+      saHomeRenderer = createScaleRenderer(canvas, { force2D: true });
+    }
+  }
+  saHomeRenderer.render({
+    level: heroLevel,
+    occupancy: heroLevel.exampleOccupancy,
+    selectedLayer: 0,
+    depthPreview: null,
+    directDepth: false,
+    highlightedRay: null,
+    building: false,
+    scanDirection: null,
+    scaleRunning: false,
+    scaleStage: 0,
+    scaled: null,
+    celebrateStart: 0,
+  });
+}
+window.addEventListener("scaleassembly:home", () => requestAnimationFrame(drawSaHomeHero));
+window.addEventListener("resize", () => requestAnimationFrame(drawSaHomeHero));
+requestAnimationFrame(drawSaHomeHero);
+
+;
+const $ = (s) => document.querySelector(s);
+const VIEW_LABELS = { front: "VOOR", top: "BOVEN", side: "ZIJ" };
+const VIEW_HINTS = { front: "x →", top: "achter ↑", side: "voor ←" };
+const DEPTH_LABELS = ["VOOR", "MIDDEN", "ACHTER"];
+const BUILD_TASKS = new Set(["build_unique", "build_variant", "build_variant_predict", "predict_hidden_view", "repair", "preserve_change", "minimal", "maximal", "plan_repair"]);
+
+const PROGRESS_KEY = "axioma.scaleAssembly.v0.5.progress";
+function loadProgress() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
+    const completed = Array.isArray(raw.completed)
+      ? raw.completed.filter((i) => Number.isInteger(i) && i >= 0 && i < LEVELS.length)
+      : [];
+    const lastLevel = Number.isInteger(raw.lastLevel)
+      ? Math.max(0, Math.min(LEVELS.length - 1, raw.lastLevel))
+      : 0;
+    return { completed: new Set(completed), lastLevel };
+  } catch {
+    return { completed: new Set(), lastLevel: 0 };
+  }
+}
+const savedProgress = loadProgress();
+function persistProgress(lastLevel = state?.levelIndex ?? savedProgress.lastLevel) {
+  savedProgress.lastLevel = Math.max(0, Math.min(LEVELS.length - 1, lastLevel));
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({
+      completed: [...savedProgress.completed].sort((a, b) => a - b),
+      lastLevel: savedProgress.lastLevel,
+    }));
+  } catch {}
+  window.dispatchEvent(new CustomEvent("scaleassembly:progress", { detail: getProgressSnapshot() }));
+}
+function markLevelCompleted() {
+  savedProgress.completed.add(state.levelIndex);
+  persistProgress(state.levelIndex);
+}
+function getProgressSnapshot() {
+  return {
+    completed: [...savedProgress.completed].sort((a, b) => a - b),
+    lastLevel: savedProgress.lastLevel,
+    total: LEVELS.length,
+  };
+}
+
+const state = {
+  levelIndex: savedProgress.lastLevel,
+  occupancy: emptyOccupancy(3),
+  history: [],
+  selectedLayer: 0,
+  assistOpen: false,
+  depthPreview: null,
+  cameraStep: 0,
+  feedback: null,
+  feedbackTone: "quiet",
+  completed: false,
+  revealedSide: false,
+  revealSolutions: [],
+  revealIndex: 0,
+  revealTimer: null,
+  variantPhase: 0,
+  firstSolution: null,
+  optimizePhase: 0,
+  optimizeStartCount: 0,
+  predictionMode: false,
+  predictionView: "side",
+  prediction: Array(9).fill(false),
+  predictionErrors: new Set(),
+  planPhase: 0,
+  planViews: null,
+  highlightedRay: null,
+  scaleQuestion: 0,
+  scaleRunning: false,
+  scaleStage: 0,
+  scaleTimers: [],
+  celebrateStart: 0,
+  gameCompleted: false,
+  completionSent: false,
+};
+
+let buildTutorialSeen = false;
+function dismissBuildTutorial(){
+  buildTutorialSeen = true;
+  $("#buildTutorial")?.classList.remove("show");
+}
+
+let stageRenderer = null;
+const level = () => LEVELS[state.levelIndex];
+const buzz = (p = 10) => { try { navigator.vibrate?.(p); } catch {} };
+const keyOf = (p) => `${p.x},${p.y},${p.z}`;
+
+function setFeedback(text = "", tone = "quiet") {
+  state.feedback = text;
+  state.feedbackTone = tone;
+}
+
+function clearTimers() {
+  if (state.revealTimer) {
+    clearInterval(state.revealTimer);
+    state.revealTimer = null;
+  }
+  state.scaleTimers.forEach(clearTimeout);
+  state.scaleTimers = [];
+}
+
+function clearDepthPreview() {
+  state.depthPreview = null;
+}
+
+function cloneViewSet(views) {
+  return Object.fromEntries(Object.entries(views).map(([name, grid]) => [name, grid.map((row) => [...row])]));
+}
+
+function resetForLevel(nextLevel) {
+  clearTimers();
+  persistProgress(state.levelIndex);
+  if (nextLevel.task === "scale" || nextLevel.task === "draw_view") state.occupancy = cloneOccupancy(nextLevel.exampleOccupancy);
+  else if (nextLevel.initialOccupancy) state.occupancy = cloneOccupancy(nextLevel.initialOccupancy);
+  else state.occupancy = emptyOccupancy(nextLevel.size);
+  state.history = [];
+  state.selectedLayer = 0;
+  state.assistOpen = false;
+  state.depthPreview = null;
+  state.cameraStep = 0;
+  stageRenderer?.setCameraStep?.(0);
+  state.feedback = null;
+  state.feedbackTone = "quiet";
+  state.completed = false;
+  state.revealedSide = nextLevel.givenViews.includes("side") || nextLevel.task === "scale";
+  state.revealSolutions = [];
+  state.revealIndex = 0;
+  state.variantPhase = 0;
+  state.firstSolution = null;
+  state.optimizePhase = 0;
+  state.optimizeStartCount = 0;
+  state.predictionMode = nextLevel.task === "draw_view";
+  state.predictionView = nextLevel.drawView || nextLevel.hiddenView || "side";
+  state.prediction = Array(9).fill(false);
+  state.predictionErrors = new Set();
+  state.planPhase = 0;
+  state.planViews = nextLevel.task === "plan_repair" ? cloneViewSet(nextLevel.flawedViews) : null;
+  state.highlightedRay = null;
+  state.scaleQuestion = 0;
+  state.scaleRunning = false;
+  state.scaleStage = 0;
+  state.celebrateStart = 0;
+  render();
+}
+
+const currentViews = () => projectOccupancy(state.occupancy, level().size);
+const activeTargetViews = () => level().task === "plan_repair" && state.planPhase ? state.planViews : level().targetViews;
+const isBuildPhase = () => BUILD_TASKS.has(level().task) && !(level().task === "plan_repair" && state.planPhase === 0);
+
+function firstMismatch(cur, target, views) {
+  for (const v of views) {
+    for (let r = 0; r < target[v].length; r += 1) {
+      for (let c = 0; c < target[v][r].length; c += 1) {
+        if (cur[v][r][c] !== target[v][r][c]) return { view: v, row: r, column: c };
+      }
+    }
+  }
+  return null;
+}
+
+function canRemove(x, y, z) {
+  const l = level();
+  if (!state.occupancy[indexOf(x, y, z, l.size)]) return false;
+  return !(y < l.size - 1 && state.occupancy[indexOf(x, y + 1, z, l.size)]);
+}
+
+function canPlace(x, y, z) {
+  const l = level();
+  if (state.occupancy[indexOf(x, y, z, l.size)]) return false;
+  return y === 0 || !!state.occupancy[indexOf(x, y - 1, z, l.size)];
+}
+
+function isActionable(p) {
+  const l = level();
+  const occupied = !!state.occupancy[indexOf(p.x, p.y, p.z, l.size)];
+  return occupied ? canRemove(p.x, p.y, p.z) : canPlace(p.x, p.y, p.z);
+}
+
+function placeOrRemove(x, y, z) {
+  const l = level();
+  if (state.completed || state.predictionMode || !isBuildPhase()) return;
+  if (state.levelIndex === 0) dismissBuildTutorial();
+  const pos = indexOf(x, y, z, l.size);
+  const next = cloneOccupancy(state.occupancy);
+  const wasOccupied = !!next[pos];
+
+  if (wasOccupied) {
+    if (y < l.size - 1 && next[indexOf(x, y + 1, z, l.size)]) {
+      setFeedback("Deze kubus draagt nog een kubus. Neem eerst de bovenste weg.", "bad");
+      buzz(24);
+      clearDepthPreview();
+      render();
+      return;
+    }
+    next[pos] = false;
+  } else {
+    if (y > 0 && !next[indexOf(x, y - 1, z, l.size)]) {
+      setFeedback("Hier ontbreekt steun. Plaats eerst de kubus eronder.", "bad");
+      buzz(24);
+      clearDepthPreview();
+      render();
+      return;
+    }
+    next[pos] = true;
+  }
+
+  state.history.push(state.occupancy);
+  state.occupancy = next;
+  state.selectedLayer = z;
+  state.highlightedRay = null;
+  state.celebrateStart = 0;
+  clearDepthPreview();
+  setFeedback();
+  stageRenderer?.animatePlacement(x, y, z, wasOccupied);
+  buzz(8);
+  render();
+}
+
+function undo() {
+  if (!state.history.length) return;
+  state.occupancy = state.history.pop();
+  state.highlightedRay = null;
+  state.celebrateStart = 0;
+  clearDepthPreview();
+  setFeedback();
+  buzz(6);
+  render();
+}
+
+function columnHeight(occupancy, x, z, size = 3) {
+  let height = 0;
+  for (let y = 0; y < size; y += 1) if (occupancy[indexOf(x, y, z, size)]) height += 1;
+  return height;
+}
+
+function changedColumns(a, b, size = 3) {
+  let changed = 0;
+  for (let z = 0; z < size; z += 1) {
+    for (let x = 0; x < size; x += 1) {
+      if (columnHeight(a, x, z, size) !== columnHeight(b, x, z, size)) changed += 1;
+    }
+  }
+  return changed;
+}
+
+function finishBuildLevel(message) {
+  state.completed = true;
+  markLevelCompleted();
+  state.highlightedRay = null;
+  state.celebrateStart = performance.now();
+  setFeedback(message, "good");
+  buzz([15, 35, 20]);
+  render();
+}
+
+function beginVariantRound(l, cubes) {
+  state.firstSolution = cloneOccupancy(state.occupancy);
+  state.variantPhase = 1;
+  state.history = [];
+  state.highlightedRay = null;
+  setFeedback(`Deel 1 klaar. Verbouw nu dezelfde ${cubes} kubussen tot een andere oplossing.`, "good");
+  buzz([10, 24, 10]);
+  render();
+}
+
+function finishVariantRound(l) {
+  const second = cloneOccupancy(state.occupancy);
+  state.revealSolutions = [cloneOccupancy(state.firstSolution), second];
+  state.revealIndex = 0;
+  state.completed = true;
+  markLevelCompleted();
+  state.highlightedRay = null;
+  state.celebrateStart = performance.now();
+  setFeedback("Juist. Twee verschillende 3D-modellen geven exact dezelfde aanzichten.", "good");
+  state.revealTimer = setInterval(() => {
+    state.revealIndex = (state.revealIndex + 1) % state.revealSolutions.length;
+    drawStage();
+  }, 1450);
+  buzz([15, 35, 20]);
+  render();
+}
+
+function beginPrediction(view, message) {
+  state.predictionMode = true;
+  state.predictionView = view;
+  state.prediction = Array(9).fill(false);
+  state.predictionErrors = new Set();
+  state.highlightedRay = null;
+  setFeedback(message);
+  buzz([10, 30, 10]);
+  render();
+}
+
+function checkBuild() {
+  const l = level();
+  const targets = activeTargetViews();
+  const cur = currentViews();
+  clearDepthPreview();
+
+  if (!modelMatchesViews(state.occupancy, targets, l.givenViews, l.size)) {
+    state.highlightedRay = firstMismatch(cur, targets, l.givenViews);
+    setFeedback("Eén kijklijn klopt nog niet. De gemarkeerde lijn helpt je zoeken.", "bad");
+    buzz(28);
+    render();
+    return;
+  }
+
+  const cubes = countVoxels(state.occupancy);
+
+  if (l.task === "build_variant" || l.task === "build_variant_predict") {
+    if (cubes !== l.cubeBudget) {
+      setFeedback(`De aanzichten kloppen, maar gebruik precies ${l.cubeBudget} kubussen. Nu heb je er ${cubes}.`, "bad");
+      buzz(22);
+      render();
+      return;
+    }
+
+    if (!state.variantPhase) {
+      beginVariantRound(l, cubes);
+      return;
+    }
+
+    const changed = changedColumns(state.firstSolution, state.occupancy, l.size);
+    if (changed === 0) {
+      setFeedback("Dit is nog je eerste oplossing. Verbouw het model echt.", "bad");
+      buzz(20);
+      render();
+      return;
+    }
+    if (changed < l.minChangedColumns) {
+      setFeedback(`Nog te weinig veranderd. Maak minstens ${l.minChangedColumns} stapels anders en laat de aanzichten kloppen.`, "bad");
+      buzz(20);
+      render();
+      return;
+    }
+
+    if (l.task === "build_variant_predict") {
+      const firstHidden = projectOccupancy(state.firstSolution, l.size)[l.hiddenView];
+      const secondHidden = cur[l.hiddenView];
+      if (viewsEqual(firstHidden, secondHidden)) {
+        setFeedback(`${VIEW_LABELS[l.hiddenView]} ziet er nog hetzelfde uit. Maak je tweede model zo anders dat ook die derde kijkrichting verandert.`, "bad");
+        buzz(22);
+        render();
+        return;
+      }
+      state.variantPhase = 2;
+      beginPrediction(l.hiddenView, `Goed. De twee modellen verschillen echt. Teken nu ${VIEW_LABELS[l.hiddenView]} van je tweede model.`);
+      return;
+    }
+
+    finishVariantRound(l);
+    return;
+  }
+
+  if (l.task === "predict_hidden_view") {
+    beginPrediction(l.hiddenView, `Je model past. Teken nu ${VIEW_LABELS[l.hiddenView]} van precies jouw eigen model.`);
+    return;
+  }
+
+  if (l.task === "repair") {
+    if (state.history.length !== l.exactActions) {
+      setFeedback(`Het model klopt, maar de opdracht vroeg precies ${l.exactActions} verandering. Herstart en zoek de ene beslissende kubus.`, "bad");
+      buzz(22);
+      render();
+      return;
+    }
+    finishBuildLevel("Juist. Eén gerichte verandering repareert beide aanzichten.");
+    return;
+  }
+
+  if (l.task === "preserve_change") {
+    finishBuildLevel(`${VIEW_LABELS[l.preserveView]} bleef gelijk terwijl ${VIEW_LABELS[l.changeView]} veranderde. Precies de bedoeling.`);
+    return;
+  }
+
+  if (l.task === "minimal") {
+    const min = minimumCubeCount({ targetViews: targets, givenViews: l.givenViews, size: l.size });
+    if (!state.optimizePhase) {
+      if (cubes !== l.startCubeCount) {
+        setFeedback(`De aanzichten kloppen, maar bouw de eerste versie met precies ${l.startCubeCount} kubussen. Nu heb je er ${cubes}.`, "bad");
+        buzz(20);
+        render();
+        return;
+      }
+      state.optimizePhase = 1;
+      state.optimizeStartCount = cubes;
+      state.history = [];
+      state.highlightedRay = null;
+      setFeedback(`Goed. Eerste model bewaard met ${cubes} kubussen. Nu dezelfde aanzichten met minder materiaal.`, "good");
+      buzz([10, 24, 10]);
+      render();
+      return;
+    }
+
+    if (cubes > min) {
+      setFeedback(`Dit klopt met ${cubes} kubussen, maar het kan nog zuiniger. Zoek minstens één overbodige kubus.`, "bad");
+      buzz(20);
+      render();
+      return;
+    }
+    finishBuildLevel(`Geldig én zo zuinig mogelijk: ${cubes} kubussen.`);
+    return;
+  }
+
+  if (l.task === "maximal") {
+    const max = maximumCubeCount({ targetViews: targets, givenViews: l.givenViews, size: l.size });
+    if (cubes < max) {
+      setFeedback(`Het model klopt met ${cubes} kubussen, maar er past nog verborgen volume bij zonder de aanzichten te veranderen.`, "bad");
+      buzz(18);
+      render();
+      return;
+    }
+    finishBuildLevel(`Vol: ${cubes} kubussen. Meer kan niet zonder een aanzicht te veranderen.`);
+    return;
+  }
+
+  if (l.task === "plan_repair") {
+    finishBuildLevel("Je gerepareerde bouwtekening werkt ook echt als 3D-model.");
+    return;
+  }
+
+  const viewsText = l.givenViews.length === 3 ? "alle drie de aanzichten" : l.givenViews.map((v) => VIEW_LABELS[v]).join(" en ");
+  finishBuildLevel(`Correct. De 3D-vorm past exact bij ${viewsText}.`);
+}
+
+function checkPrediction() {
+  const l = level();
+  const view = state.predictionView;
+  const cur = currentViews();
+  const pred = Array.from({ length: 3 }, (_, r) => state.prediction.slice(r * 3, r * 3 + 3));
+  if (viewsEqual(pred, cur[view])) {
+    state.predictionErrors = new Set();
+    state.predictionMode = false;
+    state.highlightedRay = null;
+    state.completed = true;
+    markLevelCompleted();
+    state.celebrateStart = performance.now();
+
+    if (l.task === "build_variant_predict") {
+      state.revealSolutions = [cloneOccupancy(state.firstSolution), cloneOccupancy(state.occupancy)];
+      state.revealIndex = 0;
+      state.revealTimer = setInterval(() => {
+        state.revealIndex = (state.revealIndex + 1) % state.revealSolutions.length;
+        drawStage();
+      }, 1450);
+      setFeedback(`Juist. De eerste twee aanzichten bleven gelijk, maar ${VIEW_LABELS[view]} bewijst dat de modellen verschillen.`, "good");
+    } else if (l.task === "draw_view") {
+      setFeedback(`Juist. Dat is exact het ${VIEW_LABELS[view]}-aanzicht van dit 3D-model.`, "good");
+    } else {
+      setFeedback(`Je voorspelling en de echte ${VIEW_LABELS[view]}-scan vallen perfect samen.`, "good");
+    }
+    buzz([15, 35, 20]);
+    render();
+    return;
+  }
+
+  const errors = new Set();
+  for (let r = 0; r < 3; r += 1) for (let c = 0; c < 3; c += 1) if (pred[r][c] !== cur[view][r][c]) errors.add(r * 3 + c);
+  state.predictionErrors = errors;
+  const first = [...errors][0];
+  state.highlightedRay = { view, row: Math.floor(first / 3), column: first % 3 };
+  setFeedback(`Deze ${VIEW_LABELS[view]}-kijklijn komt nog niet overeen met het 3D-model.`, "bad");
+  buzz(24);
+  render();
+}
+
+function countPlanEdits() {
+  const l = level();
+  let edits = 0;
+  for (const view of l.givenViews) for (let r = 0; r < 3; r += 1) for (let c = 0; c < 3; c += 1) {
+    if (state.planViews[view][r][c] !== l.flawedViews[view][r][c]) edits += 1;
+  }
+  return edits;
+}
+
+function checkPlanRepair() {
+  const l = level();
+  const edits = countPlanEdits();
+  if (edits !== 1) {
+    setFeedback(`Verander precies één vak. Je hebt er nu ${edits} aangepast.`, "bad");
+    buzz(20);
+    render();
+    return;
+  }
+  const solutions = solveViews({ targetViews: state.planViews, givenViews: l.givenViews, size: l.size, limit: 2 });
+  if (!solutions.length) {
+    setFeedback("Nog niet: deze drie tekeningen kunnen nog altijd niet van één 3D-model komen.", "bad");
+    buzz(24);
+    render();
+    return;
+  }
+  state.planPhase = 1;
+  state.occupancy = emptyOccupancy(l.size);
+  state.history = [];
+  state.highlightedRay = null;
+  setFeedback("Plan gerepareerd. Bouw nu het bewijs in 3D.", "good");
+  buzz([10, 24, 10]);
+  render();
+}
+
+function answerScale(value) {
+  const l = level();
+  const k = l.scaleFactor ?? 1;
+  const answers = [k, k ** 2, k ** 3];
+  if (value !== answers[state.scaleQuestion]) {
+    const d = ["één", "twee", "drie"][state.scaleQuestion];
+    setFeedback(`Hier groeit de maat in ${d} richting${state.scaleQuestion === 0 ? "" : "en"}.`, "bad");
+    buzz(22);
+    render();
+    return;
+  }
+  if (state.scaleQuestion < 2) {
+    state.scaleQuestion += 1;
+    setFeedback(state.scaleQuestion === 1 ? "Juist: lengte ×k. Nu het vlak." : "Juist: oppervlakte ×k². Nu het volume.");
+    buzz(8);
+    render();
+    return;
+  }
+  setFeedback();
+  state.scaleStage = 1;
+  state.scaleRunning = true;
+  render();
+  state.scaleTimers = [
+    setTimeout(() => { state.scaleStage = 2; render(); }, 900),
+    setTimeout(() => { state.scaleStage = 3; render(); }, 1850),
+    setTimeout(() => {
+      state.completed = true;
+      markLevelCompleted();
+      state.celebrateStart = performance.now();
+      setFeedback("Dezelfde vorm, exact opgebouwd uit nieuwe eenheidskubussen.", "good");
+      buzz([15, 35, 20]);
+      render();
+    }, 2900),
+  ];
+}
+
+function markGameComplete() {
+  if (state.completionSent) return;
+  state.completionSent = true;
+  window.AxiomaBridge.complete();
+}
+
+function nextLevel() {
+  if (state.levelIndex === LEVELS.length - 1) {
+    state.gameCompleted = true;
+    clearTimers();
+    markGameComplete();
+    render();
+    return;
+  }
+  state.levelIndex += 1;
+  persistProgress(state.levelIndex);
+  resetForLevel(LEVELS[state.levelIndex]);
+}
+
+function loadLevel(index) {
+  const next = Math.max(0, Math.min(LEVELS.length - 1, Number(index) || 0));
+  state.gameCompleted = false;
+  state.levelIndex = next;
+  persistProgress(next);
+  resetForLevel(LEVELS[next]);
+}
+
+function renderView(view, target, current, pred = false) {
+  const wrap = document.createElement("section");
+  wrap.className = `view${pred ? " pred" : ""}`;
+  const head = document.createElement("div");
+  head.className = "viewhead";
+  head.innerHTML = `<b>${pred ? `JOUW ${VIEW_LABELS[view]}` : VIEW_LABELS[view]}</b>`;
+  wrap.appendChild(head);
+
+  const grid = document.createElement("div");
+  grid.className = "grid3";
+  for (let r = 0; r < 3; r += 1) {
+    for (let c = 0; c < 3; c += 1) {
+      if (pred) {
+        const button = document.createElement("button");
+        const i = r * 3 + c;
+        button.className = `predcell ${state.prediction[i] ? "on" : ""} ${state.predictionErrors.has(i) ? "err" : ""}`;
+        button.setAttribute("aria-label", `Jouw ${VIEW_LABELS[view]} rij ${r + 1}, kolom ${c + 1}`);
+        button.onclick = () => {
+          state.prediction[i] = !state.prediction[i];
+          state.predictionErrors = new Set();
+          setFeedback();
+          render();
+        };
+        grid.appendChild(button);
+      } else {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "vcell";
+        button.setAttribute("aria-label", `${VIEW_LABELS[view]} rij ${r + 1}, kolom ${c + 1}`);
+        if (target?.[r]?.[c]) button.classList.add("target");
+        if (current?.[r]?.[c]) button.classList.add("live");
+        if (state.highlightedRay?.view === view && state.highlightedRay.row === r && state.highlightedRay.column === c) button.classList.add("miss");
+        button.onclick = () => {
+          clearDepthPreview();
+          state.highlightedRay = { view, row: r, column: c };
+          setFeedback("Deze lichtlijn toont welke 3D-plaatsen bij dit vak horen.", "quiet");
+          buzz(5);
+          render();
+        };
+        grid.appendChild(button);
+      }
+    }
+  }
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function renderPlanView(view) {
+  const l = level();
+  const wrap = document.createElement("section");
+  wrap.className = "view plan-view";
+  const head = document.createElement("div");
+  head.className = "viewhead";
+  head.innerHTML = `<b>PLAN ${VIEW_LABELS[view]}</b>`;
+  wrap.appendChild(head);
+  const grid = document.createElement("div");
+  grid.className = "grid3";
+  for (let r = 0; r < 3; r += 1) for (let c = 0; c < 3; c += 1) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "vcell plan-cell";
+    if (state.planViews[view][r][c]) button.classList.add("target");
+    if (state.planViews[view][r][c] !== l.flawedViews[view][r][c]) button.classList.add("plan-edit");
+    button.setAttribute("aria-label", `Plan ${VIEW_LABELS[view]} rij ${r + 1}, kolom ${c + 1}`);
+    button.onclick = () => {
+      state.planViews[view][r][c] = !state.planViews[view][r][c];
+      state.highlightedRay = null;
+      setFeedback();
+      buzz(5);
+      render();
+    };
+    grid.appendChild(button);
+  }
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function renderViews() {
+  const l = level();
+  const displayOccupancy = state.revealSolutions.length ? state.revealSolutions[state.revealIndex] : state.occupancy;
+  const cur = projectOccupancy(displayOccupancy, l.size);
+  const box = $("#views");
+  box.innerHTML = "";
+  box.classList.remove("has-pred", "single-view", "two-views", "three-views");
+
+  if (l.task === "plan_repair" && state.planPhase === 0) {
+    l.givenViews.forEach((v) => box.appendChild(renderPlanView(v)));
+    box.classList.add("three-views");
+    return;
+  }
+
+  const targets = activeTargetViews();
+  l.givenViews.forEach((v) => box.appendChild(renderView(v, targets[v], cur[v])));
+
+  if (state.predictionMode && !state.completed) {
+    box.appendChild(renderView(state.predictionView, null, null, true));
+    box.classList.add("has-pred");
+  } else if (["predict_hidden_view", "draw_view", "build_variant_predict"].includes(l.task) && state.completed) {
+    const v = l.drawView || l.hiddenView || state.predictionView;
+    if (!l.givenViews.includes(v)) box.appendChild(renderView(v, cur[v], cur[v]));
+  }
+
+  const normalCount = box.querySelectorAll(".view:not(.pred)").length;
+  if (normalCount <= 1) box.classList.add("single-view");
+  else if (normalCount === 2) box.classList.add("two-views");
+  else box.classList.add("three-views");
+}
+function renderDepthPicker() {
+  const box = $("#depthPicker");
+  box.innerHTML = "";
+  const p = state.depthPreview;
+  if (!p?.candidates?.length) {
+    box.classList.remove("show");
+    box.parentElement?.classList.remove("choosing-depth");
+    return;
+  }
+  box.classList.add("show");
+  box.parentElement?.classList.add("choosing-depth");
+  const title = document.createElement("span");
+  title.className = "depth-picker-title";
+  title.textContent = "Welke plek bedoel je?";
+  box.appendChild(title);
+  p.candidates.forEach((candidate) => {
+    const b = document.createElement("button");
+    b.className = keyOf(candidate) === p.selectedKey ? "active" : "";
+    const occupied = !!state.occupancy[indexOf(candidate.x, candidate.y, candidate.z, level().size)];
+    b.innerHTML = `<strong>${DEPTH_LABELS[candidate.z]}</strong><small>${occupied ? "WEG" : "BOUW"}</small>`;
+    b.onclick = (e) => {
+      e.stopPropagation();
+      state.selectedLayer = candidate.z;
+      placeOrRemove(candidate.x, candidate.y, candidate.z);
+    };
+    box.appendChild(b);
+  });
+  const close = document.createElement("button");
+  close.className = "close-depth";
+  close.textContent = "×";
+  close.setAttribute("aria-label", "Sluit dieptekeuze");
+  close.onclick = (e) => { e.stopPropagation(); clearDepthPreview(); render(); };
+  box.appendChild(close);
+}
+
+function renderControls() {
+  const l = level();
+  const controls = $("#controls");
+  controls.innerHTML = "";
+
+  if (l.task === "plan_repair" && state.planPhase === 0 && !state.completed) {
+    controls.innerHTML = `
+      <div class="layer-title">HERSTEL HET PLAN</div>
+      <div class="round-card"><small>1 FOUT VAK</small><strong>${countPlanEdits()} / 1 aangepast</strong><span>Maak de drie aanzichten samen bouwbaar.</span></div>
+      <div class="build-tip">Tik links één vak aan. Je verandert geen antwoordkeuze: je repareert de bouwtekening zelf.</div>
+      <div class="actions" style="grid-template-columns:1fr"><button class="btn primary" id="checkPlan">TEST HET PLAN</button></div>`;
+    $("#checkPlan").onclick = checkPlanRepair;
+  } else if (isBuildPhase() && !state.predictionMode && !state.completed) {
+    const direct = !!stageRenderer?.available;
+    const cubes = countVoxels(state.occupancy);
+    let roundCard = "";
+    let checkLabel = "CONTROLEER";
+
+    if (l.task === "build_variant" || l.task === "build_variant_predict") {
+      const totalParts = l.task === "build_variant_predict" ? 3 : 2;
+      const round = state.variantPhase ? 2 : 1;
+      roundCard = `<div class="round-card phase-card"><small>DEEL ${round} VAN ${totalParts}</small><strong>${cubes} / ${l.cubeBudget} kubussen</strong><span>${state.variantPhase ? `Verbouw ${l.cubeBudget} kubussen: minstens ${l.minChangedColumns} stapels anders.` : `Bouw eerst ${l.cubeBudget} kubussen die bij de aanzichten passen.`}</span></div>`;
+      checkLabel = state.variantPhase ? "CONTROLEER DEEL 2" : "KLAAR MET DEEL 1";
+    } else if (l.task === "minimal") {
+      roundCard = state.optimizePhase
+        ? `<div class="round-card"><small>VERBOUWING</small><strong>${cubes} kubussen</strong><span>Eerste model: ${state.optimizeStartCount}. Zelfde aanzichten, minder materiaal.</span></div>`
+        : `<div class="round-card"><small>EERSTE MODEL</small><strong>${cubes} / ${l.startCubeCount} kubussen</strong><span>Laat eerst de aanzichten kloppen.</span></div>`;
+      checkLabel = state.optimizePhase ? "CONTROLEER ZUINIGER" : "CONTROLEER MODEL";
+    } else if (l.task === "maximal") {
+      roundCard = `<div class="round-card"><small>VERBORGEN VOLUME</small><strong>${cubes} kubussen</strong><span>De aanzichten moeten exact hetzelfde blijven.</span></div>`;
+      checkLabel = "KAN ER NOG MEER BIJ?";
+    } else if (l.task === "repair") {
+      roundCard = `<div class="round-card"><small>REPARATIE</small><strong>${state.history.length} / ${l.exactActions} verandering</strong><span>Vind de ene kubus die alles herstelt.</span></div>`;
+      checkLabel = "CONTROLEER REPARATIE";
+    } else if (l.task === "preserve_change") {
+      roundCard = `<div class="round-card"><small>${VIEW_LABELS[l.preserveView]} BLIJFT GELIJK</small><strong>${cubes} kubussen</strong><span>Verander alleen ${VIEW_LABELS[l.changeView]}.</span></div>`;
+      checkLabel = "CONTROLEER VERBOUWING";
+    } else if (l.task === "plan_repair") {
+      roundCard = `<div class="round-card"><small>BEWIJS IN 3D</small><strong>${cubes} kubussen</strong><span>Bouw nu wat jouw gerepareerde plan zegt.</span></div>`;
+      checkLabel = "CONTROLEER BEWIJS";
+    }
+
+    if (direct) {
+      controls.innerHTML = `
+        <div class="layer-title">BOUW IN DE KAMER</div>
+        ${roundCard}
+        <div class="actions"><button class="btn" id="undo">↶ ONGEDAAN</button><button class="btn primary" id="check">${checkLabel}</button></div>`;
+    } else {
+      controls.innerHTML = `<div class="layer-title">DIEPTE</div>${roundCard}<div class="layers" id="layers"></div><div class="build-tip">Compatibiliteitsmodus: kies eerst de diepte en tik daarna in de kamer.</div><div class="actions"><button class="btn" id="undo">↶ ONGEDAAN</button><button class="btn primary" id="check">${checkLabel}</button></div>`;
+      DEPTH_LABELS.forEach((name, z) => {
+        const b = document.createElement("button");
+        b.className = state.selectedLayer === z ? "on" : "";
+        b.innerHTML = `<b>${z + 1}</b>${name}`;
+        b.onclick = () => { state.selectedLayer = z; clearDepthPreview(); state.highlightedRay = null; render(); };
+        $("#layers").appendChild(b);
+      });
+    }
+    $("#undo").disabled = !state.history.length;
+    $("#undo").onclick = undo;
+    $("#check").onclick = checkBuild;
+  } else if (state.predictionMode && !state.completed) {
+    const name = VIEW_LABELS[state.predictionView];
+    controls.innerHTML = `<div class="layer-title">TEKEN ${name}</div><div class="hint" style="display:block;margin:0">Tik in JOUW ${name} de vakjes aan die je ziet.</div><div class="actions" style="grid-template-columns:1fr"><button class="btn primary" id="scan">CONTROLEER ${name}</button></div>`;
+    $("#scan").onclick = checkPrediction;
+  } else if (l.task === "scale" && !state.scaleRunning && !state.completed) {
+    const k = l.scaleFactor ?? 1;
+    const choices = k === 2 ? [2, 4, 8] : [3, 9, 27];
+    const labels = ["LENGTE", "OPPERVLAKTE", "VOLUME"];
+    controls.innerHTML = `<div class="scaleq"><small>${labels[state.scaleQuestion]}</small><strong>Wat wordt de factor?</strong></div><div class="scaleopts">${choices.map((v) => `<button data-k="${v}">×${v}</button>`).join("")}</div>`;
+    controls.querySelectorAll("[data-k]").forEach((b) => { b.onclick = () => answerScale(Number(b.dataset.k)); });
+  } else if (l.task === "scale" && state.scaleRunning && !state.completed) {
+    controls.innerHTML = `<div class="hint" style="display:block;margin:0">Kijk hoe dezelfde vorm in één, twee en daarna drie richtingen groeit.</div>`;
+  }
+
+  if (state.completed) {
+    const done = document.createElement("div");
+    done.className = "donebox";
+    done.innerHTML = `<strong>${state.feedback || "Level voltooid."}</strong><button class="btn gold" id="next" style="width:100%">${state.levelIndex === LEVELS.length - 1 ? "AFRONDEN" : "VOLGENDE"} →</button>`;
+    controls.appendChild(done);
+    $("#next").onclick = nextLevel;
+  }
+}
+
+function drawStage() {
+  if (!stageRenderer) return;
+  const l = level();
+  const occ = state.revealSolutions.length ? state.revealSolutions[state.revealIndex] : state.occupancy;
+  const scaled = l.task === "scale" && state.scaleStage === 3 ? scaleOccupancy(l.exampleOccupancy, 3, l.scaleFactor ?? 1) : null;
+  stageRenderer.render({
+    level: l,
+    occupancy: occ,
+    selectedLayer: state.selectedLayer,
+    depthPreview: state.depthPreview,
+    directDepth: !!stageRenderer.available,
+    highlightedRay: state.highlightedRay,
+    building: isBuildPhase() && !state.predictionMode && !state.completed,
+    scanDirection: null,
+    scaleRunning: state.scaleRunning,
+    scaleStage: state.scaleStage,
+    scaled,
+    celebrateStart: state.celebrateStart,
+  });
+}
+
+function renderScaleReadout() {
+  const l = level();
+  const el = $("#readout");
+  if (l.task !== "scale" || !state.scaleRunning) {
+    el.classList.remove("show");
+    return;
+  }
+  const k = l.scaleFactor ?? 1;
+  const labels = ["", "LENGTE", "OPPERVLAKTE", "VOLUME"];
+  const factors = [1, k, k ** 2, k ** 3];
+  const s = Math.max(1, state.scaleStage);
+  el.classList.add("show");
+  el.querySelector("small").textContent = labels[s];
+  el.querySelector("strong").textContent = `×${factors[s]}`;
+  el.querySelector("span").textContent = s === 3
+    ? `${countVoxels(l.exampleOccupancy)} × ${k}³ = ${countVoxels(scaleOccupancy(l.exampleOccupancy, 3, k).occupancy)} kubussen`
+    : s === 1 ? "Eén richting" : s === 2 ? "Twee richtingen" : "Drie richtingen";
+}
+
+function render() {
+  const l = level();
+  document.body.classList.toggle("mode-plan", l.task === "plan_repair" && state.planPhase === 0 && !state.completed);
+  document.body.classList.toggle("mode-predict", state.predictionMode && !state.completed);
+  document.body.classList.toggle("mode-scale", l.task === "scale");
+  $("#title").textContent = l.title;
+  const dynamicInstruction = (l.task === "build_variant" || l.task === "build_variant_predict") && state.variantPhase === 1
+    ? l.variantInstruction
+    : l.task === "build_variant_predict" && state.variantPhase === 2
+      ? l.predictionInstruction
+      : l.task === "minimal" && state.optimizePhase
+        ? l.optimizeInstruction
+        : l.task === "plan_repair" && state.planPhase
+          ? l.buildInstruction
+          : l.instruction;
+  let phaseText = "";
+  if (l.task === "build_variant") phaseText = ` · DEEL ${state.variantPhase ? 2 : 1}/2`;
+  else if (l.task === "build_variant_predict") phaseText = ` · DEEL ${state.variantPhase === 2 ? 3 : state.variantPhase ? 2 : 1}/3`;
+  else if (l.task === "minimal") phaseText = ` · DEEL ${state.optimizePhase ? 2 : 1}/2`;
+  else if (l.task === "plan_repair") phaseText = ` · DEEL ${state.planPhase ? 2 : 1}/2`;
+  $("#levelId").textContent = `OEFENING ${String(state.levelIndex + 1).padStart(2, "0")}${phaseText}`;
+  $("#missionTitle").textContent = dynamicInstruction;
+  $("#instruction").textContent = "";
+  $("#hint").textContent = l.hint;
+  $("#levelNo").textContent = String(state.levelIndex + 1).padStart(2, "0");
+
+  const feedback = $("#feedback");
+  feedback.textContent = state.feedback || "";
+  feedback.className = `feedback ${state.feedbackTone}`;
+
+  if (state.revealSolutions.length) $("#stageLabel").textContent = `MODEL ${state.revealIndex ? "B" : "A"}`;
+  else if (l.task === "build_variant") $("#stageLabel").textContent = `DEEL ${state.variantPhase ? 2 : 1} / 2`;
+  else if (l.task === "build_variant_predict") $("#stageLabel").textContent = `DEEL ${state.variantPhase === 2 ? 3 : state.variantPhase ? 2 : 1} / 3`;
+  else if (l.task === "minimal") $("#stageLabel").textContent = `DEEL ${state.optimizePhase ? 2 : 1} / 2`;
+  else if (l.task === "plan_repair") $("#stageLabel").textContent = `DEEL ${state.planPhase ? 2 : 1} / 2`;
+  else $("#stageLabel").textContent = "";
+
+  $("#stageNote").textContent = state.depthPreview ? "KIES DE BEDOELDE PLEK" : "";
+
+  $("#buildTutorial")?.classList.toggle("show", state.levelIndex === 0 && !buildTutorialSeen && isBuildPhase() && !state.completed);
+  renderViews();
+  renderControls();
+  renderDepthPicker();
+  renderScaleReadout();
+  drawStage();
+  $("#complete").classList.toggle("show", state.gameCompleted);
+}
+
+function handleDirectTap(screenX, screenY) {
+  const l = level();
+  if (!isBuildPhase() || state.predictionMode || state.completed) return;
+  let candidates = stageRenderer?.pickCandidates(screenX, screenY) || [];
+  if (!candidates.length) {
+    clearDepthPreview();
+    render();
+    return;
+  }
+
+  // In WebGL surface-picking mode the renderer already tells us whether the
+  // player touched a build surface (floor/top) or a removable cube side.
+  // Never let an unrelated front cube steal a tap meant for a deeper floor tile.
+  if (candidates.some((c) => c.kind)) {
+    candidates = candidates.filter((c) => c.kind === "place" ? canPlace(c.x, c.y, c.z) : canRemove(c.x, c.y, c.z));
+  } else {
+    // Compatibility path for the deterministic layer picker.
+    const removable = candidates.filter((c) => state.occupancy[indexOf(c.x, c.y, c.z, l.size)] && canRemove(c.x, c.y, c.z));
+    if (removable.length) candidates = removable;
+    else {
+      const placeable = candidates.filter((c) => canPlace(c.x, c.y, c.z));
+      if (placeable.length) candidates = placeable;
+      else {
+        const actionable = candidates.filter(isActionable);
+        if (actionable.length) candidates = actionable;
+      }
+    }
+  }
+
+  // Deduplicate, then preserve renderer depth order.
+  const seen = new Set();
+  candidates = candidates.filter((c) => { const k = keyOf(c); if (seen.has(k)) return false; seen.add(k); return true; });
+
+  if (candidates.length === 1) {
+    const c = candidates[0];
+    state.selectedLayer = c.z;
+    placeOrRemove(c.x, c.y, c.z);
+    return;
+  }
+
+  const selected = candidates.find((c) => c.z === state.selectedLayer) || candidates[0];
+  state.depthPreview = {
+    candidates,
+    selectedKey: keyOf(selected),
+  };
+  setFeedback("Hier liggen meerdere plekken achter elkaar. Kies de bedoelde diepte in de kamer.", "quiet");
+  buzz(5);
+  render();
+}
+
+$("#closeBuildTutorial")?.addEventListener("click", dismissBuildTutorial);
+$("#home").onclick = () => window.dispatchEvent(new CustomEvent("scaleassembly:home"));
+$("#backHome").onclick = () => window.dispatchEvent(new CustomEvent("scaleassembly:home"));
+$("#restart").onclick = () => resetForLevel(level());
+const fullscreenButton = $("#fullscreen");
+if (fullscreenButton) {
+  fullscreenButton.onclick = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen?.();
+        try { await screen.orientation?.lock?.("landscape"); } catch {}
+      } else await document.exitFullscreen?.();
+    } catch {}
+  };
+  document.addEventListener("fullscreenchange", () => {
+    fullscreenButton.textContent = document.fullscreenElement ? "↙" : "⛶";
+    fullscreenButton.setAttribute("aria-label", document.fullscreenElement ? "Verlaat volledig scherm" : "Volledig scherm");
+    setTimeout(drawStage, 40);
+  });
+}
+$("#again").onclick = () => {
+  state.levelIndex = 0;
+  state.gameCompleted = false;
+  state.completionSent = false;
+  resetForLevel(LEVELS[0]);
+};
+
+let stageCanvas = $("#canvas");
+try {
+  stageRenderer = createScaleRenderer(stageCanvas);
+} catch (error) {
+  console.warn("WebGL initialisatie mislukt; 2D-compatibiliteitsmodus wordt gebruikt.", error);
+  const fallbackCanvas = stageCanvas.cloneNode(false);
+  stageCanvas.replaceWith(fallbackCanvas);
+  stageCanvas = fallbackCanvas;
+  stageRenderer = createScaleRenderer(stageCanvas, { force2D: true });
+}
+stageCanvas.addEventListener("webglcontextlost", (e) => {
+  e.preventDefault();
+  setFeedback("De 3D-weergave wordt opnieuw opgebouwd…", "quiet");
+  render();
+});
+stageCanvas.addEventListener("webglcontextrestored", () => {
+  try { stageRenderer = createScaleRenderer(stageCanvas); } catch { stageRenderer = createScaleRenderer(stageCanvas, { force2D: true }); }
+  setFeedback("3D-weergave hersteld.", "good");
+  render();
+});
+let stageDown = null;
+const LONG_PRESS_MS = 410;
+const TOUCH_PLACE_RADIUS = 70;
+const TOUCH_REMOVE_RADIUS = 62;
+const TOUCH_DRAG_RADIUS = 84;
+
+function touchLike(e) {
+  return e.pointerType === "touch" || e.pointerType === "pen";
+}
+function cancelLongPress(d = stageDown) {
+  if (d?.longPressTimer) clearTimeout(d.longPressTimer);
+  if (d) d.longPressTimer = 0;
+}
+function clearStageGesture() {
+  cancelLongPress();
+  stageDown = null;
+  stageRenderer?.clearHover();
+}
+function nearestTouch(kind, x, y, radius, prefer = null) {
+  const preferKey = prefer ? keyOf(prefer) : "";
+  return stageRenderer?.nearestTouchCandidate?.(x, y, kind, radius, preferKey) || null;
+}
+function armLongPressRemove(pointerId) {
+  if (!stageDown?.removeTarget) return;
+  stageDown.longPressTimer = setTimeout(() => {
+    const d = stageDown;
+    if (!d || d.pointerId !== pointerId || d.distance > 12) return;
+    const remove = nearestTouch("remove", d.lastX, d.lastY, TOUCH_REMOVE_RADIUS + 8, d.removeTarget);
+    if (!remove) return;
+    d.longPressActive = true;
+    d.removeTarget = remove;
+    d.currentPlace = null;
+    stageRenderer?.setHoverCandidate(remove, true);
+    setFeedback("Laat los om de bovenste kubus weg te nemen.", "quiet");
+    buzz(12);
+    render();
+  }, LONG_PRESS_MS);
+}
+
+stageCanvas.addEventListener("pointermove", (e) => {
+  if (stageDown) e.preventDefault();
+  const r = stageCanvas.getBoundingClientRect();
+  const x = e.clientX - r.left;
+  const y = e.clientY - r.top;
+
+  if (!stageDown) {
+    if (!touchLike(e)) stageRenderer?.setHover(x, y);
+    return;
+  }
+
+  const dx = x - stageDown.x;
+  const dy = y - stageDown.y;
+  stageDown.lastX = x;
+  stageDown.lastY = y;
+  stageDown.distance = Math.hypot(dx, dy);
+
+  if (!stageDown.touchLike) {
+    stageRenderer?.setHover(x, y);
+    return;
+  }
+
+  if (stageDown.distance > 12) {
+    cancelLongPress(stageDown);
+    if (stageDown.longPressActive) stageDown.longPressActive = false;
+  }
+
+  if (stageDown.longPressActive && stageDown.removeTarget) {
+    stageRenderer?.setHoverCandidate(stageDown.removeTarget, true);
+    return;
+  }
+
+  // When a touch starts on the board, movement means "move my build preview",
+  // not "rotate the camera". The target snaps magnetically to the nearest
+  // valid column so a thumb never has to hit the tiny visible top face.
+  if (stageDown.startedOnTarget) {
+    const place = nearestTouch("place", x, y, TOUCH_DRAG_RADIUS, stageDown.currentPlace);
+    stageDown.currentPlace = place;
+    if (place) stageRenderer?.setHoverCandidate(place, true);
+    else stageRenderer?.clearHover();
+  }
+});
+
+stageCanvas.addEventListener("pointerleave", () => {
+  if (!stageDown) stageRenderer?.clearHover();
+});
+
+stageCanvas.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  const r = stageCanvas.getBoundingClientRect();
+  const x = e.clientX - r.left;
+  const y = e.clientY - r.top;
+  const isTouch = touchLike(e);
+  stageCanvas.setPointerCapture?.(e.pointerId);
+
+  if (isTouch && stageRenderer?.available && isBuildPhase() && !state.predictionMode && !state.completed) {
+    const place = nearestTouch("place", x, y, TOUCH_PLACE_RADIUS);
+    const remove = nearestTouch("remove", x, y, TOUCH_REMOVE_RADIUS);
+    stageDown = {
+      pointerId: e.pointerId, x, y, lastX: x, lastY: y, distance: 0,
+      touchLike: true, startedOnTarget: !!(place || remove),
+      currentPlace: place, removeTarget: remove,
+      longPressTimer: 0, longPressActive: false,
+    };
+    if (place) stageRenderer?.setHoverCandidate(place, true);
+    else if (remove) stageRenderer?.setHoverCandidate(remove, true);
+    armLongPressRemove(e.pointerId);
+    return;
+  }
+
+  stageDown = { pointerId: e.pointerId, x, y, lastX: x, lastY: y, distance: 0, touchLike: isTouch, startedOnTarget: false };
+  stageRenderer?.setHover(x, y);
+});
+
+stageCanvas.addEventListener("pointerup", (e) => {
+  if (!stageDown) return;
+  const d = stageDown;
+  const r = stageCanvas.getBoundingClientRect();
+  const x = e.clientX - r.left;
+  const y = e.clientY - r.top;
+  const dx = x - d.x;
+  const dy = y - d.y;
+  const dist = Math.hypot(dx, dy);
+  cancelLongPress(d);
+  stageDown = null;
+
+  if (d.touchLike && stageRenderer?.available && isBuildPhase() && !state.predictionMode && !state.completed) {
+    if (d.longPressActive && d.removeTarget && dist <= 22) {
+      state.selectedLayer = d.removeTarget.z;
+      placeOrRemove(d.removeTarget.x, d.removeTarget.y, d.removeTarget.z);
+      stageRenderer?.clearHover();
+      return;
+    }
+
+    if (d.startedOnTarget) {
+      const place = nearestTouch("place", x, y, TOUCH_DRAG_RADIUS, d.currentPlace) || d.currentPlace;
+      if (place && canPlace(place.x, place.y, place.z)) {
+        state.selectedLayer = place.z;
+        placeOrRemove(place.x, place.y, place.z);
+      } else if (d.removeTarget) {
+        setFeedback("Houd je vinger even op de kubus om de bovenste weg te nemen.", "quiet");
+        buzz(4);
+        render();
+      } else {
+        stageRenderer?.clearHover();
+      }
+      return;
+    }
+
+    // Camera orbit remains available, but only if the swipe started away from
+    // the build board. This prevents a build-drag from accidentally rotating it.
+    if (Math.abs(dx) > 38 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+      state.cameraStep = stageRenderer.rotateCamera(dx < 0 ? 1 : -1);
+      clearDepthPreview();
+      state.highlightedRay = null;
+      setFeedback(state.cameraStep === 0 ? "Terug naar de centrale kijkhoek." : "Je kijkt nu schuin langs de bouwkamer.", "quiet");
+      buzz(4);
+      render();
+      return;
+    }
+    stageRenderer?.clearHover();
+    return;
+  }
+
+  if (stageRenderer?.available && Math.abs(dx) > 34 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+    state.cameraStep = stageRenderer.rotateCamera(dx < 0 ? 1 : -1);
+    clearDepthPreview();
+    state.highlightedRay = null;
+    setFeedback(state.cameraStep === 0 ? "Terug naar de centrale kijkhoek." : "Je kijkt nu schuin langs de bouwkamer.", "quiet");
+    buzz(4);
+    render();
+    return;
+  }
+
+  if (dist > 15) return;
+  if (stageRenderer?.available) handleDirectTap(x, y);
+  else {
+    const hit = stageRenderer?.pick(x, y);
+    if (hit) placeOrRemove(hit.x, hit.y, hit.z);
+  }
+});
+
+stageCanvas.addEventListener("pointercancel", clearStageGesture);
+addEventListener("resize", drawStage);
+window.ScaleAssemblyAPI = {
+  loadLevel,
+  getCurrentLevel: () => state.levelIndex,
+  getProgress: getProgressSnapshot,
+  restart: () => resetForLevel(level()),
+  levelMeta: () => LEVELS.map((l, i) => ({ index: i, id: l.id, title: l.title, task: l.task })),
+};
+window.dispatchEvent(new CustomEvent("scaleassembly:ready", { detail: getProgressSnapshot() }));
+if (!LEVEL_VALIDATION.every((x) => x.valid)) console.error("Scale level validation failed", LEVEL_VALIDATION);
+resetForLevel(LEVELS[state.levelIndex]);
+</script>\n<script id="axiomaPortalBridge">
+(()=>{
+  const inPortal=window.self!==window.top&&new URLSearchParams(location.search).get('portal')==='1';
+  if(!inPortal)return;
+  document.documentElement.classList.add('axioma-portal-embed');
+  const hideRedundantFullscreen=()=>{
+    for(const id of ['fullBtn','fullscreen']){
+      const el=document.getElementById(id);
+      if(el){el.style.display='none';el.setAttribute('aria-hidden','true');el.tabIndex=-1;}
+    }
+  };
+  hideRedundantFullscreen();
+  new MutationObserver(hideRedundantFullscreen).observe(document.documentElement,{childList:true,subtree:true});
+  addEventListener('load',()=>{
+    hideRedundantFullscreen();
+    try{parent.postMessage({type:'axioma:game-ready',path:location.pathname},location.origin)}catch(_){}
+  },{once:true});
+})();
+</script>\n
+</body></html>
