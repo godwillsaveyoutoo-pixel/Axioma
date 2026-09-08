@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#0b1118"/>
-<title>Algebrasmederij v2.1.4</title>
+<title>Algebrasmederij v2.2.7</title>
 <style>
 :root{
   --bg:#0a1017;--bg2:#101a24;--ink:#f1f5f8;--muted:#8496a7;--dim:#556879;
@@ -534,9 +534,124 @@ button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
  .flip-pending.flip-resolving.flip-resolved-glyph{transform:none!important}
 }
 
+/* v2.1.7 — Complex Fraction Presentation Guard.
+   Learner-facing states and transition traces never render a fraction inside
+   another fraction; equivalent forms are flattened to a single fraction bar. */
+
+/* v2.1.6 — Structure Coverage Pass.
+   Rebalances repeated exercise forms so negative distributivity, negative
+   integer/fraction coefficients, numerator groups, two-sided brackets and
+   sign-sensitive formula/inequality work recur across the learning spine. */
+
 /* v2.1 — compound additive factors can be direct gesture sources without changing algebra layout. */
 .add-inline{display:inline-flex;flex-direction:row;align-items:baseline;white-space:nowrap;vertical-align:baseline}
 
+/* v2.2 — Polynomial Forge: powers remain part of the algebra baseline while
+   exponents stay readable and touchable. No separate tool palette is introduced. */
+.power{display:inline-flex;align-items:flex-start;white-space:nowrap;vertical-align:baseline;line-height:1}
+.power-base{display:inline-flex;align-items:baseline}
+.power-exp{font-size:.62em;line-height:1;position:relative;top:-.42em;margin-left:1px;font-weight:900}
+.power-exp .gesture-source::before{inset:-13px -18px}
+.power-exp .gesture-source{min-width:18px;min-height:22px;padding:0 2px}
+.previous .power-exp,.review-line .power-exp{top:-.38em}
+/* v2.2.4 — guided squares of binomials. The four constituent products are
+   built visibly in order instead of being collapsed by one recognition gesture. */
+.square-build-draft{gap:5px}
+.square-build-draft .draft-piece{padding-left:4px;padding-right:4px}
+.square-build-draft .draft-hole{min-width:42px}
+.square-factor-paren{display:inline-flex;align-items:center;white-space:nowrap}
+
+/* v2.1.5 — Mathematical axis alignment.
+   A stacked numeric coefficient (e.g. 1/3 x) must not pull the variable off
+   the relation axis. Products containing fractions are centered as one
+   mathematical object, so x, = and the right-hand member share one height. */
+.mul-inline{align-items:center!important;vertical-align:middle}
+.expr .mul-inline,.draft-expr .mul-inline,.transition-expr .mul-inline,
+.review-expr .mul-inline,.trial-formula .mul-inline,.stage-example .mul-inline{align-items:center!important}
+.numeric-frac{vertical-align:middle}
+
+
+
+/* v2.2.7 — Clear Assignment Bar -------------------------------------------
+   The goal remains permanently visible during play. Contextual gesture help
+   is secondary and may appear underneath, but never replaces the assignment. */
+.assignment-panel{
+  display:grid!important;
+  grid-template-rows:auto auto;
+  align-content:center;
+  gap:2px!important;
+  min-width:0;
+}
+.assignment-main{
+  min-width:0;
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+}
+.assignment-label{
+  flex:none;
+  color:var(--gold)!important;
+  font-size:10px!important;
+  line-height:1;
+  font-weight:950!important;
+  letter-spacing:.10em;
+}
+.assignment-text{
+  min-width:0;
+  color:#f3f6f7;
+  font-size:14px;
+  line-height:1.12;
+  font-weight:850;
+  letter-spacing:-.01em;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+.gesture-context{
+  min-width:0;
+  display:flex;
+  align-items:baseline;
+  gap:7px;
+  padding-left:0;
+  color:#718695;
+}
+.gesture-context[hidden]{display:none!important}
+.gesture-context b{
+  flex:none;
+  color:#b99a58!important;
+  font-size:7px!important;
+  letter-spacing:.08em;
+  opacity:.9;
+}
+.gesture-context span{
+  min-width:0;
+  color:#718695!important;
+  font-size:8px!important;
+  line-height:1.08;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+
+@media (orientation:landscape) and (max-height:460px){
+  .gesture-legend.assignment-panel{
+    max-width:calc(100vw - 112px)!important;
+    min-height:44px!important;
+    padding:7px 11px 7px 12px!important;
+    gap:2px!important;
+  }
+  .assignment-main{gap:10px}
+  .assignment-label{font-size:8.5px!important}
+  .assignment-text{font-size:12px;line-height:1.12}
+  .gesture-context b{font-size:6.5px!important}
+  .gesture-context span{font-size:7.5px!important}
+}
+@media (orientation:landscape) and (max-width:700px){
+  .gesture-legend.assignment-panel{max-width:calc(100vw - 104px)!important;padding-left:9px!important;padding-right:9px!important}
+  .assignment-main{gap:7px}
+  .assignment-label{font-size:8px!important}
+  .assignment-text{font-size:11px}
+}
 </style>
 
 <style id="rf-website-mobile-shell">
@@ -869,6 +984,59 @@ button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
   .lean-stage-row{grid-template-columns:108px minmax(0,1fr)!important}.lean-stage-copy strong{font-size:12px!important}
 }
 </style>
+
+<style id="rf-menu-no-clipping-v224">
+/* v2.2.4 — Menu readability contract.
+   Menu labels wrap instead of being truncated. No ellipsis is allowed in the
+   split level menu, including the 640×360 landscape gate. */
+.rf-split-menu .rf-theme-item{height:auto;min-height:50px;padding-top:6px;padding-bottom:6px}
+.rf-split-menu .rf-theme-item strong,
+.rf-split-menu .rf-detail-head h1,
+.rf-split-menu .rf-detail-head p,
+.rf-split-menu .lean-stage-copy strong{
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+.rf-split-menu .rf-theme-item strong{line-height:1.12!important}
+.rf-menu-detail{grid-template-rows:auto minmax(0,1fr)!important}
+.rf-detail-head{min-height:64px!important;height:auto!important;padding-top:7px!important;padding-bottom:7px!important}
+.rf-detail-head p{max-width:none!important;line-height:1.22!important}
+.lean-stage-list{grid-template-rows:repeat(var(--stage-count,5),minmax(48px,1fr))!important}
+.lean-stage-row{grid-template-columns:172px minmax(0,1fr)!important;min-height:48px!important}
+.lean-stage-copy strong{line-height:1.12!important}
+@media(max-width:700px) and (orientation:landscape){
+  .rf-menu-detail{grid-template-rows:auto minmax(0,1fr)!important}
+  .rf-detail-head{min-height:58px!important;padding-top:5px!important;padding-bottom:5px!important}
+  .rf-detail-head p{display:block!important;font-size:10px!important;line-height:1.18!important}
+  .lean-stage-row{grid-template-columns:154px minmax(0,1fr)!important}
+  .lean-stage-copy strong{font-size:12px!important}
+}
+@media(max-width:650px) and (orientation:landscape){
+  .rf-detail-head p{display:block!important;font-size:9.5px!important}
+  .lean-stage-row{grid-template-columns:148px minmax(0,1fr)!important}
+  .rf-theme-item strong{font-size:12.5px!important}
+}
+</style>
+
+
+<style id="rf-menu-no-clipping-v225">
+/* v2.2.5 — Final menu audit. Menu copy may wrap but is never ellipsized or
+   silently hidden at the 780×360 and 640×360 landscape gates. */
+.rf-split-menu .rf-theme-item strong,
+.rf-split-menu .rf-detail-head h1,
+.rf-split-menu .rf-detail-head p,
+.rf-split-menu .lean-stage-copy strong,
+.rf-split-menu .lean-stage-copy span,
+.rf-split-menu .rf-theme-group-title{
+  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+  overflow-wrap:anywhere;word-break:normal;
+}
+.rf-split-menu .rf-detail-head p{display:block!important}
+.rf-split-menu .lean-stage-row{height:auto!important}
+</style>
 </head>
 <body>
 
@@ -925,9 +1093,15 @@ button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
     </main>
 
     <div class="bottom-bar" id="bottomBar">
-      <div class="gesture-legend" id="gestureLegend">
-        <b id="gestureVerb">PAK</b>
-        <span id="gestureHint">Sleep een onderstreept deel naar een logisch doel.</span>
+      <div class="gesture-legend assignment-panel" id="gestureLegend">
+        <div class="assignment-main">
+          <b class="assignment-label">OPDRACHT</b>
+          <strong class="assignment-text" id="assignmentText">Vereenvoudig de uitdrukking.</strong>
+        </div>
+        <div class="gesture-context" id="gestureContext">
+          <b id="gestureVerb">PAK</b>
+          <span id="gestureHint">Sleep een deel naar een logisch doel.</span>
+        </div>
       </div>
       <div class="solved-strip" id="solvedStrip" aria-live="polite">
         <div class="solved-copy"><span class="solved-check">✓</span><strong>Keten klopt</strong><span id="solvedMeta"></span></div>
@@ -991,21 +1165,23 @@ const V=name=>({t:'var',name});
 const Add=(...terms)=>({t:'add',terms:terms.flat()});
 const Mul=(...factors)=>({t:'mul',factors:factors.flat()});
 const Div=(num,den)=>({t:'div',num,den});
+const Pow=(base,exp)=>({t:'pow',base,exp});
 const Eq=(left,right)=>({t:'eq',left,right});
 const Rel=(left,op,right)=>{if(!['<','>','≤','≥'].includes(op))throw new Error('Invalid comparator '+op);return {t:'rel',op,left,right}};
 function isRelation(n){return !!n&&(n.t==='eq'||n.t==='rel')}
 function relationOp(n){return n?.t==='eq'?'=':n?.t==='rel'?n.op:null}
 function flipComparator(op){return ({'<':'>','>':'<','≤':'≥','≥':'≤'})[op]||op}
 function relationLike(n,left,right,op=relationOp(n)){return op==='='?Eq(left,right):Rel(left,op,right)}
-function clone(n){if(!n)return n;switch(n.t){case'num':return N(n.v.n,n.v.d);case'var':return V(n.name);case'add':return Add(n.terms.map(clone));case'mul':return Mul(n.factors.map(clone));case'div':return Div(clone(n.num),clone(n.den));case'eq':return Eq(clone(n.left),clone(n.right));case'rel':return Rel(clone(n.left),n.op,clone(n.right));default:throw new Error('Unknown node '+n.t)}}
-function equal(a,b){if(!a||!b||a.t!==b.t)return false;switch(a.t){case'num':return a.v.n===b.v.n&&a.v.d===b.v.d;case'var':return a.name===b.name;case'add':return a.terms.length===b.terms.length&&a.terms.every((x,i)=>equal(x,b.terms[i]));case'mul':return a.factors.length===b.factors.length&&a.factors.every((x,i)=>equal(x,b.factors[i]));case'div':return equal(a.num,b.num)&&equal(a.den,b.den);case'eq':return equal(a.left,b.left)&&equal(a.right,b.right);case'rel':return a.op===b.op&&equal(a.left,b.left)&&equal(a.right,b.right)}}
-function nodeKey(n){switch(n.t){case'num':return `n:${n.v}`;case'var':return `v:${n.name}`;case'add':return `a(${n.terms.map(nodeKey).join(',')})`;case'mul':return `m(${n.factors.map(nodeKey).join(',')})`;case'div':return `d(${nodeKey(n.num)}|${nodeKey(n.den)})`;case'eq':return `e(${nodeKey(n.left)}=${nodeKey(n.right)})`;case'rel':return `r(${nodeKey(n.left)}${n.op}${nodeKey(n.right)})`}}
+function clone(n){if(!n)return n;switch(n.t){case'num':return N(n.v.n,n.v.d);case'var':return V(n.name);case'add':return Add(n.terms.map(clone));case'mul':return Mul(n.factors.map(clone));case'div':return Div(clone(n.num),clone(n.den));case'pow':return Pow(clone(n.base),clone(n.exp));case'eq':return Eq(clone(n.left),clone(n.right));case'rel':return Rel(clone(n.left),n.op,clone(n.right));default:throw new Error('Unknown node '+n.t)}}
+function equal(a,b){if(!a||!b||a.t!==b.t)return false;switch(a.t){case'num':return a.v.n===b.v.n&&a.v.d===b.v.d;case'var':return a.name===b.name;case'add':return a.terms.length===b.terms.length&&a.terms.every((x,i)=>equal(x,b.terms[i]));case'mul':return a.factors.length===b.factors.length&&a.factors.every((x,i)=>equal(x,b.factors[i]));case'div':return equal(a.num,b.num)&&equal(a.den,b.den);case'pow':return equal(a.base,b.base)&&equal(a.exp,b.exp);case'eq':return equal(a.left,b.left)&&equal(a.right,b.right);case'rel':return a.op===b.op&&equal(a.left,b.left)&&equal(a.right,b.right)}}
+function nodeKey(n){switch(n.t){case'num':return `n:${n.v}`;case'var':return `v:${n.name}`;case'add':return `a(${n.terms.map(nodeKey).join(',')})`;case'mul':return `m(${n.factors.map(nodeKey).join(',')})`;case'div':return `d(${nodeKey(n.num)}|${nodeKey(n.den)})`;case'pow':return `p(${nodeKey(n.base)}^${nodeKey(n.exp)})`;case'eq':return `e(${nodeKey(n.left)}=${nodeKey(n.right)})`;case'rel':return `r(${nodeKey(n.left)}${n.op}${nodeKey(n.right)})`}}
 function isNegativeTerm(n){if(n.t==='num')return n.v.n<0;if(n.t==='mul'&&n.factors[0]?.t==='num')return n.factors[0].v.n<0;return false}
 function negate(n){if(n.t==='num')return N(-n.v.n,n.v.d);if(n.t==='mul'&&n.factors[0]?.t==='num'){const c=n.factors[0].v;return simplify(Mul(N(-c.n,c.d),...n.factors.slice(1).map(clone)));}return Mul(N(-1),clone(n))}
 function stripSign(n){if(n.t==='num'&&n.v.n<0)return {neg:true,node:N(-n.v.n,n.v.d)};if(n.t==='mul'&&n.factors[0]?.t==='num'&&n.factors[0].v.n<0){const c=n.factors[0].v;return {neg:true,node:simplify(Mul(N(-c.n,c.d),...n.factors.slice(1).map(clone)))};}return {neg:false,node:n}}
 function simplify(n){
   switch(n.t){
     case'num':case'var':return clone(n);
+    case'pow':{const b=simplify(n.base),e=simplify(n.exp);if(e.t==='num'&&e.v.d===1){const k=e.v.n;if(k===0)return N(1);if(k===1)return b;if(b.t==='num'&&k>0){let r=new Rational(1);for(let i=0;i<k;i++)r=r.mul(b.v);return N(r.n,r.d);}}return Pow(b,e);}
     case'eq':return Eq(simplify(n.left),simplify(n.right));
     case'rel':return Rel(simplify(n.left),n.op,simplify(n.right));
     case'div':{
@@ -1014,6 +1190,11 @@ function simplify(n){
       if(a.t==='num'&&a.v.isZero())return N(0);
       if(b.t==='num'&&b.v.isOne())return a;
       if(b.t==='num'&&a.t==='mul'&&a.factors[0]?.t==='num'){const q=a.factors[0].v.div(b.v);return simplify(Mul(N(q.n,q.d),...a.factors.slice(1).map(clone)));}
+      /* v2.1.7 — never keep a complex fraction in learner-facing algebra.
+         (a/b)/c becomes a/(bc); a/(b/c) becomes ac/b.
+         This preserves the mathematics while guaranteeing one visible fraction bar. */
+      if(a.t==='div')return simplify(Div(clone(a.num),simplify(Mul(clone(a.den),clone(b)))));
+      if(b.t==='div')return simplify(Div(simplify(Mul(clone(a),clone(b.den))),clone(b.num)));
       return Div(a,b);
     }
     case'mul':{
@@ -1064,18 +1245,18 @@ function factorCommon(addNode){
   const inside=parts.map(p=>{const c=p.c/g;if(!p.base)return N(c);if(c===1)return clone(p.base);if(c===-1)return negate(p.base);return Mul(N(c),clone(p.base));});
   return simplify(Mul(N(g),Add(inside)));
 }
-function containsVar(n,name){switch(n.t){case'var':return n.name===name;case'num':return false;case'add':return n.terms.some(x=>containsVar(x,name));case'mul':return n.factors.some(x=>containsVar(x,name));case'div':return containsVar(n.num,name)||containsVar(n.den,name);case'eq':case'rel':return containsVar(n.left,name)||containsVar(n.right,name)}}
-function vars(n,set=new Set()){switch(n.t){case'var':set.add(n.name);break;case'add':n.terms.forEach(x=>vars(x,set));break;case'mul':n.factors.forEach(x=>vars(x,set));break;case'div':vars(n.num,set);vars(n.den,set);break;case'eq':case'rel':vars(n.left,set);vars(n.right,set);break;}return set}
-function evaluate(n,env){switch(n.t){case'num':return n.v.valueOf();case'var':if(!(n.name in env))throw new Error('Missing '+n.name);return env[n.name];case'add':return n.terms.reduce((s,x)=>s+evaluate(x,env),0);case'mul':return n.factors.reduce((s,x)=>s*evaluate(x,env),1);case'div':{const d=evaluate(n.den,env);if(Math.abs(d)<1e-10)throw new Error('undefined');return evaluate(n.num,env)/d}case'eq':return Math.abs(evaluate(n.left,env)-evaluate(n.right,env))<1e-9;case'rel':{const l=evaluate(n.left,env),r=evaluate(n.right,env);if(n.op==='<')return l<r-1e-9;if(n.op==='>')return l>r+1e-9;if(n.op==='≤')return l<=r+1e-9;if(n.op==='≥')return l>=r-1e-9;throw new Error('Bad comparator')}}}
+function containsVar(n,name){switch(n.t){case'var':return n.name===name;case'num':return false;case'add':return n.terms.some(x=>containsVar(x,name));case'mul':return n.factors.some(x=>containsVar(x,name));case'div':return containsVar(n.num,name)||containsVar(n.den,name);case'pow':return containsVar(n.base,name)||containsVar(n.exp,name);case'eq':case'rel':return containsVar(n.left,name)||containsVar(n.right,name)}}
+function vars(n,set=new Set()){switch(n.t){case'var':set.add(n.name);break;case'add':n.terms.forEach(x=>vars(x,set));break;case'mul':n.factors.forEach(x=>vars(x,set));break;case'div':vars(n.num,set);vars(n.den,set);break;case'pow':vars(n.base,set);vars(n.exp,set);break;case'eq':case'rel':vars(n.left,set);vars(n.right,set);break;}return set}
+function evaluate(n,env){switch(n.t){case'num':return n.v.valueOf();case'var':if(!(n.name in env))throw new Error('Missing '+n.name);return env[n.name];case'add':return n.terms.reduce((s,x)=>s+evaluate(x,env),0);case'mul':return n.factors.reduce((s,x)=>s*evaluate(x,env),1);case'div':{const d=evaluate(n.den,env);if(Math.abs(d)<1e-10)throw new Error('undefined');return evaluate(n.num,env)/d}case'pow':return Math.pow(evaluate(n.base,env),evaluate(n.exp,env));case'eq':return Math.abs(evaluate(n.left,env)-evaluate(n.right,env))<1e-9;case'rel':{const l=evaluate(n.left,env),r=evaluate(n.right,env);if(n.op==='<')return l<r-1e-9;if(n.op==='>')return l>r+1e-9;if(n.op==='≤')return l<=r+1e-9;if(n.op==='≥')return l>=r-1e-9;throw new Error('Bad comparator')}}}
 function pathParts(path){if(path===''||path==null)return[];return String(path).split('.').filter(Boolean)}
-function getAt(rootNode,path){let n=rootNode;for(const p of pathParts(path)){if(n.t==='eq'||n.t==='rel')n=p==='L'?n.left:n.right;else if(n.t==='add')n=n.terms[+p];else if(n.t==='mul')n=n.factors[+p];else if(n.t==='div')n=p==='N'?n.num:n.den;else return null;}return n}
-function replaceAt(rootNode,path,repl){const parts=pathParts(path);if(parts.length===0)return clone(repl);const rec=(n,i)=>{const p=parts[i],last=i===parts.length-1;if(n.t==='eq'||n.t==='rel'){const L=p==='L'?(last?clone(repl):rec(n.left,i+1)):clone(n.left),R=p==='R'?(last?clone(repl):rec(n.right,i+1)):clone(n.right);return relationLike(n,L,R)}if(n.t==='add'){const ts=n.terms.map(clone);ts[+p]=last?clone(repl):rec(n.terms[+p],i+1);return Add(ts)}if(n.t==='mul'){const fs=n.factors.map(clone);fs[+p]=last?clone(repl):rec(n.factors[+p],i+1);return Mul(fs)}if(n.t==='div')return p==='N'?Div(last?clone(repl):rec(n.num,i+1),clone(n.den)):Div(clone(n.num),last?clone(repl):rec(n.den,i+1));throw new Error('Bad path')};return rec(rootNode,0)}
+function getAt(rootNode,path){let n=rootNode;for(const p of pathParts(path)){if(n.t==='eq'||n.t==='rel')n=p==='L'?n.left:n.right;else if(n.t==='add')n=n.terms[+p];else if(n.t==='mul')n=n.factors[+p];else if(n.t==='div')n=p==='N'?n.num:n.den;else if(n.t==='pow')n=p==='B'?n.base:n.exp;else return null;}return n}
+function replaceAt(rootNode,path,repl){const parts=pathParts(path);if(parts.length===0)return clone(repl);const rec=(n,i)=>{const p=parts[i],last=i===parts.length-1;if(n.t==='eq'||n.t==='rel'){const L=p==='L'?(last?clone(repl):rec(n.left,i+1)):clone(n.left),R=p==='R'?(last?clone(repl):rec(n.right,i+1)):clone(n.right);return relationLike(n,L,R)}if(n.t==='add'){const ts=n.terms.map(clone);ts[+p]=last?clone(repl):rec(n.terms[+p],i+1);return Add(ts)}if(n.t==='mul'){const fs=n.factors.map(clone);fs[+p]=last?clone(repl):rec(n.factors[+p],i+1);return Mul(fs)}if(n.t==='div')return p==='N'?Div(last?clone(repl):rec(n.num,i+1),clone(n.den)):Div(clone(n.num),last?clone(repl):rec(n.den,i+1));if(n.t==='pow')return p==='B'?Pow(last?clone(repl):rec(n.base,i+1),clone(n.exp)):Pow(clone(n.base),last?clone(repl):rec(n.exp,i+1));throw new Error('Bad path')};return rec(rootNode,0)}
 function parentInfo(rootNode,path){const ps=pathParts(path);if(ps.length===0)return null;const key=ps.pop();const pp=ps.join('.');return {parent:getAt(rootNode,pp),parentPath:pp,key}}
 function topSideInfo(rootNode,path){if(!isRelation(rootNode))return null;const ps=pathParts(path);if(ps[0]!=='L'&&ps[0]!=='R')return null;return {side:ps[0],sideNode:ps[0]==='L'?rootNode.left:rootNode.right,otherNode:ps[0]==='L'?rootNode.right:rootNode.left,sidePath:ps[0],rest:ps.slice(1)} }
-function serialize(n){switch(n.t){case'num':return {t:'num',n:n.v.n,d:n.v.d};case'var':return {t:'var',name:n.name};case'add':return {t:'add',terms:n.terms.map(serialize)};case'mul':return {t:'mul',factors:n.factors.map(serialize)};case'div':return {t:'div',num:serialize(n.num),den:serialize(n.den)};case'eq':return {t:'eq',left:serialize(n.left),right:serialize(n.right)};case'rel':return {t:'rel',op:n.op,left:serialize(n.left),right:serialize(n.right)}}}
+function serialize(n){switch(n.t){case'num':return {t:'num',n:n.v.n,d:n.v.d};case'var':return {t:'var',name:n.name};case'add':return {t:'add',terms:n.terms.map(serialize)};case'mul':return {t:'mul',factors:n.factors.map(serialize)};case'div':return {t:'div',num:serialize(n.num),den:serialize(n.den)};case'pow':return {t:'pow',base:serialize(n.base),exp:serialize(n.exp)};case'eq':return {t:'eq',left:serialize(n.left),right:serialize(n.right)};case'rel':return {t:'rel',op:n.op,left:serialize(n.left),right:serialize(n.right)}}}
 function text(n,parentPrec=0){
- const prec={eq:0,rel:0,add:1,mul:2,div:2,num:3,var:3}[n.t];let s='';
- switch(n.t){case'num':s=n.v.toString();break;case'var':s=n.name;break;case'eq':s=`${text(n.left)} = ${text(n.right)}`;break;case'rel':s=`${text(n.left)} ${n.op} ${text(n.right)}`;break;case'add':s=n.terms.map((t,i)=>{const {neg,node}=stripSign(t);const body=text(node,1);if(i===0)return neg?`−${body}`:body;return neg?` − ${body}`:` + ${body}`}).join('');break;case'mul':{const fs=n.factors;const parts=[];for(let i=0;i<fs.length;i++){const f=fs[i];const need=f.t==='add'||f.t==='eq';let part=text(f,2);if(need)part=`(${part})`;parts.push(part)}s=parts.join('·').replace(/^(-?\d+)·([a-zA-Z])$/,'$1$2');break;}case'div':s=`(${text(n.num)})/(${text(n.den)})`;break;}
+ const prec={eq:0,rel:0,add:1,mul:2,div:2,pow:3,num:4,var:4}[n.t];let s='';
+ switch(n.t){case'num':s=n.v.toString();break;case'var':s=n.name;break;case'eq':s=`${text(n.left)} = ${text(n.right)}`;break;case'rel':s=`${text(n.left)} ${n.op} ${text(n.right)}`;break;case'add':s=n.terms.map((t,i)=>{const {neg,node}=stripSign(t);const body=text(node,1);if(i===0)return neg?`−${body}`:body;return neg?` − ${body}`:` + ${body}`}).join('');break;case'mul':{const fs=n.factors;const parts=[];for(let i=0;i<fs.length;i++){const f=fs[i];const need=f.t==='add'||f.t==='eq';let part=text(f,2);if(need)part=`(${part})`;parts.push(part)}s=parts.join('·').replace(/^(-?\d+)·([a-zA-Z])$/,'$1$2');break;}case'div':s=`(${text(n.num)})/(${text(n.den)})`;break;case'pow':{const b=n.base.t==='add'?`(${text(n.base)})`:text(n.base,3);s=`${b}^${text(n.exp,0)}`;break;}}
  return prec<parentPrec?`(${s})`:s;
 }
 
@@ -1090,10 +1271,11 @@ function speech(n){
   case'add':return n.terms.map((t,i)=>{const sg=stripSign(t),core=speech(sg.node);if(i===0)return sg.neg?`min ${core}`:core;return `${sg.neg?'min':'plus'} ${core}`}).join(' ');
   case'mul':return n.factors.map(speech).join(' maal ');
   case'div':return `${speech(n.num)} gedeeld door ${speech(n.den)}`;
+  case'pow':return `${speech(n.base)} tot de macht ${speech(n.exp)}`;
  }
 }
 function equivalentByCases(a,b,cases,conditions=[]){let checked=0;for(const env of cases){if(!conditions.every(c=>domainAllows(c,env)))continue;let av,bv;try{av=evaluate(a,env);bv=evaluate(b,env)}catch(e){continue}checked++;if(typeof av==='boolean'||typeof bv==='boolean'){if(av!==bv)return {ok:false,checked,env,av,bv}}else if(Math.abs(av-bv)>1e-8)return {ok:false,checked,env,av,bv};}return {ok:true,checked}}
-RF.Math={Rational,N,V,Add,Mul,Div,Eq,Rel,isRelation,relationOp,relationLike,flipComparator,clone,equal,nodeKey,negate,stripSign,simplify,collectLike,factorCommon,containsVar,vars,evaluate,getAt,replaceAt,parentInfo,topSideInfo,serialize,text,speech,equivalentByCases,domainAllows,coeffBase,isNegativeTerm};
+RF.Math={Rational,N,V,Add,Mul,Div,Pow,Eq,Rel,isRelation,relationOp,relationLike,flipComparator,clone,equal,nodeKey,negate,stripSign,simplify,collectLike,factorCommon,containsVar,vars,evaluate,getAt,replaceAt,parentInfo,topSideInfo,serialize,text,speech,equivalentByCases,domainAllows,coeffBase,isNegativeTerm};
 })(typeof window!=='undefined'?window:globalThis);
 
 </script>
@@ -1101,10 +1283,11 @@ RF.Math={Rational,N,V,Add,Mul,Div,Eq,Rel,isRelation,relationOp,relationLike,flip
 (function(root){
 'use strict';
 const RF=root.RF=root.RF||{},M=RF.Math;
-const {N,Add,Mul,Div,Eq,clone,nodeKey,negate,simplify,getAt,parentInfo,coeffBase}=M;
+const {N,Add,Mul,Div,Pow,Eq,clone,nodeKey,negate,simplify,getAt,parentInfo,coeffBase}=M;
 function pathJoin(base,key){return base?`${base}.${key}`:String(key)}
-function walk(n,path='',out=[]){out.push({node:n,path});switch(n.t){case'eq':case'rel':walk(n.left,'L',out);walk(n.right,'R',out);break;case'add':n.terms.forEach((t,i)=>walk(t,pathJoin(path,i),out));break;case'mul':n.factors.forEach((f,i)=>walk(f,pathJoin(path,i),out));break;case'div':walk(n.num,pathJoin(path,'N'),out);walk(n.den,pathJoin(path,'D'),out);break;}return out}
-function baseKey(term){const b=coeffBase(term);return b.base?nodeKey(b.base):'#const'}
+function walk(n,path='',out=[]){out.push({node:n,path});switch(n.t){case'eq':case'rel':walk(n.left,'L',out);walk(n.right,'R',out);break;case'add':n.terms.forEach((t,i)=>walk(t,pathJoin(path,i),out));break;case'mul':n.factors.forEach((f,i)=>walk(f,pathJoin(path,i),out));break;case'div':walk(n.num,pathJoin(path,'N'),out);walk(n.den,pathJoin(path,'D'),out);break;case'pow':walk(n.base,pathJoin(path,'B'),out);walk(n.exp,pathJoin(path,'E'),out);break;}return out}
+function commutativeKey(n){if(n?.t==='mul')return `cm(${n.factors.map(commutativeKey).sort().join(',')})`;return nodeKey(n)}
+function baseKey(term){const b=coeffBase(term);return b.base?commutativeKey(b.base):'#const'}
 function mergePair(ast,aPath,bPath){const api=parentInfo(ast,aPath),bpi=parentInfo(ast,bPath);if(!api||!bpi||api.parentPath!==bpi.parentPath||api.parent?.t!=='add')return null;const ai=+api.key,bi=+bpi.key;if(ai===bi)return null;const a=api.parent.terms[ai],b=api.parent.terms[bi];if(baseKey(a)!==baseKey(b))return null;const ac=coeffBase(a),bc=coeffBase(b),c=ac.coeff.add(bc.coeff);let merged;if(c.isZero())merged=N(0);else if(!ac.base)merged=N(c.n,c.d);else if(c.isOne())merged=clone(ac.base);else merged=simplify(Mul(N(c.n,c.d),clone(ac.base)));const first=Math.min(ai,bi),second=Math.max(ai,bi),terms=[];for(let i=0;i<api.parent.terms.length;i++){if(i===first){if(!(merged.t==='num'&&merged.v.isZero()))terms.push(merged);}else if(i!==second)terms.push(clone(api.parent.terms[i]));}const replaced=simplify(terms.length?simplify(Add(terms)):N(0));return simplify(M.replaceAt(ast,api.parentPath,replaced));}
 function balanceAdd(ast,term){const inv=negate(term);return simplify(M.relationLike(ast,Add(clone(ast.left),clone(inv)),Add(clone(ast.right),clone(inv))))}
 function divideSideByKnownNonzero(side,factor){
@@ -1189,6 +1372,88 @@ function factorCommonPairs(ast,targetVar=null){
  // Deduplicate structurally identical source/target gestures.
  const seen=new Set();return out.filter(g=>{const k=g.sourcePath+'>'+g.targetPath+'|'+M.nodeKey(g.result);if(seen.has(k))return false;seen.add(k);return true});
 }
+function powerInfo(node){
+ if(node?.t==='var')return {base:clone(node),exp:1};
+ if(node?.t==='pow'&&node.exp?.t==='num'&&node.exp.v.d===1&&node.exp.v.n>0)return {base:clone(node.base),exp:node.exp.v.n};
+ return null;
+}
+function combinePowerPairs(ast){
+ const out=[];
+ for(const {node,path} of walk(ast)){
+  if(node.t!=='mul'||node.factors.length<2)continue;
+  for(let i=0;i<node.factors.length;i++)for(let j=i+1;j<node.factors.length;j++){
+   const a=powerInfo(node.factors[i]),b=powerInfo(node.factors[j]);if(!a||!b||!M.equal(a.base,b.base))continue;
+   const merged=Pow(clone(a.base),N(a.exp+b.exp));const fs=node.factors.map(clone);fs[i]=merged;fs.splice(j,1);
+   const result=simplify(M.replaceAt(ast,path,simplify(Mul(fs))));const pi=pathJoin(path,i),pj=pathJoin(path,j);
+   const base={kind:'combine-powers',containerPath:path,result,label:'machten samen'};
+   out.push({...base,sourcePath:pi,targetPath:pj});out.push({...base,sourcePath:pj,targetPath:pi});
+  }
+ }
+ return out;
+}
+function squareExpansionGestures(ast){
+ const out=[];for(const {node,path} of walk(ast)){
+  if(node.t!=='pow'||node.exp?.t!=='num'||node.exp.v.d!==1||node.exp.v.n!==2||node.base?.t!=='add')continue;
+  out.push({kind:'expand-square',sourcePath:pathJoin(path,'E'),targetPath:pathJoin(path,'B'),containerPath:path,result:simplify(M.replaceAt(ast,path,Mul(clone(node.base),clone(node.base)))),label:'open kwadraat'});
+ }
+ return out;
+}
+// v2.2.4 — A binomial square is learned as four explicit products, in a
+// fixed didactic order: A², A·B, A·B, B². The same A·B action must therefore
+// be carried out twice. This is deliberately not an instant formula gesture.
+function guidedSquareInfo(node,path){
+ if(node?.t!=='pow'||node.exp?.t!=='num'||node.exp.v.d!==1||node.exp.v.n!==2||node.base?.t!=='add'||node.base.terms.length!==2)return null;
+ const basePath=pathJoin(path,'B'),firstPath=pathJoin(basePath,0),secondPath=pathJoin(basePath,1),expPath=pathJoin(path,'E');
+ const first=clone(node.base.terms[0]),second=clone(node.base.terms[1]);
+ const pieces=[Pow(clone(first),N(2)),Mul(clone(first),clone(second)),Mul(clone(first),clone(second)),Pow(clone(second),N(2))];
+ const expanded=simplify(Add(pieces.map(clone)));
+ return {squarePath:path,firstPath,secondPath,expPath,first,second,pieces,expanded};
+}
+function guidedSquareStartGestures(ast){
+ const out=[];for(const {node,path} of walk(ast)){const q=guidedSquareInfo(node,path);if(!q)continue;out.push({kind:'square-build-first',sourcePath:q.expPath,targetPath:q.firstPath,...q,label:'eerste kwadraat'});}return out;
+}
+function guidedSquareLockedGestures(ast,sourcePath,draft){
+ if(!draft||draft.kind!=='guided-square-build')return[];
+ if(draft.stage===1&&sourcePath===draft.firstPath)return[{kind:'square-build-cross',sourcePath,targetPath:draft.secondPath,squarePath:draft.squarePath,firstPath:draft.firstPath,secondPath:draft.secondPath,expPath:draft.expPath,fullResult:clone(draft.fullResult),label:'eerste kruisproduct'}];
+ if(draft.stage===2&&sourcePath===draft.firstPath)return[{kind:'square-build-cross',sourcePath,targetPath:draft.secondPath,squarePath:draft.squarePath,firstPath:draft.firstPath,secondPath:draft.secondPath,expPath:draft.expPath,fullResult:clone(draft.fullResult),label:'tweede kruisproduct'}];
+ if(draft.stage===3&&sourcePath===draft.expPath)return[{kind:'square-build-last',sourcePath,targetPath:draft.secondPath,squarePath:draft.squarePath,firstPath:draft.firstPath,secondPath:draft.secondPath,expPath:draft.expPath,fullResult:clone(draft.fullResult),label:'tweede kwadraat'}];
+ return[];
+}
+function perfectSquareRoot(node){
+ const sg=M.stripSign(node);if(sg.neg)return null;const n=sg.node;
+ if(n.t==='num'&&n.v.d===1&&n.v.n>=0){const r=Math.round(Math.sqrt(n.v.n));return r*r===n.v.n?N(r):null;}
+ const cb=M.coeffBase(n);if(cb.coeff.d!==1||cb.coeff.n<0)return null;const rc=Math.round(Math.sqrt(cb.coeff.n));if(rc*rc!==cb.coeff.n)return null;
+ const factors=cb.base?.t==='mul'?cb.base.factors:[cb.base].filter(Boolean),roots=[];
+ for(const f of factors){if(f.t==='pow'&&f.exp?.t==='num'&&f.exp.v.d===1&&f.exp.v.n%2===0){const k=f.exp.v.n/2;roots.push(k===1?clone(f.base):Pow(clone(f.base),N(k)));}else return null;}
+ if(rc!==1||roots.length===0)roots.unshift(N(rc));
+ if(!roots.length)return N(rc);return simplify(Mul(roots));
+}
+function productEquivalentKey(n){const s=simplify(n),cb=M.coeffBase(s),base=cb.base?commutativeKey(cb.base):'#const';return `${cb.coeff.toString()}|${base}`}
+function specialPatternPairs(ast){
+ const out=[];
+ for(const {node,path} of walk(ast)){
+  if(node.t!=='add')continue;
+  // Difference of squares: A² − B² -> (A−B)(A+B)
+  if(node.terms.length===2){
+   for(let i=0;i<2;i++)for(let j=0;j<2;j++){if(i===j)continue;const si=M.stripSign(node.terms[i]),sj=M.stripSign(node.terms[j]);if(si.neg||!sj.neg)continue;
+    const a=perfectSquareRoot(si.node),b=perfectSquareRoot(sj.node);if(!a||!b)continue;
+    const result=simplify(M.replaceAt(ast,path,Mul(Add(clone(a),negate(clone(b))),Add(clone(a),clone(b)))));const pi=pathJoin(path,i),pj=pathJoin(path,j);
+    out.push({kind:'fold-difference-squares',sourcePath:pi,targetPath:pj,containerPath:path,result,label:'vouw patroon'});
+   }
+  }
+  // Perfect-square trinomial: A² ± 2AB + B² -> (A±B)²
+  if(node.terms.length===3){
+   for(let i=0;i<3;i++)for(let j=i+1;j<3;j++){
+    const si=M.stripSign(node.terms[i]),sj=M.stripSign(node.terms[j]);if(si.neg||sj.neg)continue;const a=perfectSquareRoot(si.node),b=perfectSquareRoot(sj.node);if(!a||!b)continue;
+    const k=[0,1,2].find(q=>q!==i&&q!==j),mid=node.terms[k],plus=simplify(Mul(N(2),clone(a),clone(b))),minus=simplify(Mul(N(-2),clone(a),clone(b)));
+    let sign=0;if(productEquivalentKey(mid)===productEquivalentKey(plus))sign=1;else if(productEquivalentKey(mid)===productEquivalentKey(minus))sign=-1;else continue;
+    const bin=Add(clone(a),sign>0?clone(b):negate(clone(b)));const result=simplify(M.replaceAt(ast,path,Pow(bin,N(2))));const pi=pathJoin(path,i),pj=pathJoin(path,j);
+    const base={kind:'fold-perfect-square',containerPath:path,result,label:'vouw patroon'};out.push({...base,sourcePath:pi,targetPath:pj});out.push({...base,sourcePath:pj,targetPath:pi});
+   }
+  }
+ }
+ const seen=new Set();return out.filter(g=>{const k=g.kind+'|'+g.sourcePath+'>'+g.targetPath+'|'+M.nodeKey(g.result);if(seen.has(k))return false;seen.add(k);return true});
+}
 function lockedDistributionGestures(ast,sourcePath,draft){if(!draft||draft.kind!=='distribution'||sourcePath!==draft.sourcePath)return[];const g=distributableGroups(ast).find(x=>x.id===draft.groupId);if(!g)return[];const used=new Set(draft.touched||[]);return g.targets.filter(t=>!used.has(t.path)).map(t=>({kind:'distribute-touch',sourcePath,targetPath:t.path,groupId:g.id,containerPath:g.containerPath,product:t.product,targetIndex:t.index,fullResult:g.full,targets:g.targets,label:'raak',locked:true}));}
 
 function givenSubstitutionGestures(ast,varName,valueNode){
@@ -1201,10 +1466,14 @@ function givenSubstitutionGestures(ast,varName,valueNode){
  return out;
 }
 function gesturesForSource(ast,sourcePath,draft=null,targetVar=null,options={}){
- if(draft)return lockedDistributionGestures(ast,sourcePath,draft);
+ if(draft){if(draft.kind==='guided-square-build')return guidedSquareLockedGestures(ast,sourcePath,draft);return lockedDistributionGestures(ast,sourcePath,draft);}
  const gestures=[],source=getAt(ast,sourcePath);if(!source)return gestures;const pi=parentInfo(ast,sourcePath);
  if(pi?.parent?.t==='add'){for(let i=0;i<pi.parent.terms.length;i++){if(String(i)===String(pi.key))continue;const tp=pi.parentPath?`${pi.parentPath}.${i}`:String(i);if(baseKey(pi.parent.terms[+pi.key])===baseKey(pi.parent.terms[i])){const result=mergePair(ast,sourcePath,tp);if(result)gestures.push({kind:'merge',sourcePath,targetPath:tp,result,label:'samen'});}}}
  for(const g of distributableGroups(ast)){if(g.sourcePath!==sourcePath)continue;for(const t of g.targets)gestures.push({kind:'distribute-touch',sourcePath,targetPath:t.path,groupId:g.id,containerPath:g.containerPath,product:t.product,targetIndex:t.index,fullResult:g.full,targets:g.targets,label:'raak'});}
+ for(const p of combinePowerPairs(ast)){if(p.sourcePath===sourcePath)gestures.push(p);}
+ if(options.guidedSquare){for(const q of guidedSquareStartGestures(ast)){if(q.sourcePath===sourcePath)gestures.push(q);}}
+ else{for(const q of squareExpansionGestures(ast)){if(q.sourcePath===sourcePath)gestures.push(q);}}
+ for(const q of specialPatternPairs(ast)){if(q.sourcePath===sourcePath)gestures.push(q);}
  for(const b of additiveTopTerms(ast,targetVar)){if(b.sourcePath===sourcePath)gestures.push({kind:'balance-add',sourcePath,targetSide:b.otherSide,result:b.result,term:b.term,label:'door ='});}
  for(const d of divisiveTopFactors(ast,targetVar)){if(d.sourcePath===sourcePath)gestures.push({kind:'balance-divide',...d,targetSide:d.otherSide});}
  for(const d of numeratorFactorMoves(ast,targetVar)){if(d.sourcePath===sourcePath)gestures.push({kind:'balance-divide-numerator',sourcePath,targetSide:d.otherSide,result:d.result,factor:d.factor,label:'door ='});}
@@ -1212,10 +1481,10 @@ function gesturesForSource(ast,sourcePath,draft=null,targetVar=null,options={}){
  if(options.allowFactorCommon){for(const f of factorCommonPairs(ast,targetVar)){if(f.sourcePath===sourcePath)gestures.push(f);}}
  return gestures;
 }
-function allGestureSources(ast,draft=null,targetVar=null,options={}){if(draft)return new Set(lockedDistributionGestures(ast,draft.sourcePath,draft).length?[draft.sourcePath]:[]);const set=new Set();for(const {path} of walk(ast)){if(gesturesForSource(ast,path,null,targetVar,options).length)set.add(path)}return set}
+function allGestureSources(ast,draft=null,targetVar=null,options={}){if(draft){if(draft.kind==='guided-square-build'){const candidates=[draft.firstPath,draft.expPath],set=new Set();for(const p of candidates)if(guidedSquareLockedGestures(ast,p,draft).length)set.add(p);return set}return new Set(lockedDistributionGestures(ast,draft.sourcePath,draft).length?[draft.sourcePath]:[])}const set=new Set();for(const {path} of walk(ast)){if(gesturesForSource(ast,path,null,targetVar,options).length)set.add(path)}return set}
 function gestureTargets(ast,sourcePath,draft=null,targetVar=null,options={}){return gesturesForSource(ast,sourcePath,draft,targetVar,options)}
-function transitionAst(gesture,ast){if(gesture.kind==='balance-add'){const inv=negate(gesture.term);return M.relationLike(ast,Add(clone(ast.left),clone(inv)),Add(clone(ast.right),clone(inv)));}if(gesture.kind==='balance-divide'||gesture.kind==='balance-divide-numerator'){if(gesture.requiresComparatorFlip)return null;return M.relationLike(ast,Div(clone(ast.left),clone(gesture.factor)),Div(clone(ast.right),clone(gesture.factor)));}if(gesture.kind==='balance-multiply-den'){if(gesture.requiresComparatorFlip)return null;return M.relationLike(ast,Mul(clone(ast.left),clone(gesture.den)),Mul(clone(ast.right),clone(gesture.den)));}return null}
-RF.Gestures={walk,gesturesForSource,allGestureSources,gestureTargets,givenSubstitutionGestures,mergePair,distributableGroups,balanceAdd,divideBothByExpr,divideNumeratorFactor,numeratorFactorMoves,multiplyAcrossDenominator,divideBothMeta,multiplyAcrossDenominatorMeta,numericSign,transitionAst,lockedDistributionGestures,targetTermExposed,additiveTopTerms,divisiveTopFactors,numeratorFactorMoves,denominatorMoves,factorCommonPairs};
+function transitionAst(gesture,ast){if(gesture.kind==='balance-add'){const inv=negate(gesture.term);return M.relationLike(ast,Add(clone(ast.left),clone(inv)),Add(clone(ast.right),clone(inv)));}if(gesture.kind==='balance-divide'||gesture.kind==='balance-divide-numerator'){if(gesture.requiresComparatorFlip)return null;const f=M.simplify(gesture.factor);/* For a visible numeric fraction, show the reciprocal operation itself. This makes the sign part of the learning event: −1/3 becomes ×(−3), not ×3. */if(f?.t==='num'&&f.v.d>1&&!f.v.isZero()){const reciprocal=N(f.v.d,f.v.n);return M.relationLike(ast,Mul(clone(ast.left),clone(reciprocal)),Mul(clone(ast.right),clone(reciprocal)));}/* If one side is already a fraction, flatten only that side for the transition trace. We still show ordinary a/a cancellation explicitly elsewhere, but never draw a fraction bar inside another fraction. */const traceDivide=(side,factor)=>side?.t==='div'||factor?.t==='div'?M.simplify(Div(clone(side),clone(factor))):Div(clone(side),clone(factor));return M.relationLike(ast,traceDivide(ast.left,gesture.factor),traceDivide(ast.right,gesture.factor));}if(gesture.kind==='balance-multiply-den'){if(gesture.requiresComparatorFlip)return null;return M.relationLike(ast,Mul(clone(ast.left),clone(gesture.den)),Mul(clone(ast.right),clone(gesture.den)));}return null}
+RF.Gestures={walk,gesturesForSource,allGestureSources,gestureTargets,givenSubstitutionGestures,mergePair,distributableGroups,balanceAdd,divideBothByExpr,divideNumeratorFactor,numeratorFactorMoves,multiplyAcrossDenominator,divideBothMeta,multiplyAcrossDenominatorMeta,numericSign,transitionAst,lockedDistributionGestures,targetTermExposed,additiveTopTerms,divisiveTopFactors,numeratorFactorMoves,denominatorMoves,factorCommonPairs,combinePowerPairs,squareExpansionGestures,guidedSquareStartGestures,guidedSquareLockedGestures,specialPatternPairs};
 })(typeof window!=='undefined'?window:globalThis);
 
 </script>
@@ -1239,6 +1508,11 @@ function requiredNonzero(gesture){
 function ruleId(kind,gesture=null){if(gesture?.requiresComparatorFlip&&(kind==='balance-divide'||kind==='balance-multiply-den'))return kind==='balance-divide'?'DIVIDE_INEQUALITY_BY_NEGATIVE_AND_REVERSE':'MULTIPLY_INEQUALITY_BY_NEGATIVE_AND_REVERSE';return ({
   'substitute-given':'SUBSTITUTE_GIVEN_VALUE',
   merge:'ADD_LIKE_TERMS',
+  'combine-powers':'MULTIPLY_POWERS_SAME_BASE',
+  'expand-square':'EXPAND_BINOMIAL_SQUARE_AS_PRODUCT',
+  'guided-square-build':'BUILD_BINOMIAL_SQUARE_FROM_FOUR_PRODUCTS',
+  'fold-perfect-square':'FACTOR_PERFECT_SQUARE_TRINOMIAL',
+  'fold-difference-squares':'FACTOR_DIFFERENCE_OF_SQUARES',
   'factor-common':'FACTOR_COMMON_FACTOR',
   distribution:'DISTRIBUTE_OVER_SUM',
   'distribute-touch':'DISTRIBUTE_OVER_SUM',
@@ -1250,6 +1524,10 @@ function ruleId(kind,gesture=null){if(gesture?.requiresComparatorFlip&&(kind==='
 function recompute(before,kind,gesture,targetVar){
   if(kind==='substitute-given'){if(!gesture?.varName||!gesture?.value||!gesture?.targetPath)return null;const n=M.getAt(before,gesture.targetPath);if(!n||n.t!=='var'||n.name!==gesture.varName)return null;return M.simplify(M.replaceAt(before,gesture.targetPath,gesture.value));}
   if(kind==='merge')return G.mergePair(before,gesture.sourcePath,gesture.targetPath);
+  if(kind==='combine-powers')return G.combinePowerPairs(before).find(g=>g.sourcePath===gesture.sourcePath&&g.targetPath===gesture.targetPath)?.result||null;
+  if(kind==='expand-square')return G.squareExpansionGestures(before).find(g=>g.sourcePath===gesture.sourcePath&&g.targetPath===gesture.targetPath)?.result||null;
+  if(kind==='guided-square-build'){const q=G.guidedSquareStartGestures(before).find(g=>g.squarePath===gesture.squarePath);return q?.expanded||q?.fullResult||null;}
+  if(kind==='fold-perfect-square'||kind==='fold-difference-squares')return G.specialPatternPairs(before).find(g=>g.kind===kind&&g.sourcePath===gesture.sourcePath&&g.targetPath===gesture.targetPath)?.result||null;
   if(kind==='factor-common')return G.factorCommonPairs(before,targetVar).find(g=>g.sourcePath===gesture.sourcePath&&g.targetPath===gesture.targetPath)?.result||null;
   if(kind==='distribution'||kind==='distribute-touch'){
     const group=G.distributableGroups(before).find(x=>x.sourcePath===gesture.sourcePath||x.id===gesture.groupId);
@@ -1274,7 +1552,7 @@ RF.Rules={validate,ruleId,hasNonzeroCondition};
 (function(root){
 'use strict';
 const RF=root.RF=root.RF||{},M=RF.Math;
-const {N,V,Add,Mul,Div,Eq,Rel}=M;
+const {N,V,Add,Mul,Div,Pow,Eq,Rel}=M;
 const x=()=>V('x');
 const common=[{x:-5},{x:-2},{x:-1},{x:0},{x:1},{x:2},{x:5},{x:8}];
 function exact(target){return state=>M.equal(M.simplify(state.ast),M.simplify(target));}
@@ -1305,10 +1583,9 @@ const challenges=[
  {id:'D03',campaign:'ALGEBRA',campaignLabel:'Vergelijkingen',family:'RAAK',title:'Iedere term',goal:'Bouw de volgende regel door 3 elk deel te laten raken',targetVar:'x',start:Mul(N(3),Add(x(),N(2))),target:Add(Mul(N(3),x()),N(6)),hiddenCases:common,bestMoves:2,onboarding:true,note:'Laat de factor de hele groep beïnvloeden.',hints:['Welke termen zitten allemaal binnen dezelfde haakjes?','Dezelfde factor moet elk deel van de groep bereiken.']},
  {id:'D04',campaign:'ALGEBRA',campaignLabel:'Vergelijkingen',family:'RAAK',title:'Min maal min',goal:'Laat −2 elk deel raken en maak de nieuwe regel af',targetVar:'x',start:Mul(N(-2),Add(x(),N(-3))),target:Add(Mul(N(-2),x()),N(6)),hiddenCases:common,bestMoves:2,hints:['Let op de tekens wanneer de factor elk deel raakt.','Controleer ook het tweede deel binnen de haakjes.']},
  {id:'D05',campaign:'ALGEBRA',campaignLabel:'Vergelijkingen',family:'DOOR =',title:'Zelfde aftrekking',goal:'Maak +2 weg zonder de gelijkheid te breken',targetVar:'x',start:Eq(Add(x(),N(2)),N(6)),target:Eq(x(),N(4)),hiddenCases:[{x:4},{x:3},{x:0},{x:7},{x:-2}],bestMoves:1,onboarding:true,note:'Wat je aan één zijde verandert, moet de gelijkheid bewaren.',hints:['Welke term houdt x nog vast?','Kies een bewerking die aan beide zijden hetzelfde effect heeft.']},
- {id:'D06',campaign:'ALGEBRA',campaignLabel:'Vergelijkingen',family:'DOOR =',title:'Zelfde deling',goal:'Maak de factor 3 los van x',targetVar:'x',start:Eq(Mul(N(3),x()),N(12)),target:Eq(x(),N(4)),hiddenCases:[{x:4},{x:3},{x:0},{x:7},{x:-2}],bestMoves:1,hints:['Welke factor houdt x nog vast?','Maak dezelfde inverse bewerking aan beide zijden.']},
+ {id:'D06',campaign:'ALGEBRA',campaignLabel:'Vergelijkingen',family:'DOOR =',title:'Negatieve factor',goal:'Maak de factor −3 los van x',targetVar:'x',start:Eq(Mul(N(-3),x()),N(12)),target:Eq(x(),N(-4)),hiddenCases:[{x:-4},{x:3},{x:0},{x:7},{x:-2}],bestMoves:1,hints:['Welke volledige factor houdt x vast?','Delen door −3 bewaart de gelijkheid en geeft een negatieve uitkomst.']},
  {id:'D07',campaign:'ALGEBRA',campaignLabel:'Vergelijkingen',family:'ROUTE',title:'Twee routes',goal:'Maak x vrij — maar maak iedere begonnen regel eerst af',targetVar:'x',start:Eq(Mul(N(3),Add(x(),N(2))),N(18)),target:Eq(x(),N(4)),hiddenCases:[{x:4},{x:2},{x:0},{x:-3},{x:8}],bestMoves:2,hints:['Er zijn meerdere geldige eerste stappen.','Kies één route en maak de begonnen nieuwe regel eerst af.']},
- {id:'D08',campaign:'ALGEBRA',campaignLabel:'Vergelijkingen',family:'KETEN',title:'Volledige afleiding',goal:'Maak x vrij, regel voor regel',targetVar:'x',start:Eq(Mul(N(2),Add(x(),N(3))),N(14)),target:Eq(x(),N(4)),hiddenCases:[{x:4},{x:2},{x:0},{x:-3},{x:8}],bestMoves:2,hints:['Werk alleen verder op de actieve regel.','Vraag telkens: wat houdt x in deze regel nog vast?']},
-
+ {id:'D08',campaign:'ALGEBRA',campaignLabel:'Vergelijkingen',family:'KETEN',title:'Negatief voor haakjes',goal:'Maak x vrij, regel voor regel',targetVar:'x',start:Eq(Mul(N(-2),Add(x(),N(3))),N(14)),target:Eq(x(),N(-10)),hiddenCases:[{x:-10},{x:2},{x:0},{x:-3},{x:8}],bestMoves:2,hints:['De factor buiten de haakjes is negatief.','Je kunt de volledige factor eerst losmaken of de haakjes correct uitwerken.']},
  // CAMPAGNE 2 — FORMULES OMZETTEN
  {id:'F01',campaign:'FORMULAS',campaignLabel:'Formules',family:'MAAK VRIJ',title:'Product',goal:'Maak I vrij',targetVar:'I',start:Eq(V('P'),Mul(V('U'),V('I'))),target:Eq(V('I'),Div(V('P'),V('U'))),conditions:[{type:'nonzero',var:'U'}],assumption:'U ≠ 0',hiddenCases:fenv({P:12,U:3,I:4},{P:10,U:2,I:5},{P:15,U:5,I:3},{P:7,U:2,I:9},{P:-8,U:4,I:-2}),bestMoves:1,hints:['Welke factor zit nog vast aan de doelletter?','Een product kun je losmaken met de inverse bewerking aan beide zijden.']},
  {id:'F02',campaign:'FORMULAS',campaignLabel:'Formules',family:'BREUK',title:'Letter in de noemer',goal:'Maak t vrij',targetVar:'t',start:Eq(V('v'),Div(V('s'),V('t'))),target:Eq(V('t'),Div(V('s'),V('v'))),conditions:[{type:'nonzero',var:'t'},{type:'nonzero',var:'v'}],assumption:'t ≠ 0 · v ≠ 0',hiddenCases:fenv({v:2,s:10,t:5},{v:3,s:12,t:4},{v:5,s:15,t:3},{v:-2,s:8,t:-4},{v:4,s:7,t:6}),bestMoves:2,hints:['Waar bevindt de doelletter zich in de breuk?','Welke bewerking maakt een noemer ongedaan?']},
@@ -1349,8 +1626,8 @@ challenges.push(
  {id:'Q04',campaign:'EQUATIONS',family:'BREUK',title:'x in een breuk',goal:'Maak x vrij',targetVar:'x',start:Eq(Div(V('x'),N(3)),N(4)),target:Eq(V('x'),N(12)),hiddenCases:[{x:12},{x:0},{x:-3},{x:6},{x:15}],bestMoves:1,hints:['Wat doet de noemer met x?','Maak de breuk ongedaan zonder de gelijkheid te breken.']},
  // VERGELIJKINGEN — twee stappen
  {id:'Q05',campaign:'EQUATIONS',family:'KETEN',title:'Plus en factor',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(2),V('x')),N(3)),N(11)),target:Eq(V('x'),N(4)),hiddenCases:[{x:4},{x:0},{x:-2},{x:6},{x:10}],bestMoves:2,hints:['Wat houdt x van buitenaf nog vast?','Werk één bewerking per nieuwe regel af.']},
- {id:'Q06',campaign:'EQUATIONS',family:'KETEN',title:'Min en factor',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(5),V('x')),N(-10)),N(15)),target:Eq(V('x'),N(5)),hiddenCases:[{x:5},{x:0},{x:-2},{x:3},{x:9}],bestMoves:2,hints:['Kijk eerst naar de losse term naast de x-term.','Daarna blijft nog één factor over.']},
- {id:'Q07',campaign:'EQUATIONS',family:'KETEN',title:'Breuk en plus',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Div(V('x'),N(4)),N(2)),N(5)),target:Eq(V('x'),N(12)),hiddenCases:[{x:12},{x:0},{x:-4},{x:8},{x:16}],bestMoves:2,hints:['Werk de buitenste bewerking eerst weg.','Daarna kun je de breuk zelf aanpakken.']},
+ {id:'Q06',campaign:'EQUATIONS',family:'KETEN',title:'Negatieve factor in twee stappen',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(-4),V('x')),N(6)),N(18)),target:Eq(V('x'),N(-3)),hiddenCases:[{x:-3},{x:0},{x:-2},{x:3},{x:9}],bestMoves:2,hints:['Werk eerst de losse term weg.','Daarna blijft een negatieve factor aan x vast.']},
+ {id:'Q07',campaign:'EQUATIONS',family:'KETEN',title:'Groep in de teller',goal:'Maak x vrij',targetVar:'x',start:Eq(Div(Add(V('x'),N(-2)),N(3)),N(4)),target:Eq(V('x'),N(14)),hiddenCases:[{x:14},{x:0},{x:-4},{x:8},{x:16}],bestMoves:2,hints:['De noemer werkt op de volledige teller.','Maak eerst de breuk als geheel ongedaan en werk daarna de losse term weg.']},
  // VERGELIJKINGEN — haakjes
  {id:'Q08',campaign:'EQUATIONS',family:'HAAKJES',title:'Haakjes met plus',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(5),Add(V('x'),N(1))),N(20)),target:Eq(V('x'),N(3)),hiddenCases:[{x:3},{x:0},{x:-1},{x:5},{x:8}],bestMoves:2,hints:['Er zijn meerdere geldige routes.','Maak een begonnen distributieregel volledig af.']},
  {id:'Q09',campaign:'EQUATIONS',family:'HAAKJES',title:'Haakjes met min',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(2),Add(V('x'),N(-2))),N(10)),target:Eq(V('x'),N(7)),hiddenCases:[{x:7},{x:0},{x:-2},{x:4},{x:10}],bestMoves:2,hints:['Kijk naar de structuur rond x.','Je kunt een factor als geheel aanpakken of de haakjes uitwerken.']},
@@ -1367,21 +1644,21 @@ challenges.push(
  {id:'P04',campaign:'FORMULAS',family:'BREUK',title:'Teller vrij',goal:'Maak a vrij',targetVar:'a',start:Eq(V('Q'),Div(V('a'),V('b'))),target:Eq(Mul(V('Q'),V('b')),V('a')),conditions:[{type:'nonzero',var:'b'}],assumption:'b ≠ 0',hiddenCases:fenv({Q:3,a:12,b:4},{Q:2,a:10,b:5},{Q:-2,a:-8,b:4},{Q:5,a:15,b:3},{Q:4,a:20,b:5}),bestMoves:1,hints:['Wat doet de noemer met de hele teller?','Maak eerst de verticale breuk ongedaan.']},
  {id:'P05',campaign:'FORMULAS',family:'BREUK',title:'Stroomformule',goal:'Maak I vrij',targetVar:'I',start:Eq(V('R'),Div(V('V'),V('I'))),target:Eq(Div(V('V'),V('R')),V('I')),conditions:[{type:'nonzero',var:'I'},{type:'nonzero',var:'R'}],assumption:'I ≠ 0 · R ≠ 0',hiddenCases:fenv({R:2,V:10,I:5},{R:3,V:12,I:4},{R:5,V:15,I:3},{R:-2,V:8,I:-4},{R:4,V:20,I:5}),bestMoves:2,hints:['De doelletter staat in de noemer.','Maak de breuk stap voor stap eenvoudiger.']},
  // FORMULES — twee bewerkingen
- {id:'P06',campaign:'FORMULAS',family:'KETEN',title:'Som na product',goal:'Maak n vrij',targetVar:'n',start:Eq(V('M'),Add(Mul(V('k'),V('n')),V('p'))),target:Eq(Div(Add(V('M'),Mul(N(-1),V('p'))),V('k')),V('n')),conditions:[{type:'nonzero',var:'k'}],assumption:'k ≠ 0',hiddenCases:fenv({M:11,k:2,n:4,p:3},{M:8,k:3,n:2,p:2},{M:4,k:-2,n:1,p:6},{M:20,k:5,n:3,p:5},{M:7,k:2,n:4,p:-1}),bestMoves:2,hints:['Welke bewerking zit het verst buiten de doelletter?','Maak eerst één volledige nieuwe regel.']},
- {id:'P07',campaign:'FORMULAS',family:'HAAKJES',title:'Letter in groep',goal:'Maak t vrij',targetVar:'t',start:Eq(V('s'),Mul(V('a'),Add(V('t'),V('b')))),target:Eq(Add(Div(V('s'),V('a')),Mul(N(-1),V('b'))),V('t')),conditions:[{type:'nonzero',var:'a'}],assumption:'a ≠ 0',hiddenCases:fenv({s:20,a:4,t:3,b:2},{s:18,a:3,t:4,b:2},{s:10,a:2,t:1,b:4},{s:-12,a:3,t:-6,b:2},{s:30,a:5,t:4,b:2}),bestMoves:2,hints:['Welke structuur omsluit t?','Werk van buiten naar binnen.']},
+ {id:'P06',campaign:'FORMULAS',family:'KETEN',title:'Verschil na product',goal:'Maak n vrij',targetVar:'n',start:Eq(V('M'),Add(Mul(V('k'),V('n')),Mul(N(-1),V('p')))),target:Eq(Div(Add(V('M'),V('p')),V('k')),V('n')),conditions:[{type:'nonzero',var:'k'}],assumption:'k ≠ 0',hiddenCases:fenv({M:5,k:2,n:4,p:3},{M:4,k:3,n:2,p:2},{M:-8,k:-2,n:1,p:6},{M:10,k:5,n:3,p:5},{M:9,k:2,n:4,p:-1}),bestMoves:2,hints:['Het minteken hoort bij de volledige p-term.','Werk eerst de buitenste optelling of aftrekking weg.']},
+ {id:'P07',campaign:'FORMULAS',family:'HAAKJES',title:'Verschil in de groep',goal:'Maak t vrij',targetVar:'t',start:Eq(V('s'),Mul(V('a'),Add(V('t'),Mul(N(-1),V('b'))))),target:Eq(Add(Div(V('s'),V('a')),V('b')),V('t')),conditions:[{type:'nonzero',var:'a'}],assumption:'a ≠ 0',hiddenCases:fenv({s:4,a:4,t:3,b:2},{s:6,a:3,t:4,b:2},{s:-6,a:2,t:1,b:4},{s:-24,a:3,t:-6,b:2},{s:10,a:5,t:4,b:2}),bestMoves:2,hints:['De doelletter staat in een verschil binnen de groep.','Werk van buiten naar binnen en houd het minteken bij b.']},
  // FORMULES — haakjes & breuken / zelfstandig
- {id:'P08',campaign:'FORMULAS',family:'MEERSTAPS',title:'Nieuwe samengestelde formule',goal:'Maak x vrij',targetVar:'x',start:Eq(V('B'),Div(Mul(V('u'),Add(V('v'),V('x'))),V('w'))),target:Eq(Add(Div(Mul(V('B'),V('w')),V('u')),Mul(N(-1),V('v'))),V('x')),conditions:[{type:'nonzero',var:'u'},{type:'nonzero',var:'w'}],assumption:'u ≠ 0 · w ≠ 0',hiddenCases:fenv({B:4,u:2,v:3,x:5,w:4},{B:3,u:3,v:2,x:4,w:6},{B:2,u:4,v:1,x:5,w:12},{B:-2,u:2,v:5,x:-9,w:4},{B:5,u:5,v:1,x:3,w:4}),bestMoves:3,hints:['Er zijn meerdere geldige routes.','Kies zelf welke buitenste structuur je eerst eenvoudiger maakt.']}
+ {id:'P08',campaign:'FORMULAS',family:'MEERSTAPS',title:'Doelletter als negatieve term',goal:'Maak x vrij',targetVar:'x',start:Eq(V('B'),Div(Mul(V('u'),Add(V('v'),Mul(N(-1),V('x')))),V('w'))),target:Eq(Add(V('v'),Mul(N(-1),Div(Mul(V('B'),V('w')),V('u')))),V('x')),conditions:[{type:'nonzero',var:'u'},{type:'nonzero',var:'w'}],assumption:'u ≠ 0 · w ≠ 0',hiddenCases:fenv({B:2,u:2,v:7,x:3,w:4},{B:2,u:3,v:6,x:2,w:6},{B:-2,u:4,v:1,x:5,w:8},{B:-2,u:2,v:-1,x:3,w:4},{B:3,u:5,v:4,x:1,w:5}),bestMoves:4,hints:['x staat met een minteken in de groep.','Na het wegwerken van de buitenlagen kan −x overblijven; behandel dat teken als deel van de term.']}
 );
 
 
 challenges.push(
- {id:'E11',campaign:'EXPRESSIONS',family:'MIX',title:'Eerst uitwerken',goal:'Vereenvoudig volledig',targetVar:'x',start:Add(Mul(N(2),Add(V('x'),N(2))),Mul(N(3),V('x'))),target:Add(Mul(N(5),V('x')),N(4)),hiddenCases:[{x:-3},{x:0},{x:1},{x:4},{x:8}],bestMoves:3,hints:['Werk één structuur volledig af.','Daarna ontstaan gelijksoortige x-termen.']},
- {id:'E09',campaign:'EXPRESSIONS',family:'ZELF',title:'Zelf mixen',goal:'Vereenvoudig volledig',targetVar:'a',start:Add(Mul(N(2),Add(V('a'),N(3))),Mul(N(4),V('a'))),target:Add(Mul(N(6),V('a')),N(6)),hiddenCases:[{a:-3},{a:0},{a:1},{a:4},{a:8}],bestMoves:3,hints:['Welke bekende structuren zie je?','Werk elke begonnen stap volledig af.']},
- {id:'E10',campaign:'EXPRESSIONS',family:'ZELF',title:'Zelf met tekens',goal:'Vereenvoudig volledig',targetVar:'y',start:Add(Mul(N(-2),Add(V('y'),N(-4))),Mul(N(3),V('y'))),target:Add(V('y'),N(8)),hiddenCases:[{y:-5},{y:0},{y:2},{y:6},{y:10}],bestMoves:3,hints:['Let op de signed terms.','Combineer pas nadat de haakjes volledig zijn uitgewerkt.']},
- {id:'Q13',campaign:'EQUATIONS',family:'ZELF',title:'Zelf met haakjes',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(3),Add(V('x'),N(-1))),N(12)),target:Eq(V('x'),N(5)),hiddenCases:[{x:5},{x:0},{x:-2},{x:7},{x:10}],bestMoves:2,hints:['Kies zelf een geldige route.','Maak elke nieuwe regel volledig af.']},
+ {id:'E11',campaign:'EXPRESSIONS',family:'MIX',title:'Verschil en negatieve term',goal:'Vereenvoudig volledig',targetVar:'x',start:Add(Mul(N(4),Add(V('x'),N(-1))),Mul(N(-2),V('x'))),target:Add(Mul(N(2),V('x')),N(-4)),hiddenCases:[{x:-3},{x:0},{x:1},{x:4},{x:8}],bestMoves:3,hints:['Werk de haakjes volledig uit.','Lees −2x als één volledige term wanneer je daarna samenbrengt.']},
+ {id:'E09',campaign:'EXPRESSIONS',family:'ZELF',title:'Zelf met negatieve distributie',goal:'Vereenvoudig volledig',targetVar:'a',start:Add(Mul(N(-2),Add(V('a'),N(3))),Mul(N(4),V('a'))),target:Add(Mul(N(2),V('a')),N(-6)),hiddenCases:[{a:-3},{a:0},{a:1},{a:4},{a:8}],bestMoves:3,hints:['Het minteken hoort bij de factor buiten de haakjes.','Werk elke begonnen distributiestap volledig af voordat je termen samenbrengt.']},
+ {id:'E10',campaign:'EXPRESSIONS',family:'ZELF',title:'Negatieve breukfactor',goal:'Vereenvoudig volledig',targetVar:'y',start:Add(Mul(N(-1,2),Add(Mul(N(2),V('y')),N(-6))),Mul(N(3),V('y'))),target:Add(Mul(N(2),V('y')),N(3)),hiddenCases:[{y:-5},{y:0},{y:2},{y:6},{y:10}],bestMoves:3,hints:['Behandel −1/2 als één volledige factor.','Let bij elk product op zowel de breuk als het teken.']},
+ {id:'Q13',campaign:'EQUATIONS',family:'ZELF',title:'Zelf met negatieve haakjesfactor',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(-3),Add(V('x'),N(2))),N(12)),target:Eq(V('x'),N(-6)),hiddenCases:[{x:-6},{x:0},{x:-2},{x:7},{x:10}],bestMoves:2,hints:['Kies zelf een geldige route.','Let erop dat −3 de volledige groep beïnvloedt.']},
  {id:'Q14',campaign:'EQUATIONS',family:'ZELF',title:'Zelf beide kanten',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(2),V('x')),N(5)),Add(V('x'),N(11))),target:Eq(V('x'),N(6)),hiddenCases:[{x:6},{x:0},{x:-2},{x:4},{x:9}],bestMoves:3,hints:['De doelletter komt meer dan één keer voor.','Kies zelf welke volledige term je eerst verplaatst.']},
- {id:'P09',campaign:'FORMULAS',family:'ZELF',title:'Zelf samengestelde formule',goal:'Maak x vrij',targetVar:'x',start:Eq(V('C'),Div(Mul(V('d'),Add(V('e'),V('x'))),V('g'))),target:Eq(Add(Div(Mul(V('C'),V('g')),V('d')),Mul(N(-1),V('e'))),V('x')),conditions:[{type:'nonzero',var:'d'},{type:'nonzero',var:'g'}],assumption:'d ≠ 0 · g ≠ 0',hiddenCases:fenv({C:4,d:2,e:3,x:5,g:4},{C:3,d:3,e:2,x:4,g:6},{C:2,d:4,e:1,x:5,g:12},{C:-2,d:2,e:5,x:-9,g:4},{C:5,d:5,e:1,x:3,g:4}),bestMoves:3,hints:['Welke structuren herken je rond x?','Kies zelf een geldige volgorde.']},
- {id:'P10',campaign:'FORMULAS',family:'ZELF',title:'Zelf twee bewerkingen',goal:'Maak b vrij',targetVar:'b',start:Eq(V('L'),Add(Mul(V('a'),V('b')),V('c'))),target:Eq(Div(Add(V('L'),Mul(N(-1),V('c'))),V('a')),V('b')),conditions:[{type:'nonzero',var:'a'}],assumption:'a ≠ 0',hiddenCases:fenv({L:11,a:2,b:4,c:3},{L:8,a:3,b:2,c:2},{L:4,a:-2,b:1,c:6},{L:20,a:5,b:3,c:5},{L:7,a:2,b:4,c:-1}),bestMoves:2,hints:['Werk zonder voorgeschreven route.','Vraag alleen: wat houdt b nu nog vast?']}
+ {id:'P09',campaign:'FORMULAS',family:'ZELF',title:'Zelf met negatieve doelterm',goal:'Maak x vrij',targetVar:'x',start:Eq(V('C'),Div(Mul(V('d'),Add(V('e'),Mul(N(-1),V('x')))),V('g'))),target:Eq(Add(V('e'),Mul(N(-1),Div(Mul(V('C'),V('g')),V('d')))),V('x')),conditions:[{type:'nonzero',var:'d'},{type:'nonzero',var:'g'}],assumption:'d ≠ 0 · g ≠ 0',hiddenCases:fenv({C:2,d:2,e:7,x:3,g:4},{C:2,d:3,e:6,x:2,g:6},{C:-2,d:4,e:1,x:5,g:8},{C:-2,d:2,e:-1,x:3,g:4},{C:3,d:5,e:4,x:1,g:5}),bestMoves:4,hints:['Lees het teken van x als onderdeel van de volledige term.','Kies zelf een geldige volgorde om de buitenlagen weg te werken.']},
+ {id:'P10',campaign:'FORMULAS',family:'ZELF',title:'Zelf met aftrekking',goal:'Maak b vrij',targetVar:'b',start:Eq(V('L'),Add(Mul(V('a'),V('b')),Mul(N(-1),V('c')))),target:Eq(Div(Add(V('L'),V('c')),V('a')),V('b')),conditions:[{type:'nonzero',var:'a'}],assumption:'a ≠ 0',hiddenCases:fenv({L:5,a:2,b:4,c:3},{L:4,a:3,b:2,c:2},{L:-8,a:-2,b:1,c:6},{L:10,a:5,b:3,c:5},{L:9,a:2,b:4,c:-1}),bestMoves:2,hints:['Werk zonder voorgeschreven route.','Het minteken hoort bij de c-term; maak die eerst correct ongedaan.']}
 );
 
 
@@ -1420,17 +1697,21 @@ challenges.push(
  {id:'B01',campaign:'BRACKETS',family:'RAAK',title:'Vier raakt alles',goal:'Werk de haakjes uit',targetVar:'x',start:Mul(N(4),Add(V('x'),N(2))),target:Add(Mul(N(4),V('x')),N(8)),hiddenCases:[{x:-3},{x:0},{x:2},{x:5}],bestMoves:2,hints:['Welke factor staat buiten de groep?','Laat dezelfde factor elk deel binnen de haakjes raken.']},
  {id:'B02',campaign:'BRACKETS',family:'RAAK',title:'Negatieve factor',goal:'Werk de haakjes uit',targetVar:'a',start:Mul(N(-3),Add(V('a'),N(2))),target:Add(Mul(N(-3),V('a')),N(-6)),hiddenCases:[{a:-3},{a:0},{a:2},{a:5}],bestMoves:2,hints:['De factor is negatief.','Let op het teken van elk nieuw product.']},
  {id:'B03',campaign:'BRACKETS',family:'RAAK',title:'Vijf met verschil',goal:'Werk de haakjes uit',targetVar:'y',start:Mul(N(5),Add(V('y'),N(-1))),target:Add(Mul(N(5),V('y')),N(-5)),hiddenCases:[{y:-3},{y:0},{y:2},{y:5}],bestMoves:2,hints:['Ook een negatieve term binnen de groep moet geraakt worden.','Maak de begonnen verdeling volledig af.']},
- {id:'B04',campaign:'BRACKETS',family:'MIX',title:'Uitwerken en samenbrengen',goal:'Vereenvoudig volledig',targetVar:'a',start:Add(Mul(N(2),Add(V('a'),N(3))),V('a')),target:Add(Mul(N(3),V('a')),N(6)),hiddenCases:[{a:-3},{a:0},{a:2},{a:5}],bestMoves:3,hints:['Eerst ontstaat een nieuwe regel uit de haakjes.','Daarna kun je gelijksoortige termen herkennen.']},
-
+ {id:'B04',campaign:'BRACKETS',family:'MIX',title:'Negatief uitwerken en samenbrengen',goal:'Vereenvoudig volledig',targetVar:'x',start:Add(Mul(N(-3),Add(V('x'),N(2))),Mul(N(5),V('x'))),target:Add(Mul(N(2),V('x')),N(-6)),hiddenCases:[{x:-3},{x:0},{x:2},{x:5}],bestMoves:3,hints:['De negatieve factor raakt beide termen in de haakjes.','Werk eerst de distributie volledig af en breng daarna de x-termen samen.']},
  // Verdiepte vergelijkingen: meer structuur, variabele aan beide kanten en rationale coëfficiënten.
- {id:'Q15',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Halve factor',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(1,2),V('x')),N(4)),target:Eq(V('x'),N(8)),hiddenCases:[{x:8},{x:0},{x:-2},{x:4}],bestMoves:1,hints:['Welke factor houdt x vast?','Een breukfactor is ook gewoon een factor.']},
- {id:'Q16',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Halve factor en plus',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(1,2),V('x')),N(3)),N(7)),target:Eq(V('x'),N(8)),hiddenCases:[{x:8},{x:0},{x:-2},{x:4}],bestMoves:2,hints:['Werk van de buitenste bewerking naar x toe.','De factor 1/2 kan pas los zodra de losse term weg is.']},
- {id:'Q17',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Haakjes tegenover x',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(3),Add(V('x'),N(-1))),Add(V('x'),N(7))),target:Eq(V('x'),N(5)),hiddenCases:[{x:5},{x:0},{x:-2},{x:8}],bestMoves:4,hints:['De doelletter staat aan beide zijden.','Maak eerst genoeg structuur zichtbaar om volledige x-termen te kunnen verplaatsen.']},
- {id:'Q18',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Twee routes met beide kanten',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(4),Add(V('x'),N(2))),Add(Mul(N(2),V('x')),N(16))),target:Eq(V('x'),N(4)),hiddenCases:[{x:4},{x:0},{x:-2},{x:8}],bestMoves:4,hints:['Er is meer dan één geldige eerste stap.','Kies een route en werk elke nieuwe regel af.']},
+ {id:'Q15',campaign:'EQUATIONS_ADV',family:'BREUKFACTOR',title:'Positieve breukfactor',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(1,2),V('x')),N(4)),target:Eq(V('x'),N(8)),hiddenCases:[{x:8},{x:0},{x:-2},{x:4}],bestMoves:1,hints:['Welke factor houdt x vast?','Een breukfactor is ook gewoon een factor.']},
+ {id:'Q16',campaign:'EQUATIONS_ADV',family:'BREUKFACTOR',title:'Breukfactor met breukterm',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(1,2),V('x')),N(1,3)),N(7,3)),target:Eq(V('x'),N(4)),hiddenCases:[{x:4},{x:0},{x:-2},{x:8}],bestMoves:2,hints:['Werk eerst de losse breukterm weg.','Daarna blijft 1/2 als factor aan x vast en gebruik je de reciproke factor 2.']},
+ {id:'Q23',campaign:'EQUATIONS_ADV',family:'BREUKFACTOR',title:'Negatieve breukfactor',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(-1,3),V('x')),N(4)),target:Eq(V('x'),N(-12)),hiddenCases:[{x:-12},{x:0},{x:3},{x:-3},{x:9}],bestMoves:1,onboarding:true,note:'Het omgekeerde van −1/3 is −3. Het minteken blijft deel van de factor.',hints:['Welke factor houdt x vast?','Bij het omkeren van −1/3 blijft het minteken staan: de reciproke factor is −3.']},
+ {id:'Q24',campaign:'EQUATIONS_ADV',family:'BREUKFACTOR',title:'Negatieve tweederde',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(-2,3),V('x')),N(8)),target:Eq(V('x'),N(-12)),hiddenCases:[{x:-12},{x:0},{x:3},{x:-6},{x:9}],bestMoves:1,hints:['Keer de volledige breukfactor om, inclusief het teken.','Het omgekeerde van −2/3 is −3/2.']},
+ {id:'Q25',campaign:'EQUATIONS_ADV',family:'MEER STRUCTUUR',title:'Negatieve breuk en plus',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(-1,4),V('x')),N(2)),N(5)),target:Eq(V('x'),N(-12)),hiddenCases:[{x:-12},{x:0},{x:4},{x:-4},{x:8}],bestMoves:2,hints:['Werk eerst de losse term weg.','Wanneer −1/4 overblijft, is de reciproke factor −4 — niet +4.']},
+ {id:'Q26',campaign:'EQUATIONS_ADV',family:'TEKENS',title:'Negatief maal negatief',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(-3,5),V('x')),N(-6)),target:Eq(V('x'),N(10)),hiddenCases:[{x:10},{x:0},{x:-5},{x:5},{x:15}],bestMoves:1,hints:['De reciproke factor van −3/5 is −5/3.','Twee negatieve factoren leveren hier uiteindelijk een positieve oplossing.']},
+ {id:'Q27',campaign:'EQUATIONS_ADV',family:'ZELF',title:'Zelf met negatieve breukfactor',goal:'Maak x vrij',targetVar:'x',start:Eq(N(7),Add(Mul(N(-1,2),V('x')),N(1))),target:Eq(V('x'),N(-12)),hiddenCases:[{x:-12},{x:0},{x:2},{x:-4},{x:8}],bestMoves:2,hints:['Kies zelf de geldige volgorde.','Behandel −1/2 als één volledige factor; ook bij omkeren blijft het teken negatief.']},
+ {id:'Q17',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Negatieve haakjes tegenover x',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(-3),Add(V('x'),N(2))),Add(V('x'),N(-2))),target:Eq(V('x'),N(-1)),hiddenCases:[{x:-1},{x:0},{x:-2},{x:8}],bestMoves:4,hints:['De doelletter staat aan beide zijden én de buitenfactor is negatief.','Maak eerst genoeg structuur zichtbaar om volledige x-termen te kunnen verplaatsen.']},
+ {id:'Q18',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Haakjes aan beide kanten',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(2),Add(V('x'),N(3))),Mul(N(3),Add(V('x'),N(-1)))),target:Eq(V('x'),N(9)),hiddenCases:[{x:9},{x:0},{x:-2},{x:8}],bestMoves:4,hints:['Beide zijden bevatten een groep.','Werk de groepen correct uit voordat je gelijksoortige x-termen samenbrengt of verplaatst.']},
  {id:'Q19',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'x rechts sterker',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(2),V('x')),N(8)),Add(Mul(N(4),V('x')),N(-2))),target:Eq(N(5),V('x')),hiddenCases:[{x:5},{x:0},{x:-2},{x:8}],bestMoves:3,hints:['Je hoeft x niet automatisch links te zetten.','Verplaats volledige termen en behoud de gelijkheid.']},
  {id:'Q20',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Negatieve oplossing',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(3),V('x')),N(7)),Add(V('x'),N(-1))),target:Eq(V('x'),N(-4)),hiddenCases:[{x:-4},{x:0},{x:2},{x:5}],bestMoves:3,hints:['Een oplossing mag negatief zijn.','Lees de tekens als onderdeel van de volledige term.']},
- {id:'Q21',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Meer afstand tussen termen',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(6),V('x')),N(3)),Add(Mul(N(2),V('x')),N(19))),target:Eq(V('x'),N(4)),hiddenCases:[{x:4},{x:0},{x:-2},{x:8}],bestMoves:3,hints:['De doelletter staat aan beide kanten.','Je mag zelf kiezen welke volledige x-term eerst beweegt.']},
- {id:'Q22',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Zelf haakjes en beide kanten',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(2),Add(V('x'),N(5))),Add(Mul(N(3),V('x')),N(4))),target:Eq(N(6),V('x')),hiddenCases:[{x:6},{x:0},{x:-2},{x:8}],bestMoves:4,hints:['Kies zelf hoe je de zichtbare structuur vereenvoudigt.','De oplossing hoeft niet automatisch links te staan.']}
+ {id:'Q21',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Negatieve x-term tegenover positieve',goal:'Maak x vrij',targetVar:'x',start:Eq(Add(Mul(N(-2),V('x')),N(3)),Add(Mul(N(4),V('x')),N(15))),target:Eq(V('x'),N(-2)),hiddenCases:[{x:-2},{x:0},{x:2},{x:8}],bestMoves:3,hints:['Lees −2x als één volledige term.','Na het verzamelen van x-termen kan een negatieve factor overblijven.']},
+ {id:'Q22',campaign:'EQUATIONS_ADV',family:'VERDIEPING',title:'Zelf negatieve haakjes en beide kanten',goal:'Maak x vrij',targetVar:'x',start:Eq(Mul(N(-2),Add(V('x'),N(5))),Add(Mul(N(3),V('x')),N(5))),target:Eq(N(-3),V('x')),hiddenCases:[{x:-3},{x:0},{x:-2},{x:8}],bestMoves:4,hints:['Kies zelf hoe je de negatieve haakjesfactor zichtbaar maakt.','De oplossing hoeft niet automatisch links te staan.']}
 );
 
 
@@ -1448,16 +1729,15 @@ challenges.push(
 
  {id:'I07',campaign:'INEQUALITIES',family:'TEKEN DRAAIT',title:'Eerste negatieve factor',goal:'Maak x vrij',targetVar:'x',start:Rel(Mul(N(-2),V('x')),'<',N(6)),target:Rel(V('x'),'>',N(-3)),hiddenCases:inequalityCases,bestMoves:1,onboarding:true,note:'Na delen door een negatief getal vraagt het ongelijkheidsteken zelf nog een handeling.',hints:['Kijk naar het pulserende teken in de nieuwe regel.','Een negatieve deling keert de ordening om.']},
  {id:'I08',campaign:'INEQUALITIES',family:'TEKEN DRAAIT',title:'Negatief bij >',goal:'Maak x vrij',targetVar:'x',start:Rel(Mul(N(-3),V('x')),'>',N(12)),target:Rel(V('x'),'<',N(-4)),hiddenCases:inequalityCases,bestMoves:1,hints:['Wat gebeurt er met de ordening als je door −3 deelt?','Het teken moet de andere richting uit.']},
- {id:'I09',campaign:'INEQUALITIES',family:'TEKEN DRAAIT',title:'Met ≤',goal:'Maak x vrij',targetVar:'x',start:Rel(Mul(N(-4),V('x')),'≤',N(8)),target:Rel(V('x'),'≥',N(-2)),hiddenCases:inequalityCases,bestMoves:1,hints:['≤ heeft ook een omgekeerde partner.','Na een negatieve deling wordt ≤ een ≥.']},
- {id:'I10',campaign:'INEQUALITIES',family:'TEKEN DRAAIT',title:'Met ≥',goal:'Maak x vrij',targetVar:'x',start:Rel(Mul(N(-5),V('x')),'≥',N(15)),target:Rel(V('x'),'≤',N(-3)),hiddenCases:inequalityCases,bestMoves:1,hints:['De negatieve factor verandert de ordening.','≥ en ≤ horen bij elkaar als omgekeerde richting.']},
-
+ {id:'I09',campaign:'INEQUALITIES',family:'TEKEN DRAAIT',title:'Negatieve halve factor',goal:'Maak x vrij',targetVar:'x',start:Rel(Mul(N(-1,2),V('x')),'≤',N(4)),target:Rel(V('x'),'≥',N(-8)),hiddenCases:inequalityCases,bestMoves:1,hints:['Keer de volledige factor −1/2 om: dat geeft −2.','Omdat die factor negatief is, moet ≤ tegelijk in ≥ veranderen.']},
+ {id:'I10',campaign:'INEQUALITIES',family:'TEKEN DRAAIT',title:'Negatieve tweederde',goal:'Maak x vrij',targetVar:'x',start:Rel(Mul(N(-2,3),V('x')),'≥',N(6)),target:Rel(V('x'),'≤',N(-9)),hiddenCases:inequalityCases,bestMoves:1,hints:['De reciproke factor van −2/3 is −3/2.','De negatieve vermenigvuldiging keert ≥ om naar ≤.']},
  {id:'I11',campaign:'INEQUALITIES',family:'MEERDERE STAPPEN',title:'Eerst een term',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(Mul(N(-2),V('x')),N(4)),'<',N(10)),target:Rel(V('x'),'>',N(-3)),hiddenCases:inequalityCases,bestMoves:2,hints:['Werk eerst de buitenste structuur rond x weg.','Niet elke negatieve term laat het teken draaien — alleen negatief vermenigvuldigen of delen.']},
  {id:'I12',campaign:'INEQUALITIES',family:'MEERDERE STAPPEN',title:'Twee tekens',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(Mul(N(-3),V('x')),N(-6)),'≥',N(3)),target:Rel(V('x'),'≤',N(-3)),hiddenCases:inequalityCases,bestMoves:2,hints:['Maak de losse term weg en kijk daarna opnieuw.','Pas bij de negatieve deling verandert de richting.']},
  {id:'I13',campaign:'INEQUALITIES',family:'MEERDERE STAPPEN',title:'Geen tekenwissel nodig',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(Mul(N(2),V('x')),N(1)),'<',N(9)),target:Rel(V('x'),'<',N(4)),hiddenCases:inequalityCases,bestMoves:2,hints:['Niet elke ongelijkheid vraagt een tekenwissel.','Kijk naar het teken van de factor waarmee je deelt.']},
  {id:'I14',campaign:'INEQUALITIES',family:'BEIDE KANTEN',title:'x aan beide kanten',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(Mul(N(3),V('x')),N(2)),'>',Add(V('x'),N(8))),target:Rel(V('x'),'>',N(3)),hiddenCases:inequalityCases,bestMoves:3,hints:['De doelletter staat aan beide kanten.','Verplaats volledige x-termen en behoud de richting zolang je alleen optelt of aftrekt.']},
 
- {id:'I15',campaign:'INEQUALITIES',family:'ZELF',title:'Zelf met negatieve factor',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(Mul(N(-2),V('x')),N(5)),'>',N(11)),target:Rel(V('x'),'<',N(-3)),hiddenCases:inequalityCases,bestMoves:2,hints:['Lees de structuur en kies zelf de volgorde.','Let pas op het teken wanneer je een negatieve factor wegdeelt.']},
- {id:'I16',campaign:'INEQUALITIES',family:'ZELF',title:'Zelf beide kanten',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(Mul(N(4),V('x')),N(-3)),'≤',Add(Mul(N(2),V('x')),N(5))),target:Rel(V('x'),'≤',N(4)),hiddenCases:inequalityCases,bestMoves:3,hints:['Dezelfde regels als bij vergelijkingen helpen eerst.','Kies een route die x aan één kant verzamelt.']},
+ {id:'I15',campaign:'INEQUALITIES',family:'ZELF',title:'Zelf met negatieve breukfactor',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(Mul(N(-1,2),V('x')),N(5)),'>',N(11)),target:Rel(V('x'),'<',N(-12)),hiddenCases:inequalityCases,bestMoves:2,hints:['Werk eerst de losse term weg.','Bij de negatieve breukfactor moet je zowel reciproke factor als tekenrichting correct behandelen.']},
+ {id:'I16',campaign:'INEQUALITIES',family:'ZELF',title:'Tekenwissel ontstaat na verzamelen',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(Mul(N(2),V('x')),N(3)),'>',Add(Mul(N(5),V('x')),N(-6))),target:Rel(V('x'),'<',N(3)),hiddenCases:inequalityCases,bestMoves:3,hints:['Verzamel eerst de x-termen aan één kant.','Ook als de oorspronkelijke factoren positief zijn, kan daarna een negatieve factor ontstaan en moet het teken alsnog draaien.']},
  {id:'I17',campaign:'INEQUALITIES',family:'ZELF',title:'Haakjes en negatief',goal:'Maak x vrij',targetVar:'x',start:Rel(Mul(N(-3),Add(V('x'),N(1))),'<',N(6)),target:Rel(V('x'),'>',N(-3)),hiddenCases:inequalityCases,bestMoves:2,hints:['Er zijn meerdere mogelijke eerste bewegingen.','Als je door −3 deelt, moet de ordening mee veranderen.']},
  {id:'I18',campaign:'INEQUALITIES',family:'ZELF',title:'Negatieve x-term',goal:'Maak x vrij',targetVar:'x',start:Rel(Add(N(5),Mul(N(-2),V('x'))),'≥',N(11)),target:Rel(V('x'),'≤',N(-3)),hiddenCases:inequalityCases,bestMoves:2,hints:['Welke losse term kun je eerst wegwerken?','Kijk daarna naar de factor van x.']},
 
@@ -1480,7 +1760,29 @@ challenges.push(
 
  {id:'S13',campaign:'SMART_REWRITE',family:'ZELF',title:'Zelf een slimme route',goal:'Maak x vrij',targetVar:'x',allowFactorCommon:true,start:Eq(V('A'),Add(Mul(V('r'),V('x')),Mul(V('s'),V('x')),V('t'))),target:Eq(Div(Add(V('A'),Mul(N(-1),V('t'))),Add(V('r'),V('s'))),V('x')),conditions:[nzExpr(Add(V('r'),V('s')))],assumption:'r + s ≠ 0',hiddenCases:fenv({A:23,r:2,s:3,t:3,x:4},{A:11,r:5,s:-2,t:2,x:3},{A:4,r:-1,s:4,t:-2,x:2},{A:-5,r:3,s:1,t:3,x:-2},{A:12,r:2,s:5,t:5,x:1}),bestMoves:3,hints:['Zoek zelf waar dezelfde factor terugkomt.','Kies een route die de formule overzichtelijk houdt.']},
  {id:'S14',campaign:'SMART_REWRITE',family:'ZELF',title:'Zelf met breuk en verschil',goal:'Maak x vrij',targetVar:'x',allowFactorCommon:true,start:Eq(V('B'),Div(Add(Mul(V('u'),V('x')),Mul(N(-1),V('v'),V('x'))),V('w'))),target:Eq(Div(Mul(V('B'),V('w')),Add(V('u'),Mul(N(-1),V('v')))),V('x')),conditions:[{type:'nonzero',var:'w'},nzExpr(Add(V('u'),Mul(N(-1),V('v'))))],assumption:'w ≠ 0 · u − v ≠ 0',hiddenCases:fenv({B:4,u:5,v:3,w:2,x:4},{B:3,u:7,v:4,w:3,x:3},{B:-5,u:2,v:7,w:2,x:2},{B:3,u:-1,v:-5,w:4,x:3},{B:-6,u:1,v:4,w:1,x:2}),bestMoves:3,hints:['Lees eerst de volledige structuur.','De kortste route hoeft niet dezelfde te zijn als in de vorige proef.']},
- {id:'S15',campaign:'SMART_REWRITE',family:'ZELF',title:'Eindproef factoriseren',goal:'Maak y vrij',targetVar:'y',allowFactorCommon:true,start:Eq(V('C'),Add(Mul(V('h'),V('y')),Mul(V('k'),V('y')),Mul(N(-1),V('m')))),target:Eq(Div(Add(V('C'),V('m')),Add(V('h'),V('k'))),V('y')),conditions:[nzExpr(Add(V('h'),V('k')))],assumption:'h + k ≠ 0',hiddenCases:fenv({C:17,h:2,k:3,m:3,y:4},{C:7,h:5,k:-2,m:2,y:3},{C:2,h:-1,k:4,m:4,y:2},{C:-11,h:3,k:1,m:3,y:-2},{C:4,h:2,k:5,m:3,y:1}),bestMoves:3,hints:['Gebruik alleen wat je uit de structuur zelf kunt afleiden.','Let op de voorwaarde bij de laatste deling.']}
+ {id:'S15',campaign:'SMART_REWRITE',family:'ZELF',title:'Eindproef factoriseren',goal:'Maak y vrij',targetVar:'y',allowFactorCommon:true,start:Eq(V('C'),Add(Mul(V('h'),V('y')),Mul(V('k'),V('y')),Mul(N(-1),V('m')))),target:Eq(Div(Add(V('C'),V('m')),Add(V('h'),V('k'))),V('y')),conditions:[nzExpr(Add(V('h'),V('k')))],assumption:'h + k ≠ 0',hiddenCases:fenv({C:17,h:2,k:3,m:3,y:4},{C:7,h:5,k:-2,m:2,y:3},{C:2,h:-1,k:4,m:4,y:2},{C:-11,h:3,k:1,m:3,y:-2},{C:4,h:2,k:5,m:3,y:1}),bestMoves:3,hints:['Gebruik alleen wat je uit de structuur zelf kunt afleiden.','Let op de voorwaarde bij de laatste deling.']},
+
+ // v2.2.5 — Final depth audit: three focused polynomial families, five exercises each; later exercises require multi-step structural work.
+ // De tijdelijke patroon-/zelf-proberenreeksen zijn uit de leerroute gehaald.
+ // Binnen elke familie loopt de structuur bewust van eenvoudig naar moeilijker.
+ {id:'M01',campaign:'POLYNOMIALS',family:'GELIJKSOORTIG',title:'Twee kwadraten',goal:'Herleid de veelterm',targetVar:'x',start:Add(Pow(V('x'),N(2)),Pow(V('x'),N(2))),target:Mul(N(2),Pow(V('x'),N(2))),hiddenCases:[{x:-4},{x:-1},{x:0},{x:2},{x:5}],bestMoves:1,onboarding:true,hints:['Deze twee termen hebben exact hetzelfde letterdeel.','Breng de twee x²-termen samen.']},
+ {id:'M02',campaign:'POLYNOMIALS',family:'GELIJKSOORTIG',title:'Coëfficiënten erbij',goal:'Herleid de veelterm',targetVar:'x',start:Add(Mul(N(2),Pow(V('x'),N(2))),Mul(N(3),Pow(V('x'),N(2)))),target:Mul(N(5),Pow(V('x'),N(2))),hiddenCases:[{x:-3},{x:-1},{x:0},{x:2},{x:4}],bestMoves:1,hints:['Het letterdeel x² blijft hetzelfde.','Tel alleen de coëfficiënten op.']},
+ {id:'M03',campaign:'POLYNOMIALS',family:'GELIJKSOORTIG',title:'x² naast x',goal:'Herleid wat kan',targetVar:'x',start:Add(Pow(V('x'),N(2)),Mul(N(3),V('x')),Mul(N(2),Pow(V('x'),N(2)))),target:Add(Mul(N(3),Pow(V('x'),N(2))),Mul(N(3),V('x'))),hiddenCases:[{x:-3},{x:0},{x:1},{x:4}],bestMoves:1,hints:['x² en x zijn niet gelijksoortig.','Breng alleen de termen met exact hetzelfde letterdeel samen.']},
+ {id:'M04',campaign:'POLYNOMIALS',family:'GELIJKSOORTIG',title:'Twee termfamilies',goal:'Herleid volledig',targetVar:'x',start:Add(Mul(N(4),Pow(V('x'),N(2))),Mul(N(-1),Pow(V('x'),N(2))),Mul(N(2),V('x')),Mul(N(-5),V('x'))),target:Add(Mul(N(3),Pow(V('x'),N(2))),Mul(N(-3),V('x'))),hiddenCases:[{x:-4},{x:-1},{x:0},{x:2},{x:5}],bestMoves:2,hints:['Er zijn twee families die elk apart kunnen worden herleid.','Herleid zowel de x²-termen als de x-termen.']},
+ {id:'M05',campaign:'POLYNOMIALS',family:'GELIJKSOORTIG',title:'Volledig sorteren',goal:'Herleid volledig',targetVar:'x',start:Add(Mul(N(3),Pow(V('x'),N(2))),Mul(N(-5),Pow(V('x'),N(2))),Mul(N(4),Pow(V('x'),N(2))),Mul(N(2),V('x')),Mul(N(-3),V('x')),Mul(N(5),V('x'))),target:Add(Mul(N(2),Pow(V('x'),N(2))),Mul(N(4),V('x'))),hiddenCases:[{x:-3},{x:-1},{x:0},{x:2},{x:5}],bestMoves:4,hints:['Meer termen betekent niet dat alles samenhoort.','Werk per letterdeel: alle x²-termen samen en alle x-termen samen.']},
+
+ {id:'M06',campaign:'POLYNOMIALS',family:'MACHTSPRODUCTEN',title:'Zelfde basis',goal:'Herleid het product',targetVar:'x',explicitMul:true,start:Mul(V('x'),Pow(V('x'),N(2))),target:Pow(V('x'),N(3)),hiddenCases:[{x:-4},{x:-1},{x:0},{x:2},{x:5}],bestMoves:1,onboarding:true,hints:['Zoek factoren met dezelfde basis.','x is hetzelfde als x¹: tel de exponenten op.']},
+ {id:'M07',campaign:'POLYNOMIALS',family:'MACHTSPRODUCTEN',title:'x tussen y',goal:'Herleid het product',targetVar:'x',explicitMul:true,start:Mul(Pow(V('x'),N(2)),V('y'),Pow(V('x'),N(3))),target:Mul(Pow(V('x'),N(5)),V('y')),hiddenCases:[{x:-3,y:2},{x:-1,y:-4},{x:0,y:3},{x:2,y:5}],bestMoves:1,hints:['Niet-aangrenzende factoren kunnen bij elkaar horen.','Combineer alleen de twee machten met basis x.']},
+ {id:'M08',campaign:'POLYNOMIALS',family:'MACHTSPRODUCTEN',title:'a en b door elkaar',goal:'Herleid volledig',targetVar:'a',explicitMul:true,start:Mul(Pow(V('a'),N(2)),Pow(V('b'),N(3)),V('a'),Pow(V('b'),N(2))),target:Mul(Pow(V('a'),N(3)),Pow(V('b'),N(5))),hiddenCases:[{a:1,b:2},{a:-2,b:3},{a:3,b:-1},{a:2,b:-2}],bestMoves:2,hints:['Er lopen twee basissen door elkaar.','Werk per basis: a met a, b met b.']},
+ {id:'M09',campaign:'POLYNOMIALS',family:'MACHTSPRODUCTEN',title:'x, y en z',goal:'Herleid volledig',targetVar:'x',explicitMul:true,start:Mul(Pow(V('x'),N(2)),Pow(V('y'),N(3)),Pow(V('x'),N(4)),V('z'),V('y')),target:Mul(Pow(V('x'),N(6)),Pow(V('y'),N(4)),V('z')),hiddenCases:[{x:1,y:2,z:3},{x:-2,y:3,z:1},{x:3,y:-1,z:2},{x:2,y:-2,z:-1}],bestMoves:2,hints:['z heeft geen partner en blijft dus staan.','Zoek apart de x-familie en de y-familie.']},
+ {id:'M10',campaign:'POLYNOMIALS',family:'MACHTSPRODUCTEN',title:'Drie basissen door elkaar',goal:'Herleid volledig',targetVar:'a',explicitMul:true,start:Mul(Pow(V('a'),N(2)),Pow(V('b'),N(3)),Pow(V('c'),N(4)),Pow(V('a'),N(3)),V('c'),Pow(V('b'),N(2))),target:Mul(Pow(V('a'),N(5)),Pow(V('b'),N(5)),Pow(V('c'),N(5))),hiddenCases:[{a:1,b:2,c:3},{a:-2,b:3,c:1},{a:3,b:-1,c:2},{a:2,b:-2,c:-1}],bestMoves:3,hints:['Drie grondtallen zijn bewust door elkaar geplaatst.','Zoek de paren met basis a, b en c; de plaats in het product doet er niet toe.']},
+
+ {id:'M11',campaign:'POLYNOMIALS',family:'KWADRAAT VAN EEN TWEETERM',title:'Som met 2',goal:'Werk volledig uit',targetVar:'x',guidedSquare:true,support:'guided',start:Pow(Add(V('x'),N(2)),N(2)),target:Add(Pow(V('x'),N(2)),Mul(N(4),V('x')),N(4)),hiddenCases:[{x:-4},{x:-1},{x:0},{x:3},{x:7}],bestMoves:5,onboarding:true,note:'Begin verplicht met x². Bouw daarna x·2 twee keer, en pas dan 2².',hints:['Breng eerst de ² naar x.','Bouw daarna exact hetzelfde kruisproduct twee keer.']},
+ {id:'M12',campaign:'POLYNOMIALS',family:'KWADRAAT VAN EEN TWEETERM',title:'Verschil met 2',goal:'Werk volledig uit',targetVar:'x',guidedSquare:true,support:'guided',start:Pow(Add(V('x'),N(-2)),N(2)),target:Add(Pow(V('x'),N(2)),Mul(N(-4),V('x')),N(4)),hiddenCases:[{x:-4},{x:-1},{x:0},{x:3},{x:6}],bestMoves:5,note:'Begin met x². Bouw x·(−2) twee keer en eindig met (−2)².',hints:['Het minteken hoort bij de tweede term.','Het kruisproduct ontstaat twee keer.']},
+ {id:'M13',campaign:'POLYNOMIALS',family:'KWADRAAT VAN EEN TWEETERM',title:'Som met 3',goal:'Werk volledig uit',targetVar:'x',guidedSquare:true,support:'guided',start:Pow(Add(V('x'),N(3)),N(2)),target:Add(Pow(V('x'),N(2)),Mul(N(6),V('x')),N(9)),hiddenCases:[{x:-5},{x:-2},{x:0},{x:2},{x:6}],bestMoves:5,note:'Bouw x², daarna x·3 twee keer, en pas daarna 3².',hints:['Begin opnieuw met x².','De twee gelijke kruisproducten moeten daarna nog worden herleid.']},
+ {id:'M14',campaign:'POLYNOMIALS',family:'KWADRAAT VAN EEN TWEETERM',title:'Verschil met 5',goal:'Werk volledig uit',targetVar:'x',guidedSquare:true,support:'guided',start:Pow(Add(V('x'),N(-5)),N(2)),target:Add(Pow(V('x'),N(2)),Mul(N(-10),V('x')),N(25)),hiddenCases:[{x:-6},{x:-2},{x:0},{x:3},{x:8}],bestMoves:5,note:'Bouw x², daarna x·(−5) twee keer, en pas daarna (−5)².',hints:['Bewaar het negatieve teken in beide kruisproducten.','Het kwadraat van −5 wordt positief.']},
+ {id:'M15',campaign:'POLYNOMIALS',family:'KWADRAAT VAN EEN TWEETERM',title:'Verschil met 7',goal:'Werk volledig uit',targetVar:'x',guidedSquare:true,support:'standard',start:Pow(Add(V('x'),N(-7)),N(2)),target:Add(Pow(V('x'),N(2)),Mul(N(-14),V('x')),N(49)),hiddenCases:[{x:-8},{x:-3},{x:0},{x:4},{x:9}],bestMoves:5,note:'Dezelfde vier bouwstenen, maar met minder ondersteuning.',hints:['Begin met x².','Bouw x·(−7) twee keer en werk af met (−7)².']}
+
 
 );
 
@@ -1522,11 +1824,11 @@ const META={
  T01:['EQUATIONS','SOLO',1],Q12:['EQUATIONS','SOLO',2],Q13:['EQUATIONS','SOLO',3],
 
  // 06 VERGELIJKINGEN VERDIEPEN — overgang naar tweede graad
- T05:['EQUATIONS_ADV','START',1],Q10:['EQUATIONS_ADV','START',2],Q11:['EQUATIONS_ADV','START',3],
- Q14:['EQUATIONS_ADV','BASIS',1],Q15:['EQUATIONS_ADV','BASIS',2],Q16:['EQUATIONS_ADV','BASIS',3],
- Q17:['EQUATIONS_ADV','DEEP',1],Q18:['EQUATIONS_ADV','DEEP',2],
- Q19:['EQUATIONS_ADV','MIX',1],Q21:['EQUATIONS_ADV','MIX',2],
- Q20:['EQUATIONS_ADV','SOLO',1],Q22:['EQUATIONS_ADV','SOLO',2],
+ T05:['EQUATIONS_ADV','START',1],Q10:['EQUATIONS_ADV','START',2],Q11:['EQUATIONS_ADV','START',3],Q14:['EQUATIONS_ADV','START',4],
+ Q15:['EQUATIONS_ADV','BASIS',1],Q23:['EQUATIONS_ADV','BASIS',2],Q24:['EQUATIONS_ADV','BASIS',3],Q16:['EQUATIONS_ADV','BASIS',4],
+ Q25:['EQUATIONS_ADV','DEEP',1],Q17:['EQUATIONS_ADV','DEEP',2],Q18:['EQUATIONS_ADV','DEEP',3],
+ Q26:['EQUATIONS_ADV','MIX',1],Q19:['EQUATIONS_ADV','MIX',2],Q21:['EQUATIONS_ADV','MIX',3],
+ Q20:['EQUATIONS_ADV','SOLO',1],Q22:['EQUATIONS_ADV','SOLO',2],Q27:['EQUATIONS_ADV','SOLO',3],
 
  // 07 FORMULES OMZETTEN — tweede graad
  F01:['FORMULAS','START',1],P01:['FORMULAS','START',2],P02:['FORMULAS','START',3],P03:['FORMULAS','START',4],T03:['FORMULAS','START',5],
@@ -1547,7 +1849,12 @@ const META={
  S04:['SMART_REWRITE','BASIS',1],S05:['SMART_REWRITE','BASIS',2],S06:['SMART_REWRITE','BASIS',3],
  S07:['SMART_REWRITE','DEEP',1],S08:['SMART_REWRITE','DEEP',2],S09:['SMART_REWRITE','DEEP',3],
  S10:['SMART_REWRITE','MIX',1],S11:['SMART_REWRITE','MIX',2],S12:['SMART_REWRITE','MIX',3],
- S13:['SMART_REWRITE','SOLO',1],S14:['SMART_REWRITE','SOLO',2],S15:['SMART_REWRITE','SOLO',3]
+ S13:['SMART_REWRITE','SOLO',1],S14:['SMART_REWRITE','SOLO',2],S15:['SMART_REWRITE','SOLO',3],
+
+ // 10 VEELTERMEN — drie families van vijf oefeningen
+ M01:['POLYNOMIALS','START',1],M02:['POLYNOMIALS','START',2],M03:['POLYNOMIALS','START',3],M04:['POLYNOMIALS','START',4],M05:['POLYNOMIALS','START',5],
+ M06:['POLYNOMIALS','BASIS',1],M07:['POLYNOMIALS','BASIS',2],M08:['POLYNOMIALS','BASIS',3],M09:['POLYNOMIALS','BASIS',4],M10:['POLYNOMIALS','BASIS',5],
+ M11:['POLYNOMIALS','DEEP',1],M12:['POLYNOMIALS','DEEP',2],M13:['POLYNOMIALS','DEEP',3],M14:['POLYNOMIALS','DEEP',4],M15:['POLYNOMIALS','DEEP',5]
 };
 
 // v1.9.1: de oude 'Letters & waarden'-proeven waren vooral matching en verdwijnen uit de hoofdleerlijn.
@@ -1560,7 +1867,7 @@ for(const c of challenges){
   c.goalTest=(c.start.t==='eq'&&c.targetVar)?isolated(c.targetVar):(c.start.t==='rel'&&c.targetVar)?relationGoal(c.target,c.targetVar):exact(c.target);
 }
 
-const THEME_ORDER={TERMS:1,EXPRESSIONS:2,BRACKETS:3,TARGET_FORMS:4,EQUATIONS:5,EQUATIONS_ADV:6,FORMULAS:7,INEQUALITIES:8,SMART_REWRITE:9};
+const THEME_ORDER={TERMS:1,EXPRESSIONS:2,BRACKETS:3,TARGET_FORMS:4,EQUATIONS:5,EQUATIONS_ADV:6,FORMULAS:7,INEQUALITIES:8,SMART_REWRITE:9,POLYNOMIALS:10};
 const STAGE_ORDER={START:1,BASIS:2,DEEP:3,MIX:4,SOLO:5,MISC:99};
 challenges.sort((a,b)=>(THEME_ORDER[a.theme]||99)-(THEME_ORDER[b.theme]||99)||(STAGE_ORDER[a.stage]||99)-(STAGE_ORDER[b.stage]||99)||(a.order||99)-(b.order||99)||a.id.localeCompare(b.id));
 RF.Challenges=challenges;
@@ -1578,11 +1885,16 @@ RF.Themes=[
  {id:'TARGET_FORMS',spineIndex:4,grade:'1e graad',future:true,comingVersion:'later',label:'Doelvormen',subtitle:'Herschrijf bewust naar een gevraagde equivalente vorm',icon:'◎',accent:'#66c7a5',soft:'rgba(102,199,165,.14)',preview:['Niet alleen vereenvoudigen: een doelvorm bouwen','Haakjes ook terug kunnen vormen','Meerdere equivalente routes leren herkennen'],stages:[]},
  {id:'EQUATIONS',spineIndex:5,grade:'1e graad',label:'Vergelijkingen',subtitle:'Maak de onbekende vrij zonder de gelijkheid te breken',icon:'=',accent:'#ff8f6b',soft:'rgba(255,143,107,.14)',stages:commonStages({BASIS:'Eén bewerking',DEEP:'Twee stappen',MIX:'Haakjes'})},
 
- {id:'EQUATIONS_ADV',spineIndex:6,grade:'2e graad',milestone:'VERDER MET ALGEBRA',label:'Vergelijkingen verdiepen',subtitle:'Werk met x aan beide kanten, breukfactoren en meerdere routes',icon:'⇄',accent:'#e889b9',soft:'rgba(232,137,185,.14)',stages:commonStages({START:'Beide kanten',BASIS:'Breukfactoren',DEEP:'Meer structuur',MIX:'Routekeuze'})},
+ {id:'EQUATIONS_ADV',spineIndex:6,grade:'2e graad',milestone:'VERDER MET ALGEBRA',label:'Vergelijkingen verdiepen',subtitle:'Werk met x aan beide kanten, positieve én negatieve breukfactoren en meerdere routes',icon:'⇄',accent:'#e889b9',soft:'rgba(232,137,185,.14)',stages:commonStages({START:'Beide kanten',BASIS:'Breukfactoren',DEEP:'Meer structuur',MIX:'Routekeuze'})},
  {id:'FORMULAS',spineIndex:7,grade:'2e graad',label:'Formules omzetten',subtitle:'Maak een gevraagde letter vrij in een formule',icon:'ƒ',accent:'#9d8cff',soft:'rgba(157,140,255,.14)',stages:commonStages({START:'Producten',BASIS:'Breuken',DEEP:'Twee bewerkingen',MIX:'Haakjes & breuken'})},
 
  {id:'INEQUALITIES',spineIndex:8,grade:'2e graad',label:'Ongelijkheden',subtitle:'Werk met <, >, ≤ en ≥ — en laat de richting bewust omklappen',icon:'<',accent:'#6ca8ff',soft:'rgba(108,168,255,.14)',stages:commonStages({START:'Zelfde regels',BASIS:'Positieve factor',DEEP:'Negatieve factor',MIX:'Meerdere stappen',SOLO:'Zelf proberen'})},
- {id:'SMART_REWRITE',spineIndex:9,grade:'2e graad',label:'Slim herschrijven',subtitle:'Factoriseer, bewaak voorwaarden en kies een efficiënte geldige route',icon:'◇',accent:'#e3b86b',soft:'rgba(227,184,107,.14)',stages:commonStages({START:'Factoriseren',BASIS:'Voorwaarden',DEEP:'Meerdere routes',MIX:'Combineren',SOLO:'Zelf proberen'})}
+ {id:'SMART_REWRITE',spineIndex:9,grade:'2e graad',label:'Slim herschrijven',subtitle:'Factoriseer, bewaak voorwaarden en kies een efficiënte geldige route',icon:'◇',accent:'#e3b86b',soft:'rgba(227,184,107,.14)',stages:commonStages({START:'Factoriseren',BASIS:'Voorwaarden',DEEP:'Meerdere routes',MIX:'Combineren',SOLO:'Zelf proberen'})},
+ {id:'POLYNOMIALS',spineIndex:10,grade:'2e graad',label:'Veeltermen',subtitle:'Herleid gelijksoortige termen, combineer machten en werk kwadraten van tweetermen stap voor stap uit',icon:'x²',accent:'#7bc5f5',soft:'rgba(123,197,245,.14)',stages:[
+   {id:'START',label:'Gelijksoortig',description:'Herken welke termen exact hetzelfde letterdeel hebben.'},
+   {id:'BASIS',label:'Machtsproducten',description:'Zoek dezelfde basis in producten waarvan de factoren bewust door elkaar staan.'},
+   {id:'DEEP',label:'Kwadraat van een tweeterm',description:'Bouw het kwadraat via vier expliciete producten.'}
+ ]}
 ];
 RF.Campaigns=RF.Themes.map(t=>({id:t.id,label:t.label,subtitle:t.subtitle}));
 })(typeof window!=='undefined'?window:globalThis);
@@ -1592,19 +1904,20 @@ RF.Campaigns=RF.Themes.map(t=>({id:t.id,label:t.label,subtitle:t.subtitle}));
 (function(){
 'use strict';
 const RF=window.RF,M=RF.Math,G=RF.Gestures,R=RF.Rules,CH=RF.Challenges,THEMES=RF.Themes||RF.Campaigns||[],$=s=>document.querySelector(s);
-const els={game:$('#gameScreen'),levels:$('#levelsScreen'),family:$('#familyLabel'),goal:$('#goalLabel'),assumption:$('#assumptionLabel'),badge:$('#levelBadge'),derivation:$('#derivation'),transition:$('#transitionRow'),status:$('#microStatus'),verb:$('#gestureVerb'),hint:$('#gestureHint'),undo:$('#undoBtn'),restart:$('#restartBtn'),dots:$('#progressDots'),grid:$('#levelGrid'),campaignSwitch:$('#campaignSwitch'),stageSwitch:$('#stageSwitch'),levelsFoot:$('#levelsFoot'),givens:$('#givenStrip'),bottom:$('#bottomBar'),solvedStrip:$('#solvedStrip'),solvedMeta:$('#solvedMeta'),review:$('#reviewBtn'),menuBack:$('#menuBackBtn'),menuEyebrow:$('#menuEyebrow'),menuTitle:$('#menuTitle'),menuSubtitle:$('#menuSubtitle')};
+const {N,Pow}=M;
+const els={game:$('#gameScreen'),levels:$('#levelsScreen'),family:$('#familyLabel'),goal:$('#goalLabel'),assumption:$('#assumptionLabel'),badge:$('#levelBadge'),derivation:$('#derivation'),transition:$('#transitionRow'),status:$('#microStatus'),assignment:$('#assignmentText'),context:$('#gestureContext'),verb:$('#gestureVerb'),hint:$('#gestureHint'),undo:$('#undoBtn'),restart:$('#restartBtn'),dots:$('#progressDots'),grid:$('#levelGrid'),campaignSwitch:$('#campaignSwitch'),stageSwitch:$('#stageSwitch'),levelsFoot:$('#levelsFoot'),givens:$('#givenStrip'),bottom:$('#bottomBar'),solvedStrip:$('#solvedStrip'),solvedMeta:$('#solvedMeta'),review:$('#reviewBtn'),menuBack:$('#menuBackBtn'),menuEyebrow:$('#menuEyebrow'),menuTitle:$('#menuTitle'),menuSubtitle:$('#menuSubtitle')};
 const store={get(k,f=null){try{const v=localStorage.getItem(k);return v==null?f:v}catch(_){return f}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}}};
 const qp=new URLSearchParams(location.search);
 let lastRaw=qp.get('level')||store.get('rf21_last',null)||store.get('rf20_last',null)||store.get('rf19_last','0');
 let currentIndex=Math.max(0,Math.min(CH.length-1,+(lastRaw||0)));
-let doneRaw=null;for(const k of ['rf21_done','rf20_done','rf19_done','rf18_done','rf17_done','rf16_done','rf15_done','rf14_done']){doneRaw=store.get(k,null);if(doneRaw!=null)break}
+let doneRaw=null;for(const k of ['rf22_done','rf21_done','rf20_done','rf19_done','rf18_done','rf17_done','rf16_done','rf15_done','rf14_done']){doneRaw=store.get(k,null);if(doneRaw!=null)break}
 let done=new Set(JSON.parse(doneRaw||'[]'));
 let selectedCampaign=CH[currentIndex]?.theme||'EXPRESSIONS';let selectedStage=CH[currentIndex]?.stage||THEMES.find(t=>t.id===selectedCampaign)?.stages?.[0]?.id||'';let state=null,history=[],selectedPath=null,selectedGiven=null,drag=null,givenDrag=null,suppressClick=false,events=[],reviewOpen=false,interactionModel={sources:new Set(),targets:[]},keyboardTargetIndex=0,menuDepth='theme';
 function c(){return CH[currentIndex]}
 function givenEntries(){return Object.entries(c()?.givens||{})}
 function hasGivens(){return givenEntries().length>0}
 function supportMode(){return c()?.support||'standard'}
-function gestureOptions(){return {allowFactorCommon:!!c()?.allowFactorCommon}}
+function gestureOptions(){return {allowFactorCommon:!!c()?.allowFactorCommon,guidedSquare:!!c()?.guidedSquare}}
 function sourceCueVisible(){const m=supportMode(),miss=state?.missteps||0;return m==='intro'||(m==='guided'&&miss>=1)||(m==='standard'&&miss>=2)||(m==='independent'&&miss>=3)}
 function campaignIndices(id){return CH.map((x,i)=>x.theme===id?i:-1).filter(i=>i>=0)}
 function stageIndices(theme,stage){return CH.map((x,i)=>x.theme===theme&&x.stage===stage?i:-1).filter(i=>i>=0).sort((a,b)=>(CH[a].order||99)-(CH[b].order||99))}
@@ -1613,7 +1926,7 @@ function stageMeta(theme,stage){return themeMeta(theme)?.stages?.find(s=>s.id===
 function campaignPos(){const a=stageIndices(c().theme,c().stage);return Math.max(0,a.indexOf(currentIndex))}
 function orderedIndices(){const out=[];for(const th of THEMES){for(const st of th.stages||[])out.push(...stageIndices(th.id,st.id))}return out}
 function nextLearningIndex(i=currentIndex){const order=orderedIndices(),p=order.indexOf(i);return order[(p+1+order.length)%order.length]??0}
-function cloneDraft(d){if(!d)return null;const out={...d,touched:[...(d.touched||[])],targets:(d.targets||[]).map(t=>({...t,product:t.product?M.clone(t.product):null})),products:{}};for(const[k,v]of Object.entries(d.products||{}))out.products[k]=M.clone(v);return out}
+function cloneDraft(d){if(!d)return null;const out={...d,touched:[...(d.touched||[])],targets:(d.targets||[]).map(t=>({...t,product:t.product?M.clone(t.product):null})),products:{}};for(const[k,v]of Object.entries(d.products||{}))out.products[k]=M.clone(v);for(const k of ['first','second','fullResult'])if(d[k])out[k]=M.clone(d[k]);out.pieces=(d.pieces||[]).map(M.clone);return out}
 function cloneState(s){return{ast:M.clone(s.ast),lines:s.lines.map(M.clone),moves:s.moves,draft:cloneDraft(s.draft),phase:s.phase||'READY',strategyPath:[...(s.strategyPath||[])],missteps:s.missteps||0,solved:!!s.solved}}
 function sourceSnapshotForDraft(){const snap=cloneState(state);snap.draft=null;snap.phase='READY';snap.moves=state.draft?.startMoves??state.moves;return snap}
 function show(name){for(const [k,e] of [['game',els.game],['levels',els.levels]])e.classList.toggle('active',k===name);document.querySelector('.app')?.classList.toggle('menu-open',name==='levels')}
@@ -1632,19 +1945,21 @@ function renderUnsignedTermAtOriginalPaths(term,path,interactive=true){
   if(!(absN===c.d)){parts.push({f:{t:'num',v:new M.Rational(absN,c.d)},html:renderNode({t:'num',v:new M.Rational(absN,c.d)},pathJoin(path,0),2,interactive),origIndex:0});}
   for(let i=1;i<term.factors.length;i++)parts.push({f:term.factors[i],html:renderNode(term.factors[i],pathJoin(path,i),2,interactive),origIndex:i});
   if(!parts.length)return '1';
-  return parts.map((part,i)=>{if(i===0)return part.html;const prev=parts[i-1].f,cur=part.f,implicit=(prev.t==='num'&&(cur.t==='var'||cur.t==='add'))||(prev.t==='var'&&cur.t==='add');return`${implicit?'':'<span class="mul-dot">·</span>'}${part.html}`}).join('');
+  return parts.map((part,i)=>{if(i===0)return part.html;const prev=parts[i-1].f,cur=part.f,implicit=(prev.t==='num'&&(cur.t==='var'||cur.t==='pow'||cur.t==='add'))||(prev.t==='var'&&cur.t==='add')||(prev.t==='add'&&cur.t==='add');return`${implicit?'':'<span class="mul-dot">·</span>'}${part.html}`}).join('');
  }
  return renderNode(term,path,1,interactive);
 }
 function renderTerm(term,path,interactive=true){const sg=M.stripSign(term),sources=sourceSet(),src=sources.has(path)&&interactive;const target=selectedPath&&currentTargets().some(g=>g.targetPath===path);const cls=`term-shell${src?' gesture-source':''}${src&&sourceCueVisible()?' source-cue':''}${selectedPath===path?' selected':''}${target?' target':''}`;/* A top-level signed term only owns the hit-area when the whole term is itself a valid source. Otherwise valid nested factors remain interactive (e.g. 2 in 2(a+3)+a). */const childInteractive=interactive&&!src;return `<span class="${cls}" data-path="${esc(path)}"${src?` tabindex="0" role="button" aria-label="Bewerk ${esc(M.speech(term))}"`:''}>${sg.neg?'<span class="signed-minus">−</span>':''}${renderUnsignedTermAtOriginalPaths(term,path,childInteractive)}</span>`}
-function renderNode(n,path='',prec=0,interactive=true){const sources=sourceSet(),src=sources.has(path)&&interactive;const target=selectedPath&&currentTargets().some(g=>g.targetPath===path);const givenInteractive=n.t==='var'&&!!c()?.givens?.[n.name];const givenTarget=givenInteractive&&!!selectedGiven&&n.name===selectedGiven;let body='';switch(n.t){case'num':body=numHTML(n.v);break;case'var':body=varHTML(n.name);break;case'eq':body=`<span class="side-zone${selectedPath&&currentTargets().some(g=>g.targetSide==='L')?' side-target':''}" data-side="L">${renderNode(n.left,'L',0,interactive)}</span><span class="eq-sign relation-sign">=</span><span class="side-zone${selectedPath&&currentTargets().some(g=>g.targetSide==='R')?' side-target':''}" data-side="R">${renderNode(n.right,'R',0,interactive)}</span>`;break;case'rel':body=`<span class="side-zone${selectedPath&&currentTargets().some(g=>g.targetSide==='L')?' side-target':''}" data-side="L">${renderNode(n.left,'L',0,interactive)}</span><span class="ineq-sign relation-sign">${esc(n.op)}</span><span class="side-zone${selectedPath&&currentTargets().some(g=>g.targetSide==='R')?' side-target':''}" data-side="R">${renderNode(n.right,'R',0,interactive)}</span>`;break;case'add':body=n.terms.map((t,i)=>{const p=pathJoin(path,i),sg=M.stripSign(t);return `${i&&!sg.neg?'<span class="op">+</span>':''}${renderTerm(t,p,interactive)}`}).join('');break;case'mul':{const parts=n.factors.map((f,i)=>({f,html:renderNode(f,pathJoin(path,i),2,interactive)}));body=parts.map((p,i)=>{if(i===0)return p.html;const prev=parts[i-1].f,implicit=(prev.t==='num'&&(p.f.t==='var'||p.f.t==='add'))||(prev.t==='var'&&p.f.t==='add');return`${implicit?'':'<span class="mul-dot">·</span>'}${p.html}`}).join('');break;}case'div':body=`<span class="frac"><span class="num">${renderNode(n.num,pathJoin(path,'N'),0,interactive)}</span><span class="bar"></span><span class="den">${renderNode(n.den,pathJoin(path,'D'),0,interactive)}</span></span>`;break;}
- const pmap={eq:0,rel:0,add:1,mul:2,div:2,num:3,var:3},my=pmap[n.t];if(my<prec)body=`<span class="paren">(</span>${body}<span class="paren">)</span>`;if(n.t==='eq'||n.t==='rel')return body;if(n.t==='add'&&!src&&!target&&selectedPath!==path)return body;const cls=`node${n.t==='mul'?' mul-inline':''}${n.t==='add'?' add-inline':''}${interactive?'':' compact'}${src?' gesture-source':''}${src&&sourceCueVisible()?' source-cue':''}${selectedPath===path?' selected':''}${target?' target':''}${givenTarget?' given-target':''}`;const varData=n.t==='var'?` data-var-name="${esc(n.name)}"`:'';const access=src?` tabindex="0" role="button" aria-label="Bewerk ${esc(M.speech(n))}"`:givenInteractive?` tabindex="0" role="button" aria-label="Vul waarde in voor ${esc(n.name)}"`:'';return `<span class="${cls}${givenInteractive?' given-variable':''}" data-path="${esc(path)}"${varData}${access}>${body}</span>`}
+function renderNode(n,path='',prec=0,interactive=true){const sources=sourceSet(),src=sources.has(path)&&interactive;const target=selectedPath&&currentTargets().some(g=>g.targetPath===path);const givenInteractive=n.t==='var'&&!!c()?.givens?.[n.name];const givenTarget=givenInteractive&&!!selectedGiven&&n.name===selectedGiven;let body='';switch(n.t){case'num':body=numHTML(n.v);break;case'var':body=varHTML(n.name);break;case'eq':body=`<span class="side-zone${selectedPath&&currentTargets().some(g=>g.targetSide==='L')?' side-target':''}" data-side="L">${renderNode(n.left,'L',0,interactive)}</span><span class="eq-sign relation-sign">=</span><span class="side-zone${selectedPath&&currentTargets().some(g=>g.targetSide==='R')?' side-target':''}" data-side="R">${renderNode(n.right,'R',0,interactive)}</span>`;break;case'rel':body=`<span class="side-zone${selectedPath&&currentTargets().some(g=>g.targetSide==='L')?' side-target':''}" data-side="L">${renderNode(n.left,'L',0,interactive)}</span><span class="ineq-sign relation-sign">${esc(n.op)}</span><span class="side-zone${selectedPath&&currentTargets().some(g=>g.targetSide==='R')?' side-target':''}" data-side="R">${renderNode(n.right,'R',0,interactive)}</span>`;break;case'add':body=n.terms.map((t,i)=>{const p=pathJoin(path,i),sg=M.stripSign(t);return `${i&&!sg.neg?'<span class="op">+</span>':''}${renderTerm(t,p,interactive)}`}).join('');break;case'mul':{const parts=n.factors.map((f,i)=>({f,html:renderNode(f,pathJoin(path,i),2,interactive)}));body=parts.map((p,i)=>{if(i===0)return p.html;const prev=parts[i-1].f,implicit=!c()?.explicitMul&&((prev.t==='num'&&(p.f.t==='var'||p.f.t==='pow'||p.f.t==='add'))||(prev.t==='var'&&p.f.t==='add')||(prev.t==='add'&&p.f.t==='add'));return`${implicit?'':'<span class="mul-dot">·</span>'}${p.html}`}).join('');break;}case'div':body=`<span class="frac"><span class="num">${renderNode(n.num,pathJoin(path,'N'),0,interactive)}</span><span class="bar"></span><span class="den">${renderNode(n.den,pathJoin(path,'D'),0,interactive)}</span></span>`;break;case'pow':{const negBase=M.isNegativeTerm(n.base),bh=renderNode(n.base,pathJoin(path,'B'),3,interactive);body=`<span class="power"><span class="power-base">${negBase?'<span class="paren">(</span>'+bh+'<span class="paren">)</span>':bh}</span><sup class="power-exp">${renderNode(n.exp,pathJoin(path,'E'),0,interactive)}</sup></span>`;break;}}
+ const pmap={eq:0,rel:0,add:1,mul:2,div:2,pow:3,num:4,var:4},my=pmap[n.t];if(my<prec)body=`<span class="paren">(</span>${body}<span class="paren">)</span>`;if(n.t==='eq'||n.t==='rel')return body;if(n.t==='add'&&!src&&!target&&selectedPath!==path)return body;const cls=`node${n.t==='mul'?' mul-inline':''}${n.t==='add'?' add-inline':''}${interactive?'':' compact'}${src?' gesture-source':''}${src&&sourceCueVisible()?' source-cue':''}${selectedPath===path?' selected':''}${target?' target':''}${givenTarget?' given-target':''}`;const varData=n.t==='var'?` data-var-name="${esc(n.name)}"`:'';const access=src?` tabindex="0" role="button" aria-label="Bewerk ${esc(M.speech(n))}"`:givenInteractive?` tabindex="0" role="button" aria-label="Vul waarde in voor ${esc(n.name)}"`:'';return `<span class="${cls}${givenInteractive?' given-variable':''}" data-path="${esc(path)}"${varData}${access}>${body}</span>`}
 function renderPlain(n){return `<div class="expr">${renderNodePlain(n,0,c().targetVar)}</div>`}
-function renderNodePlain(n,prec=0,targetVar=c().targetVar){let body='';switch(n.t){case'num':body=numHTML(n.v);break;case'var':body=n.name===targetVar?`<span class="target-variable">${esc(n.name)}</span>`:esc(n.name);break;case'eq':body=`${renderNodePlain(n.left,0,targetVar)}<span class="eq-sign relation-sign">=</span>${renderNodePlain(n.right,0,targetVar)}`;break;case'rel':body=`${renderNodePlain(n.left,0,targetVar)}<span class="ineq-sign relation-sign">${esc(n.op)}</span>${renderNodePlain(n.right,0,targetVar)}`;break;case'add':body=n.terms.map((t,i)=>{const sg=M.stripSign(t);return`${i?(sg.neg?'<span class="op">−</span>':'<span class="op">+</span>'):(sg.neg?'<span class="op">−</span>':'')}${renderNodePlain(sg.node,1,targetVar)}`}).join('');break;case'mul':{const fs=n.factors;const inner=fs.map((f,i)=>{const h=renderNodePlain(f,2,targetVar);if(i===0)return h;const prev=fs[i-1],implicit=(prev.t==='num'&&(f.t==='var'||f.t==='add'))||(prev.t==='var'&&f.t==='add');return`${implicit?'':'<span class="mul-dot">·</span>'}${h}`}).join('');body=`<span class="mul-inline">${inner}</span>`;break;}case'div':body=`<span class="frac"><span class="num">${renderNodePlain(n.num,0,targetVar)}</span><span class="bar"></span><span class="den">${renderNodePlain(n.den,0,targetVar)}</span></span>`;break;}const p={eq:0,rel:0,add:1,mul:2,div:2,num:3,var:3}[n.t];return p<prec?`<span class="paren">(</span>${body}<span class="paren">)</span>`:body}
+function renderNodePlain(n,prec=0,targetVar=c().targetVar){let body='';switch(n.t){case'num':body=numHTML(n.v);break;case'var':body=n.name===targetVar?`<span class="target-variable">${esc(n.name)}</span>`:esc(n.name);break;case'eq':body=`${renderNodePlain(n.left,0,targetVar)}<span class="eq-sign relation-sign">=</span>${renderNodePlain(n.right,0,targetVar)}`;break;case'rel':body=`${renderNodePlain(n.left,0,targetVar)}<span class="ineq-sign relation-sign">${esc(n.op)}</span>${renderNodePlain(n.right,0,targetVar)}`;break;case'add':body=n.terms.map((t,i)=>{const sg=M.stripSign(t);return`${i?(sg.neg?'<span class="op">−</span>':'<span class="op">+</span>'):(sg.neg?'<span class="op">−</span>':'')}${renderNodePlain(sg.node,1,targetVar)}`}).join('');break;case'mul':{const fs=n.factors;const inner=fs.map((f,i)=>{const h=renderNodePlain(f,2,targetVar);if(i===0)return h;const prev=fs[i-1],implicit=!c()?.explicitMul&&((prev.t==='num'&&(f.t==='var'||f.t==='pow'||f.t==='add'))||(prev.t==='var'&&f.t==='add')||(prev.t==='add'&&f.t==='add'));return`${implicit?'':'<span class="mul-dot">·</span>'}${h}`}).join('');body=`<span class="mul-inline">${inner}</span>`;break;}case'div':body=`<span class="frac"><span class="num">${renderNodePlain(n.num,0,targetVar)}</span><span class="bar"></span><span class="den">${renderNodePlain(n.den,0,targetVar)}</span></span>`;break;case'pow':{const negBase=M.isNegativeTerm(n.base),bh=renderNodePlain(n.base,3,targetVar);body=`<span class="power"><span class="power-base">${negBase?'<span class="paren">(</span>'+bh+'<span class="paren">)</span>':bh}</span><sup class="power-exp">${renderNodePlain(n.exp,0,targetVar)}</sup></span>`;break;}}const p={eq:0,rel:0,add:1,mul:2,div:2,pow:3,num:4,var:4}[n.t];return p<prec?`<span class="paren">(</span>${body}<span class="paren">)</span>`:body}
 function draftDistributionHTML(d){return d.targets.slice().sort((a,b)=>a.index-b.index).map((t,i)=>{const expected=M.stripSign(t.product),resolved=d.products[t.path],sign=expected.neg?'−':'+';const prefix=i===0?(expected.neg?'<span class="op">−</span>':''):`<span class="op">${sign}</span>`;if(resolved){const rs=M.stripSign(resolved);return `${prefix}<span class="draft-piece">${renderNodePlain(rs.node)}</span>`}return `${prefix}<span class="draft-hole" aria-label="nog af te maken">□</span>`}).join('')}
-function renderDraftProjected(n,path='',prec=0,d=state.draft){if(d&&path===d.containerPath)return `<span class="draft-group">${draftDistributionHTML(d)}</span>`;let body='';switch(n.t){case'num':body=numHTML(n.v);break;case'var':body=varHTML(n.name);break;case'eq':body=`${renderDraftProjected(n.left,'L',0,d)}<span class="eq-sign relation-sign">=</span>${renderDraftProjected(n.right,'R',0,d)}`;break;case'rel':body=`${renderDraftProjected(n.left,'L',0,d)}<span class="ineq-sign relation-sign">${esc(n.op)}</span>${renderDraftProjected(n.right,'R',0,d)}`;break;case'add':body=n.terms.map((t,i)=>{const p=pathJoin(path,i),sg=M.stripSign(t);return`${i?(sg.neg?'<span class="op">−</span>':'<span class="op">+</span>'):(sg.neg?'<span class="op">−</span>':'')}${renderDraftProjected(sg.node,p,1,d)}`}).join('');break;case'mul':{const fs=n.factors;const inner=fs.map((f,i)=>{const p=pathJoin(path,i),h=renderDraftProjected(f,p,2,d);if(i===0)return h;const prev=fs[i-1],implicit=(prev.t==='num'&&(f.t==='var'||f.t==='add'))||(prev.t==='var'&&f.t==='add');return`${implicit?'':'<span class="mul-dot">·</span>'}${h}`}).join('');body=`<span class="mul-inline">${inner}</span>`;break;}case'div':body=`<span class="frac"><span class="num">${renderDraftProjected(n.num,pathJoin(path,'N'),0,d)}</span><span class="bar"></span><span class="den">${renderDraftProjected(n.den,pathJoin(path,'D'),0,d)}</span></span>`;break;}const p={eq:0,rel:0,add:1,mul:2,div:2,num:3,var:3}[n.t];return p<prec?`<span class="paren">(</span>${body}<span class="paren">)</span>`:body}
+function renderDraftProjected(n,path='',prec=0,d=state.draft){if(d&&path===d.containerPath)return `<span class="draft-group">${draftDistributionHTML(d)}</span>`;let body='';switch(n.t){case'num':body=numHTML(n.v);break;case'var':body=varHTML(n.name);break;case'eq':body=`${renderDraftProjected(n.left,'L',0,d)}<span class="eq-sign relation-sign">=</span>${renderDraftProjected(n.right,'R',0,d)}`;break;case'rel':body=`${renderDraftProjected(n.left,'L',0,d)}<span class="ineq-sign relation-sign">${esc(n.op)}</span>${renderDraftProjected(n.right,'R',0,d)}`;break;case'add':body=n.terms.map((t,i)=>{const p=pathJoin(path,i),sg=M.stripSign(t);return`${i?(sg.neg?'<span class="op">−</span>':'<span class="op">+</span>'):(sg.neg?'<span class="op">−</span>':'')}${renderDraftProjected(sg.node,p,1,d)}`}).join('');break;case'mul':{const fs=n.factors;const inner=fs.map((f,i)=>{const p=pathJoin(path,i),h=renderDraftProjected(f,p,2,d);if(i===0)return h;const prev=fs[i-1],implicit=!c()?.explicitMul&&((prev.t==='num'&&(f.t==='var'||f.t==='pow'||f.t==='add'))||(prev.t==='var'&&f.t==='add')||(prev.t==='add'&&f.t==='add'));return`${implicit?'':'<span class="mul-dot">·</span>'}${h}`}).join('');body=`<span class="mul-inline">${inner}</span>`;break;}case'div':body=`<span class="frac"><span class="num">${renderDraftProjected(n.num,pathJoin(path,'N'),0,d)}</span><span class="bar"></span><span class="den">${renderDraftProjected(n.den,pathJoin(path,'D'),0,d)}</span></span>`;break;case'pow':{const negBase=M.isNegativeTerm(n.base),bh=renderDraftProjected(n.base,pathJoin(path,'B'),3,d);body=`<span class="power"><span class="power-base">${negBase?'<span class="paren">(</span>'+bh+'<span class="paren">)</span>':bh}</span><sup class="power-exp">${renderDraftProjected(n.exp,pathJoin(path,'E'),0,d)}</sup></span>`;break;}}const p={eq:0,rel:0,add:1,mul:2,div:2,pow:3,num:4,var:4}[n.t];return p<prec?`<span class="paren">(</span>${body}<span class="paren">)</span>`:body}
 function renderFlipDraft(d){const n=d.previewResult;if(!n||n.t!=='rel')return'';return `${renderNodePlain(n.left,0,c().targetVar)}<button class="ineq-sign relation-sign flip-pending" data-flip-comparator="1" type="button" aria-label="Draai ${esc(n.op)} om">${esc(n.op)}</button>${renderNodePlain(n.right,0,c().targetVar)}`}
-function renderDraft(){const d=state.draft;if(!d)return'';const body=d.kind==='comparator-flip'?renderFlipDraft(d):renderDraftProjected(state.ast,'',0,d);return `<div class="line draft${d.kind==='comparator-flip'?' flip-draft':''}"><div class="draft-expr">${body}</div></div>`}
+function signedFactorPlain(n){const h=renderNodePlain(n,0,null);return M.isNegativeTerm(n)?`<span class="square-factor-paren"><span class="paren">(</span>${h}<span class="paren">)</span></span>`:h}
+function guidedSquareDraftHTML(d){const a=d.first,b=d.second;const slots=[renderNodePlain(Pow(M.clone(a),N(2)),0,null),`${renderNodePlain(a,0,null)}<span class="mul-dot">·</span>${signedFactorPlain(b)}`,`${renderNodePlain(a,0,null)}<span class="mul-dot">·</span>${signedFactorPlain(b)}`,renderNodePlain(Pow(M.clone(b),N(2)),0,null)];return `<span class="draft-group square-build-draft">${slots.map((h,i)=>`${i?'<span class="op">+</span>':''}${d.stage>=i+1?`<span class="draft-piece">${h}</span>`:'<span class="draft-hole" aria-label="nog af te maken">□</span>'}`).join('')}</span>`}
+function renderDraft(){const d=state.draft;if(!d)return'';const body=d.kind==='comparator-flip'?renderFlipDraft(d):d.kind==='guided-square-build'?guidedSquareDraftHTML(d):renderDraftProjected(state.ast,'',0,d);return `<div class="line draft${d.kind==='comparator-flip'?' flip-draft':''}"><div class="draft-expr">${body}</div></div>`}
 function renderDerivation(newLine=false){
  rebuildInteractionModel();
  const solved=state.phase==='SOLVED'||state.phase==='SOLVED_PENDING'||state.solved;
@@ -1683,7 +1998,26 @@ function fitMathLayout(){
  els.derivation.querySelectorAll('.review-expr').forEach(e=>fitExpression(e,20));
 }
 function setReviewMode(open){reviewOpen=!!open&&!!(state&&(state.phase==='SOLVED'||state.solved));renderAll()}
-function renderHeader(){els.family.textContent=stageMeta(c().theme,c().stage)?.label||c().family;els.goal.textContent=c().goal;els.assumption.textContent=c().assumption||'';els.assumption.classList.toggle('show',!!c().assumption);els.badge.textContent=String(campaignPos()+1).padStart(2,'0')}
+function clearTaskText(ch){
+ const raw=(ch?.goal||'').trim();
+ if(!raw)return 'Werk de oefening uit.';
+ const free=raw.match(/^Maak\s+([^\s]+)\s+vrij/i);
+ if(free)return `Maak ${free[1]} vrij.`;
+ if(/^Maak de factor .* los van /i.test(raw) && ch?.targetVar)return `Maak ${ch.targetVar} vrij.`;
+ if(/^Maak \+?\d+ .*zonder de gelijkheid/i.test(raw) && ch?.targetVar)return `Maak ${ch.targetVar} vrij.`;
+ if(/^Bouw de volgende regel door .*elk deel te laten raken/i.test(raw))return 'Werk de haakjes uit.';
+ if(/^Laat .*elk deel raken/i.test(raw))return 'Werk de haakjes uit.';
+ if(ch?.guidedSquare)return 'Werk het kwadraat uit.';
+ return /[.!?]$/.test(raw)?raw:`${raw}.`;
+}
+function renderHeader(){
+ els.family.textContent=stageMeta(c().theme,c().stage)?.label||c().family;
+ els.goal.textContent=c().goal;
+ if(els.assignment)els.assignment.textContent=clearTaskText(c());
+ els.assumption.textContent=c().assumption||'';
+ els.assumption.classList.toggle('show',!!c().assumption);
+ els.badge.textContent=String(campaignPos()+1).padStart(2,'0')
+}
 function renderDots(){const ids=stageIndices(c().theme,c().stage);els.dots.innerHTML=ids.map(i=>{const x=CH[i];return `<i class="${done.has(x.id)?'done ':''}${i===currentIndex?'current':''}"></i>`}).join('')}
 function renderGivens(){
  if(!els.givens)return;
@@ -1695,10 +2029,10 @@ function renderGivens(){
 function givenGesture(varName,targetPath){const value=c()?.givens?.[varName];if(!value)return null;return G.givenSubstitutionGestures(state.ast,varName,value).find(g=>g.targetPath===targetPath)||null}
 function renderHint(){
  if(state.phase==='SOLVED_PENDING'||state.phase==='SOLVED'||state.solved||state.phase==='COMMITTING'){els.verb.textContent='';els.hint.textContent='';return}
- if(state.draft){if(state.draft.kind==='comparator-flip'){els.verb.textContent='TEKEN';const mode=supportMode();els.hint.textContent=mode==='intro'?'Delen door een negatief getal keert de ordening om. Tik op het pulserende teken.':mode==='guided'?'Kijk naar het pulserende ongelijkheidsteken.':mode==='standard'?'Er ontbreekt nog één deel van deze nieuwe regel.':'';return}els.verb.textContent='AFMAKEN';els.hint.textContent='Maak de begonnen volgende regel volledig.';return}
+ if(state.draft){if(state.draft.kind==='comparator-flip'){els.verb.textContent='TEKEN';const mode=supportMode();els.hint.textContent=mode==='intro'?'Delen door een negatief getal keert de ordening om. Tik op het pulserende teken.':mode==='guided'?'Kijk naar het pulserende ongelijkheidsteken.':mode==='standard'?'Er ontbreekt nog één deel van deze nieuwe regel.':'';return}if(state.draft.kind==='guided-square-build'){els.verb.textContent='BOUW';els.hint.textContent=state.draft.stage===1?'Maak nu het eerste kruisproduct.':state.draft.stage===2?'Doe exact hetzelfde kruisproduct nog een tweede keer.':'Werk af met het kwadraat van de tweede term.';return}els.verb.textContent='AFMAKEN';els.hint.textContent='Maak de begonnen volgende regel volledig.';return}
  if(hasGivens()){const mode=supportMode();els.verb.textContent=selectedGiven?'PLAATS':'VUL IN';if(selectedGiven){els.hint.textContent=mode==='independent'?'':`Leg de waarde op ${selectedGiven}.`;return}if(mode==='intro'&&state.missteps===0){els.hint.textContent='Pak een gegeven waarde en leg ze op dezelfde letter.';return}if(state.missteps>0){const hs=c().hints||[];els.hint.textContent=hs[Math.min(hs.length-1,state.missteps-1)]||'Koppel elke gegeven waarde aan dezelfde letter.';return}els.hint.textContent='';return}
  const sources=[...sourceSet()],mode=supportMode();if(!sources.length){els.verb.textContent='KIJK';els.hint.textContent='';return}
- if(selectedPath){const gs=currentTargets(),kinds=new Set(gs.map(g=>g.kind));els.verb.textContent=kinds.has('factor-common')?'VOUW SAMEN':kinds.has('merge')?'SAMEN':kinds.has('distribute-touch')?'RAAK':kinds.has('balance-add')||kinds.has('balance-divide')||kinds.has('balance-divide-numerator')||kinds.has('balance-multiply-den')?(state.ast.t==='rel'?'BEIDE KANTEN':'DOOR ='):'PAK';if(mode==='independent'){els.hint.textContent='';return}els.hint.textContent=kinds.has('factor-common')?'Welke factor komt in beide termen terug?':kinds.has('merge')?'Welke delen horen algebraïsch samen?':kinds.has('distribute-touch')?'Welke delen horen bij dezelfde groep?':kinds.has('balance-add')?'Wat moet aan beide zijden hetzelfde blijven?':(kinds.has('balance-divide')||kinds.has('balance-divide-numerator'))?'Welke structuur houdt de doelletter nog vast?':kinds.has('balance-multiply-den')?'Wat doet de noemer met de hele teller?':'Kies een betekenisvol doel.';return}
+ if(selectedPath){const gs=currentTargets(),kinds=new Set(gs.map(g=>g.kind));els.verb.textContent=kinds.has('square-build-first')?'KWADRAAT':kinds.has('square-build-cross')?'PRODUCT':kinds.has('square-build-last')?'KWADRAAT':kinds.has('fold-perfect-square')||kinds.has('fold-difference-squares')||kinds.has('factor-common')?'VOUW SAMEN':kinds.has('expand-square')?'OPEN':kinds.has('combine-powers')?'MACHT':kinds.has('merge')?'SAMEN':kinds.has('distribute-touch')?'RAAK':kinds.has('balance-add')||kinds.has('balance-divide')||kinds.has('balance-divide-numerator')||kinds.has('balance-multiply-den')?(state.ast.t==='rel'?'BEIDE KANTEN':'DOOR ='):'PAK';if(mode==='independent'){els.hint.textContent='';return}els.hint.textContent=kinds.has('square-build-first')?'Begin verplicht met het kwadraat van de eerste term.':kinds.has('square-build-cross')?'Koppel de eerste term aan de tweede term.':kinds.has('square-build-last')?'Kwadreer nu de tweede term.':kinds.has('fold-perfect-square')||kinds.has('fold-difference-squares')?'Welke bekende structuur vormen deze delen samen?':kinds.has('expand-square')?'Wat betekent een kwadraat van deze hele groep?':kinds.has('combine-powers')?'Welke machten hebben dezelfde basis?':kinds.has('factor-common')?'Welke factor komt in beide termen terug?':kinds.has('merge')?'Welke delen horen algebraïsch samen?':kinds.has('distribute-touch')?'Welke delen horen bij dezelfde groep?':kinds.has('balance-add')?'Wat moet aan beide zijden hetzelfde blijven?':(kinds.has('balance-divide')||kinds.has('balance-divide-numerator'))?'Welke structuur houdt de doelletter nog vast?':kinds.has('balance-multiply-den')?'Wat doet de noemer met de hele teller?':'Kies een betekenisvol doel.';return}
  els.verb.textContent=mode==='independent'?'ZELF':mode==='standard'?'PROBEER':(mode==='intro'&&state.lines.length>1?'PROBEER':c().family);
  const hs=c().hints||[];
  if(mode==='intro'&&state.missteps===0)els.hint.textContent=state.lines.length===1?(c().note||'Probeer een gemarkeerd deel vast te nemen.') : '';
@@ -1710,9 +2044,9 @@ function renderHint(){
 function renderStatus(msg='',kind=''){els.status.className=`micro-status ${kind}`;els.status.textContent=msg||''}
 function clearTransition(){els.transition.classList.remove('show');els.transition.textContent=''}
 function renderSolvedHUD(){const solved=state.phase==='SOLVED'||state.solved;els.game.classList.toggle('is-solved',solved);els.game.classList.toggle('review-mode',solved&&reviewOpen);if(solved){const baseMeta=state.lines.length>3?`${state.lines.length} regels · laatste 3 zichtbaar`:`${state.lines.length} regels`;const smart=c()?.theme==='SMART_REWRITE'&&c()?.bestMoves?` · ${state.moves<=c().bestMoves?'korte route':`kan in ${c().bestMoves} stappen`}`:'';els.solvedMeta.textContent=baseMeta+smart;els.review.hidden=state.lines.length<=3&&!reviewOpen;els.review.textContent=reviewOpen?'Terug':'Hele keten'}else{els.solvedMeta.textContent='';els.review.hidden=true}}
-function renderAll(newLine=false,msg='',kind=''){renderHeader();renderDots();renderDerivation(newLine);renderGivens();renderHint();renderSolvedHUD();els.undo.disabled=(state.phase==='COMMITTING'||state.phase==='SOLVED_PENDING'||state.phase==='SOLVED')||(!state.draft&&!history.length);renderStatus(msg,kind);requestAnimationFrame(fitMathLayout)}
+function renderAll(newLine=false,msg='',kind=''){renderHeader();renderDots();renderDerivation(newLine);renderGivens();renderHint();if(els.context)els.context.hidden=!(els.hint.textContent||'').trim();renderSolvedHUD();els.undo.disabled=(state.phase==='COMMITTING'||state.phase==='SOLVED_PENDING'||state.phase==='SOLVED')||(!state.draft&&!history.length);renderStatus(msg,kind);requestAnimationFrame(fitMathLayout)}
 function log(type,data={}){events.push({t:Date.now(),level:c().id,type,line:state?.lines?.length||0,phase:state?.phase,...data})}
-function strategyName(kind){return kind==='substitute-given'?'substitute':kind==='factor-common'?'factor':kind==='distribute-touch'||kind==='distribution'?'distribute':kind==='balance-divide'||kind==='balance-divide-numerator'?'divide':kind==='balance-add'?'move-term':kind==='balance-multiply-den'?'clear-denominator':kind==='merge'?'combine':kind}
+function strategyName(kind){return kind==='substitute-given'?'substitute':kind==='guided-square-build'?'square-four-products':kind==='fold-perfect-square'||kind==='fold-difference-squares'?'special-factor':kind==='expand-square'?'square-open':kind==='combine-powers'?'power-product':kind==='factor-common'?'factor':kind==='distribute-touch'||kind==='distribution'?'distribute':kind==='balance-divide'||kind==='balance-divide-numerator'?'divide':kind==='balance-add'?'move-term':kind==='balance-multiply-den'?'clear-denominator':kind==='merge'?'combine':kind}
 function semanticCommit(result,kind,gesture,{countMove=true,historySnapshot=null}={}){
  const before=M.clone(state.ast);
  const contract=R.validate({before,result,kind,gesture,conditions:c().conditions||[],targetVar:c().targetVar});
@@ -1726,6 +2060,17 @@ function applyGesture(g){if(state.phase==='COMMITTING'||state.phase==='SOLVED_PE
  if(g.kind==='substitute-given'){state.phase='COMMITTING';selectedGiven=null;selectedPath=null;renderAll();if(g.rawResult&&!M.equal(M.simplify(g.rawResult),g.rawResult)){els.transition.innerHTML=`<span class="transition-expr">${renderNodePlain(g.rawResult,0,null)}</span>`;els.transition.classList.remove('show');void els.transition.offsetWidth;els.transition.classList.add('show')}log('derivation.line_started',{kind:g.kind,varName:g.varName});setTimeout(()=>semanticCommit(g.result,'substitute-given',g),420);return true}
  if(g.kind==='merge')return semanticCommit(g.result,'merge',g);
  if(g.kind==='factor-common')return semanticCommit(g.result,'factor-common',g);
+ /* v2.2.4 — guided binomial-square construction. The first square, both
+    cross-products, and the second square are separate learner obligations. */
+ if(g.kind==='square-build-first'){state.draft={kind:'guided-square-build',stage:1,squarePath:g.squarePath,firstPath:g.firstPath,secondPath:g.secondPath,expPath:g.expPath,first:M.clone(g.first),second:M.clone(g.second),pieces:g.pieces.map(M.clone),fullResult:M.clone(g.expanded),startMoves:state.moves};state.phase='DRAFTING';state.moves++;selectedPath=null;log('derivation.draft_started',{kind:'guided-square-build',stage:1});renderAll(false,`${M.text(g.pieces[0])} staat klaar. Bouw nu het kruisproduct.`,'good');return true}
+ if(g.kind==='square-build-cross'&&state.draft?.kind==='guided-square-build'){if(state.draft.stage!==1&&state.draft.stage!==2)return false;state.draft.stage++;state.moves++;selectedPath=null;log('derivation.obligation_resolved',{kind:'square-cross',stage:state.draft.stage});renderAll(false,state.draft.stage===2?'Eerste kruisproduct gebouwd. Doe exact hetzelfde nog eens.':'Tweede kruisproduct gebouwd. Nu het laatste kwadraat.','good');return true}
+ if(g.kind==='square-build-last'&&state.draft?.kind==='guided-square-build'&&state.draft.stage===3){const snap=sourceSnapshotForDraft(),d=state.draft;d.stage=4;state.moves++;state.phase='COMMITTING';selectedPath=null;renderAll(false,'Vier producten compleet. Vastleggen…','good');const vg={kind:'guided-square-build',squarePath:d.squarePath,sourcePath:d.expPath,targetPath:d.secondPath};setTimeout(()=>semanticCommit(d.fullResult,'guided-square-build',vg,{countMove:false,historySnapshot:snap}),360);return true}
+ /* v2.2.1 — Polynomial interaction handoff.
+    v2.2.0 generated these gestures correctly, but applyGesture never committed
+    them. The UI therefore highlighted valid power/pattern targets and then did
+    nothing on drop/tap. Keep these as ordinary validated one-step rewrites. */
+ if(g.kind==='combine-powers'||g.kind==='expand-square'||g.kind==='fold-perfect-square'||g.kind==='fold-difference-squares')
+   return semanticCommit(g.result,g.kind,g);
  if(g.kind==='balance-add'||g.kind==='balance-divide'||g.kind==='balance-divide-numerator'||g.kind==='balance-multiply-den'){
    if(g.requiresComparatorFlip&&state.ast.t==='rel'){
      state.draft={kind:'comparator-flip',sourcePath:g.sourcePath,targetSide:g.targetSide,previewResult:M.clone(g.previewResult),finalResult:M.clone(g.result),startMoves:state.moves,gesture:g};state.phase='DRAFTING';state.moves++;selectedPath=null;log('derivation.draft_started',{kind:'comparator-flip',from:state.ast.op,to:g.result.op,factor:M.text(g.factor||g.den)});renderAll(false,'','good');return true
@@ -1743,7 +2088,7 @@ function applyGesture(g){if(state.phase==='COMMITTING'||state.phase==='SOLVED_PE
  return false}
 function resolveComparatorFlip(){const d=state?.draft;if(!d||d.kind!=='comparator-flip'||state.phase!=='DRAFTING')return false;const snap=sourceSnapshotForDraft(),btn=els.derivation.querySelector('[data-flip-comparator]');state.phase='COMMITTING';if(btn){btn.disabled=true;btn.classList.add('flip-resolving');setTimeout(()=>{btn.textContent=d.finalResult.op;btn.setAttribute('aria-label','Ongelijkheidsteken omgedraaid');btn.classList.add('flip-resolved-glyph')},145)}log('derivation.obligation_resolved',{kind:'comparator-flip',from:d.previewResult.op,to:d.finalResult.op});setTimeout(()=>semanticCommit(d.finalResult,d.gesture.kind,d.gesture,{countMove:false,historySnapshot:snap}),390);return true}
 function hydrateState(s){return cloneState(s)}
-function enterSolvedState(){if(!c().goalTest(state))return;state.phase='SOLVED';state.solved=true;done.add(c().id);store.set('rf21_done',JSON.stringify([...done]));renderAll();log('level.goal_reached',{moves:state.moves,lines:state.lines.length,strategy:state.strategyPath.slice()})}
+function enterSolvedState(){if(!c().goalTest(state))return;state.phase='SOLVED';state.solved=true;done.add(c().id);store.set('rf22_done',JSON.stringify([...done]));renderAll();log('level.goal_reached',{moves:state.moves,lines:state.lines.length,strategy:state.strategyPath.slice()})}
 function startLevel(i=currentIndex){clearTransition();reviewOpen=false;currentIndex=i;selectedCampaign=CH[currentIndex].theme;selectedStage=CH[currentIndex].stage;store.set('rf21_last',String(i));state={ast:M.clone(c().start),lines:[M.clone(c().start)],moves:0,draft:null,phase:'READY',strategyPath:[],missteps:0,solved:false};history=[];selectedPath=null;selectedGiven=null;drag=null;givenDrag=null;keyboardTargetIndex=0;show('game');renderAll();log('level.start')}
 function themeStyle(th){return `--theme-accent:${th.accent||'#72d9c3'};--theme-soft:${th.soft||'rgba(114,217,195,.12)'}`}
 function renderMenuHeader(){
@@ -1779,7 +2124,7 @@ function renderThemeDetail(th){
  if(!th)return'';
  if(th.future)return `<div class="rf-future-compact" style="${themeStyle(th)}"><div><span>IN ONTWIKKELING</span><strong>${esc(th.label)}</strong><p>${esc(th.subtitle||'Deze reeks wordt later toegevoegd.')}</p></div></div>`;
  let counter=0;
- return `<div class="lean-stage-list" style="${themeStyle(th)}">${(th.stages||[]).map(st=>{const ids=stageIndices(th.id,st.id);if(!ids.length)return'';const n=ids.filter(i=>done.has(CH[i].id)).length;const chips=ids.map(i=>trialChipHTML(i,++counter,th)).join('');return `<section class="lean-stage-row"><div class="lean-stage-copy"><strong>${esc(st.label)}</strong><span>${n}/${ids.length}</span></div><div class="lean-trials">${chips}</div></section>`}).join('')}</div>`
+ const visibleStages=(th.stages||[]).filter(st=>stageIndices(th.id,st.id).length);return `<div class="lean-stage-list" style="${themeStyle(th)}--stage-count:${Math.max(1,visibleStages.length)};">${visibleStages.map(st=>{const ids=stageIndices(th.id,st.id);const n=ids.filter(i=>done.has(CH[i].id)).length;const chips=ids.map(i=>trialChipHTML(i,++counter,th)).join('');return `<section class="lean-stage-row"><div class="lean-stage-copy"><strong>${esc(st.label)}</strong><span>${n}/${ids.length}</span></div><div class="lean-trials">${chips}</div></section>`}).join('')}</div>`
 }
 function renderLevelGrid(){
  if(!themeMeta(selectedCampaign)&&THEMES[0])selectedCampaign=THEMES[0].id;
@@ -1827,7 +2172,7 @@ els.campaignSwitch.addEventListener('click',e=>{const b=e.target.closest('[data-
 function openHomeFromChrome(){show('game');const home=document.getElementById('rfHome');if(home){home.hidden=false;document.body.classList.add('rf-home-open');window.dispatchEvent(new CustomEvent('rf:home-open'))}}
 $('#menuHomeBtn')?.addEventListener('click',openHomeFromChrome);$('#gameHomeBtn')?.addEventListener('click',openHomeFromChrome);
 els.review.addEventListener('click',()=>setReviewMode(!reviewOpen));$('#againBtn').addEventListener('click',()=>startLevel(currentIndex));$('#nextBtn').addEventListener('click',()=>startLevel(nextLearningIndex(currentIndex)));$('#fullBtn').addEventListener('click',async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(_){}});window.addEventListener('resize',()=>requestAnimationFrame(fitMathLayout));
-window.RF21=window.RF20=window.RF19={startLevel,getState:()=>state,getHistory:()=>history,events,challenges:CH,setReviewMode,fitMathLayout,debugGesture(source,target){selectedPath=source;const gs=G.gestureTargets(state.ast,source,state.draft,c().targetVar,gestureOptions());const g=gs.find(x=>x.targetPath===target||x.targetSide===target);if(g)return applyGesture(g);return false},debugSources:()=>[...sourceSet()],debugTargets:(source)=>G.gestureTargets(state.ast,source,state.draft,c().targetVar,gestureOptions()).map(g=>({kind:g.kind,targetPath:g.targetPath,targetSide:g.targetSide})),resolveComparatorFlip,debugStressReview(count=9){const base=M.clone(state.ast);state.lines=Array.from({length:Math.max(4,count)},()=>M.clone(base));state.phase='SOLVED';state.solved=true;reviewOpen=false;renderAll();return state.lines.length}};
+window.RF22=window.RF21=window.RF20=window.RF19={startLevel,getState:()=>state,getHistory:()=>history,events,challenges:CH,setReviewMode,fitMathLayout,debugGesture(source,target){selectedPath=source;const gs=G.gestureTargets(state.ast,source,state.draft,c().targetVar,gestureOptions());const g=gs.find(x=>x.targetPath===target||x.targetSide===target);if(g)return applyGesture(g);return false},debugSources:()=>[...sourceSet()],debugTargets:(source)=>G.gestureTargets(state.ast,source,state.draft,c().targetVar,gestureOptions()).map(g=>({kind:g.kind,targetPath:g.targetPath,targetSide:g.targetSide})),resolveComparatorFlip,debugStressReview(count=9){const base=M.clone(state.ast);state.lines=Array.from({length:Math.max(4,count)},()=>M.clone(base));state.phase='SOLVED';state.solved=true;reviewOpen=false;renderAll();return state.lines.length}};
 startLevel(currentIndex);
 })();
 
@@ -1869,7 +2214,7 @@ startLevel(currentIndex);
   window.addEventListener('resize',()=>{if(!compact())app.classList.remove('rf-chrome-open')});
 
   function readDone(){
-    for(const k of ['rf21_done','rf20_done','rf19_done','rf18_done','rf17_done','rf16_done','rf15_done','rf14_done']){
+    for(const k of ['rf22_done','rf21_done','rf20_done','rf19_done','rf18_done','rf17_done','rf16_done','rf15_done','rf14_done']){
       try{const v=localStorage.getItem(k);if(v!=null){const a=JSON.parse(v);return Array.isArray(a)?a:[]}}catch(_){ }
     }
     return [];
@@ -1909,24 +2254,5 @@ startLevel(currentIndex);
 })();
 </script>
 
-\n<script id="axiomaPortalBridge">
-(()=>{
-  const inPortal=window.self!==window.top&&new URLSearchParams(location.search).get('portal')==='1';
-  if(!inPortal)return;
-  document.documentElement.classList.add('axioma-portal-embed');
-  const hideRedundantFullscreen=()=>{
-    for(const id of ['fullBtn','fullscreen']){
-      const el=document.getElementById(id);
-      if(el){el.style.display='none';el.setAttribute('aria-hidden','true');el.tabIndex=-1;}
-    }
-  };
-  hideRedundantFullscreen();
-  new MutationObserver(hideRedundantFullscreen).observe(document.documentElement,{childList:true,subtree:true});
-  addEventListener('load',()=>{
-    hideRedundantFullscreen();
-    try{parent.postMessage({type:'axioma:game-ready',path:location.pathname},location.origin)}catch(_){}
-  },{once:true});
-})();
-</script>\n
 </body>
 </html>
