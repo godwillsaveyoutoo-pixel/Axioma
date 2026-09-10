@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>AXIOMA Verfwinkel v0.19.4 — Werktafel Doelhiërarchie</title>
+<title>AXIOMA Verfwinkel v0.19.0 — Pro Menu & Home Navigation</title>
 <style>
 :root{
   /* canonical design tokens */
@@ -362,12 +362,8 @@ body.vf-intro-open .rotate{display:none!important}.vf-intro-open .app{visibility
 .goal-summary{display:flex;align-items:center;justify-content:center;gap:7px;min-height:34px;color:#173c55;font-weight:950;text-align:center;white-space:nowrap}
 .goal-summary strong{font-size:15px}.goal-summary span{font-size:10.5px;color:#526d80}
 .stock-spacer{visibility:hidden}
-/* Werktafeldoel: twee korte informatielijnen in plaats van één schoolse zin. */
-.work-instruction{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;font-size:13px;line-height:1.08;font-weight:950;color:#294b62;letter-spacing:.005em;white-space:nowrap}
-.work-instruction .work-goal-main{font-size:1em;color:#294b62;font-weight:900}
-.work-instruction .work-goal-main strong{font-size:1.08em;color:#173e5a}
-.work-instruction .work-goal-ratio{font-size:.92em;color:#49697d;font-weight:900}
-.work-instruction .work-goal-ratio strong{font-size:1.04em;color:#155b91}
+.work-instruction{text-align:center;font-size:13px;line-height:1.15;font-weight:950;color:#294b62;letter-spacing:.005em;white-space:nowrap}
+.work-instruction strong{font-size:1.08em;color:#183d58}.work-instruction span{font-size:.82em;color:#688094;font-weight:850}
 
 @media (max-width:900px) and (orientation:landscape){
   /* The order is now carried by the centre goal vat; the floating strip was
@@ -578,193 +574,6 @@ body.vf-immersive .menu.open{gap:7px}
 }
 </style>
 
-
-<style id="vfVatInfoClarityPass">
-/* ========================================================================
-   v0.19.1 — VAT INFORMATION CLARITY PASS
-   Quantity/capacity and pigment ratio are primary gameplay information.
-   The rack is reflowed for desktop and smartphone instead of shrinking type.
-   Applies to MACHINE and WERKTAFEL without changing mixing mathematics.
-   ======================================================================== */
-.vat-info{box-sizing:border-box;width:min(100%,184px);min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 9px 6px;border:1px solid rgba(123,126,122,.40);border-radius:10px;background:linear-gradient(180deg,rgba(255,253,248,.96),rgba(239,235,227,.94));box-shadow:0 2px 5px rgba(40,43,42,.14),inset 0 1px rgba(255,255,255,.88);color:#173e59;text-align:center;white-space:nowrap;line-height:1.02;text-shadow:0 1px rgba(255,255,255,.62)}
-.vat-info strong{display:block;font-size:19px;line-height:1;font-weight:1000;letter-spacing:-.025em;color:#173b55}
-.vat-info span{display:block;margin-top:4px;font-size:12.5px;line-height:1;font-weight:950;color:#49677b;letter-spacing:-.01em}
-.vat-info-spacer{visibility:hidden;pointer-events:none}
-.goal-summary{display:flex}
-
-/* Mid-size / fallback landscape layout. */
-.machine .tankcol{grid-template-rows:26px 50px var(--tank-h) 48px 50px;gap:4px}
-.machine .tankname{font-size:16px;padding:4px 15px}
-.machine .goal-summary{min-height:48px;gap:0}
-.machine .goal-progress{min-height:30px}
-.machine .used-badge{top:calc(78px + var(--tank-h))}
-.machine .pipe-net{height:290px}
-
-.mathscene{grid-template-rows:142px minmax(0,1fr) 24px}
-.mathscene .tanks{height:142px}
-.mathscene .tankcol{grid-template-rows:24px 42px 62px 18px 30px;gap:4px}
-.mathscene .tank-stage{width:70px;height:62px}
-.mathscene .vat-info{width:min(100%,154px);min-height:40px;padding:4px 7px 5px;border-radius:8px}
-.mathscene .vat-info strong{font-size:15px}
-.mathscene .vat-info span{font-size:11px;margin-top:3px}
-
-/* Desktop/browser: generous labels, but keep the vat rack visually centred. */
-@media (min-width:901px) and (orientation:landscape){
-  .machine .tanks.n2{width:min(92%,900px);gap:clamp(28px,3vw,54px)}
-  .machine .tanks.n3{width:min(95%,1120px);gap:clamp(16px,1.7vw,30px)}
-  .machine .tanks.n2 .tankcol{max-width:220px}
-  .machine .tanks.n3 .tankcol{max-width:190px}
-  .machine .tankcol{grid-template-rows:clamp(30px,3vh,38px) clamp(58px,6vh,72px) var(--tank-h) clamp(54px,5.5vh,70px) clamp(58px,5.8vh,74px);gap:4px}
-  .machine .tankname{font-size:clamp(18px,1.25vw,24px);padding:clamp(5px,.45vh,7px) clamp(20px,1.45vw,28px)}
-  .machine .vat-info{width:min(100%,210px);min-height:clamp(54px,5.6vh,68px);padding:clamp(6px,.55vh,8px) clamp(10px,.8vw,14px);border-radius:12px}
-  .machine .vat-info strong{font-size:clamp(22px,1.55vw,30px)}
-  .machine .vat-info span{font-size:clamp(14px,.98vw,19px);margin-top:clamp(4px,.35vh,6px)}
-  .machine .tanks.n3 .vat-info strong{font-size:clamp(20px,1.35vw,26px)}
-  .machine .tanks.n3 .vat-info span{font-size:clamp(13px,.88vw,17px)}
-  .machine .goal-summary{min-height:clamp(54px,5.5vh,68px)}
-  .machine .goal-progress{font-size:clamp(14px,.95vw,18px);min-height:clamp(34px,3.3vh,44px);padding-inline:14px}
-  .machine .goal-progress strong{font-size:1.08em}
-  .machine .used-badge{top:calc(clamp(94px,9.5vh,116px) + var(--tank-h))}
-  .machine .pipe-net{height:clamp(390px,45vh,570px)}
-
-  .mathscene{grid-template-rows:clamp(245px,29vh,360px) minmax(0,1fr) clamp(24px,2.4vh,32px)}
-  .mathscene .tanks{height:clamp(245px,29vh,360px)}
-  .mathscene .tanks.n2{width:min(92%,840px)}
-  .mathscene .tanks.n3{width:min(95%,1040px)}
-  .mathscene .tanks.n2 .tankcol{max-width:190px}
-  .mathscene .tanks.n3 .tankcol{max-width:168px}
-  .mathscene .tankcol{grid-template-rows:clamp(28px,2.8vh,36px) clamp(50px,5.1vh,64px) clamp(116px,13vh,170px) clamp(22px,2.2vh,30px) clamp(32px,3.2vh,43px);gap:4px}
-  .mathscene .tank-stage{width:clamp(96px,7vw,135px);height:clamp(116px,13vh,170px)}
-  .mathscene .tankname{font-size:clamp(16px,1.05vw,21px);padding:4px 13px}
-  .mathscene .vat-info{width:min(100%,180px);min-height:clamp(46px,4.7vh,58px);padding:5px 8px 6px;border-radius:10px}
-  .mathscene .vat-info strong{font-size:clamp(18px,1.22vw,24px)}
-  .mathscene .vat-info span{font-size:clamp(12px,.82vw,16px);margin-top:4px}
-  .mathscene .tanks.n3 .vat-info strong{font-size:clamp(17px,1.08vw,21px)}
-  .mathscene .tanks.n3 .vat-info span{font-size:clamp(11.5px,.76vw,14.5px)}
-}
-
-/* Smartphone landscape: protect readable type and alignment first. */
-@media (max-width:900px) and (orientation:landscape){
-  .machine .tankcol{grid-template-rows:25px 44px var(--tank-h) 45px 44px;gap:4px}
-  .machine .tankname{font-size:16px;line-height:1;padding:4px 13px}
-  .machine .vat-info{width:min(100%,158px);min-height:42px;padding:4px 6px 5px;border-radius:9px}
-  .machine .vat-info strong{font-size:17px}
-  .machine .vat-info span{font-size:12.3px;margin-top:3px}
-  .machine .goal-summary{min-height:44px}
-  .machine .goal-progress{font-size:13.5px;min-height:29px;padding:4px 9px}
-  .machine .goal-progress strong{font-size:14.5px}
-  .machine .used-badge{top:calc(72px + var(--tank-h));left:calc(50% + 23px)}
-  .machine .pipe-net{height:260px}
-
-  .mathscene{grid-template-rows:132px minmax(0,1fr) 24px;gap:6px}
-  .mathscene .tanks{height:132px}
-  .mathscene .tankcol{grid-template-rows:25px 43px 52px;gap:4px;align-content:start}
-  .mathscene .tank-stage{width:60px;height:52px}
-  .mathscene .tankname{font-size:15px;line-height:1;padding:4px 10px}
-  .mathscene .vat-info{width:min(100%,140px);min-height:41px;padding:4px 5px 5px;border-radius:8px}
-  .mathscene .vat-info strong{font-size:14.5px}
-  .mathscene .vat-info span{font-size:11.4px;margin-top:3px}
-  .mathscene .pipe-local,.mathscene .unitrow,.mathscene .goalunit,.mathscene .used-badge,.mathscene .goal-progress{display:none!important}
-}
-
-/* Samsung A20 reference and other low-height phones. */
-@media (max-width:800px) and (max-height:430px) and (orientation:landscape){
-  :root{--tank-h:88px}
-  body.vf-immersive .machine,body.vf-immersive .math{padding:4px 8px}
-  .machine .tanks.n2{width:min(100%,650px);gap:14px}
-  .machine .tanks.n3{width:min(100%,728px);gap:5px}
-  .machine .tankcol{max-width:158px;grid-template-rows:25px 43px var(--tank-h) 44px 43px;gap:3px}
-  .machine .tanks.n3 .tankcol{max-width:150px}
-  .machine .vat-info{width:min(100%,156px);min-height:41px}
-  .machine .vat-info strong{font-size:17px}
-  .machine .vat-info span{font-size:12.1px}
-  .machine .tanks.n3 .vat-info strong{font-size:16px}
-  .machine .tanks.n3 .vat-info span{font-size:11.2px}
-  .machine .source-step{width:120px;height:42px;grid-template-columns:42px 1fr 42px}
-  .machine .source-step button{height:42px}
-  .machine .source-step .value{font-size:16px}
-  .machine .used-badge{top:calc(69px + var(--tank-h));left:calc(50% + 21px)}
-  .machine-layout{grid-template-rows:minmax(0,1fr) 26px;gap:3px}
-  .machine-status{font-size:13px;min-height:24px;padding:4px 11px}
-  .machine .pipe-net{height:252px}
-
-  .mathscene{grid-template-rows:130px minmax(0,1fr) 23px;gap:5px}
-  .mathscene .tanks{height:130px}
-  .mathscene .tanks.n2{width:min(100%,626px);gap:16px}
-  .mathscene .tanks.n3{width:min(100%,714px);gap:5px}
-  .mathscene .tankcol{max-width:138px;grid-template-rows:24px 42px 52px;gap:4px}
-  .mathscene .tanks.n3 .tankcol{max-width:128px}
-  .mathscene .tank-stage{width:60px;height:52px}
-  .mathscene .tankname{font-size:14.5px}
-  .mathscene .vat-info{width:min(100%,138px);min-height:40px;padding-inline:4px}
-  .mathscene .vat-info strong{font-size:14.2px}
-  .mathscene .vat-info span{font-size:11.1px}
-  .mathscene .tanks.n3 .vat-info strong{font-size:13.5px}
-  .mathscene .tanks.n3 .vat-info span{font-size:10.4px}
-}
-
-/* Hard 640px landscape gate: preserve the message, not tiny typography. */
-@media (min-width:640px) and (max-width:699px) and (max-height:430px) and (orientation:landscape){
-  .machine .vat-info strong{font-size:15.5px}
-  .machine .vat-info span{font-size:11px}
-  .mathscene .vat-info strong{font-size:13px}
-  .mathscene .vat-info span{font-size:10px}
-}
-</style>
-
-<style id="vfTankPipePolish">
-/* v0.19.2 — visual polish after vat-info reflow.
-   Keep the glass tank uninterrupted and anchor network pipes to the real stem. */
-.machine .tank:after{display:none!important}
-/* The tank already has a substantial lower border; removing the inner crossbar
-   avoids the impression of a pipe/line running through the paint. */
-</style>
-
-
-<style id="vfGoalHighlightPass">
-/* ========================================================================
-   v0.19.3 — GOAL HIGHLIGHT PASS
-   The requested mixture is the semantic focal point, not another source card.
-   Static blue emphasis works in MACHINE and WERKTAFEL; a single soft pulse
-   is used only when a new order/level becomes active.
-   ======================================================================== */
-.vat-info-goal{
-  pointer-events:none;
-  border:2px solid rgba(39,135,223,.72);
-  background:linear-gradient(180deg,rgba(248,252,255,.985),rgba(225,240,253,.965));
-  box-shadow:0 3px 9px rgba(25,88,139,.18),inset 0 1px rgba(255,255,255,.94),inset 0 0 0 1px rgba(94,166,224,.10);
-}
-.vat-info-goal strong{color:#155b91}
-.vat-info-goal span{color:#356883}
-.vat-info-goal.goal-cue{animation:vfGoalCue 680ms cubic-bezier(.2,.72,.22,1) 1}
-@keyframes vfGoalCue{
-  0%{transform:scale(1);box-shadow:0 3px 9px rgba(25,88,139,.18),inset 0 1px rgba(255,255,255,.94)}
-  34%{transform:scale(1.018);box-shadow:0 0 0 4px rgba(39,135,223,.15),0 5px 15px rgba(25,88,139,.24),inset 0 1px rgba(255,255,255,.96)}
-  100%{transform:scale(1);box-shadow:0 3px 9px rgba(25,88,139,.18),inset 0 1px rgba(255,255,255,.94)}
-}
-@media (prefers-reduced-motion:reduce){.vat-info-goal.goal-cue{animation:none}}
-
-/* On very small landscape screens keep the emphasis crisp, not bulky. */
-@media (max-width:800px) and (max-height:430px) and (orientation:landscape){
-  .vat-info-goal{border-width:2px;box-shadow:0 2px 6px rgba(25,88,139,.16),inset 0 1px rgba(255,255,255,.92)}
-}
-</style>
-
-<style id="vfWorktableGoalCopyPass">
-/* v0.19.4 — WORKTABLE GOAL COPY
-   Keep the target readable as quantity + ratio, not as one long instruction. */
-@media (max-width:900px) and (orientation:landscape){
-  .work-instruction{gap:1px}
-  .work-instruction .work-goal-main{font-size:.96em}
-  .work-instruction .work-goal-ratio{font-size:.88em}
-}
-@media (max-width:800px) and (max-height:430px) and (orientation:landscape){
-  .work-instruction{line-height:1.02}
-  .work-instruction .work-goal-main{font-size:.93em}
-  .work-instruction .work-goal-ratio{font-size:.84em}
-}
-</style>
-
 </head>
 <body>
 <div class="rotate">Draai je toestel naar landscape om Verfwinkel te spelen.</div>
@@ -808,25 +617,27 @@ const app=$('#app'), machine=$('#machine'), math=$('#math'), dock=$('#dockCenter
 const fmt=n=>Number.isInteger(n)?String(n):String(Math.round(n*100)/100).replace('.',',');
 
 const GROUP_META={two:{label:'2 vaten',short:'2V',desc:''},three:{label:'3 vaten',short:'3V',desc:''}};
-const progress={completed:new Set()};
+const VF_PROGRESS_KEY='axioma.verfwinkel.v019.progress';
+let vfSaved={completed:[],lastLevel:0};
+try{vfSaved={...vfSaved,...JSON.parse(localStorage.getItem(VF_PROGRESS_KEY)||'{}')}}catch(_){}
+const progress={completed:new Set(Array.isArray(vfSaved.completed)?vfSaved.completed.filter(i=>Number.isInteger(i)&&i>=0&&i<LEVELS.length):[])};
+function saveVfProgress(){try{localStorage.setItem(VF_PROGRESS_KEY,JSON.stringify({completed:[...progress.completed].sort((a,b)=>a-b),lastLevel:state?.level||0}))}catch(_){}}
 let menuGroup='two';
 
 const state={
   level:0,order:0,remain:[],pick:[],used:[],b:0,y:0,mixTotal:0,view:'machine',
   sound:true,haptics:true,running:false,flowing:[],solved:false,readyCheck:false,fullError:'',
-  mathPhase:0,goalSlots:[],recipeSlots:[],activeMath:'blue',animSlot:-1,goalCuePending:true
+  mathPhase:0,goalSlots:[],recipeSlots:[],activeMath:'blue',animSlot:-1
 };
 function L(){return LEVELS[state.level]}
 function sources(){return L().sources}
 function order(){return L().orders[state.order]}
 function activeCount(){return sources().length}
 function resetLevel(){
-  state.goalCuePending=true;
   state.order=0;state.remain=sources().map(s=>s.total);state.pick=sources().map(()=>0);state.used=sources().map(()=>0);state.flowing=sources().map(()=>false);state.b=0;state.y=0;state.mixTotal=0;state.solved=false;state.readyCheck=false;state.running=false;state.fullError='';
   resetMath();render();
 }
 function resetOrder(){
-  state.goalCuePending=true;
   state.pick=sources().map(()=>0);state.used=sources().map(()=>0);state.flowing=sources().map(()=>false);state.b=0;state.y=0;state.mixTotal=0;state.solved=false;state.readyCheck=false;state.running=false;state.fullError='';resetMath();
 }
 function resetMath(){
@@ -863,7 +674,7 @@ function targetBlock(c){return blockHTML(Array(unitParts()).fill(c))}
 function widthForParts(n){const narrow=innerWidth<900,small=innerWidth<700,cell=small?5:narrow?6:9,gap=narrow?1:2,pad=narrow?6:8;return Math.max(34,n*cell+(n-1)*gap+pad)}
 function slotStyle(){return `--slotw:${widthForParts(unitParts())}px`}
 function sourceStepper(i){
-  const step=sourceStep(i);return `<div class="source-step" aria-label="Hoeveelheid uit vat ${String.fromCharCode(65+i)}, per ${step} liter"><button data-step="${i}:-1" aria-label="${step} liter minder uit vat ${String.fromCharCode(65+i)}">−</button><div class="value">${fmt(state.pick[i])} L</div><button data-step="${i}:1" aria-label="${step} liter meer uit vat ${String.fromCharCode(65+i)}">+</button></div>`;
+  const step=sourceStep(i);return `<div class="source-step" aria-label="Hoeveelheid uit vat ${String.fromCharCode(65+i)}, per ${step} liter"><button data-step="${i}:-1" aria-label="${step} liter minder uit vat ${String.fromCharCode(65+i)}">−</button><div class="value">${fmt(state.pick[i])} l</div><button data-step="${i}:1" aria-label="${step} liter meer uit vat ${String.fromCharCode(65+i)}">+</button></div>`;
 }
 function sourceTankScale(){return 100}
 function goalTankScale(){return 100}
@@ -875,7 +686,7 @@ function tankColHTML(i,mathMode=false){
   const s=sources()[i],letter=String.fromCharCode(65+i),pick=mathMode?recipeCount()[i]:state.pick[i];
   return `<div class="tankcol ${state.flowing[i]?'flowing':''}" style="--flow:${pigmentColor(s.b,s.y)};${sourceCapacityStyle()}">
     <div class="tankname ${i===0?'a':i===1?'b':'c'}">vat ${letter}</div>
-    <div class="vat-info vat-info-source" aria-label="Vat ${letter}: ${fmt(state.remain[i])} van ${fmt(s.total)} liter, blauw geel verhouding ${s.b} op ${s.y}"><strong>${fmt(state.remain[i])} / ${fmt(s.total)} L</strong><span>blauw : geel = ${s.b} : ${s.y}</span></div>
+    <div class="stock">voorraad ${fmt(state.remain[i])} / ${fmt(s.total)} l · ${s.b}:${s.y}</div>
     <div class="tank-stage"><div class="tank"><div class="paint" data-source-paint="${i}" style="height:${sourceFill(i)}%;background:${paintGradient(s.b,s.y)}"></div></div></div>
     <div class="pipe-local ${i===0?'a':i===1?'b':'c'}"><span class="stem"></span>${mathMode?'':`<button class="valve" data-valve="${i}" aria-label="Draai kraan van vat ${letter} open"><span></span></button>`}<span class="badge">${fmt(pick)} l</span></div>
     ${(state.used[i]||0)>0?`<div class="used-badge"><strong>−${fmt(state.used[i])} l</strong><small>GEGOTEN</small></div>`:''}
@@ -886,9 +697,9 @@ function goalColHTML(mathMode=false){
   const o=order(),flow=simulatePick(state.flowing.map((on,i)=>on?state.pick[i]:0)),showB=state.b+flow.b,showY=state.y+flow.y,stream=pigmentColor(flow.b,flow.y),liquid=paintGradient(showB||o.b,showY||o.y);
   return `<div class="tankcol goalcol" style="${goalCapacityStyle()}">
     <div class="tankname goal">doel</div>
-    ${mathMode?`<div class="vat-info vat-info-goal ${state.goalCuePending?'goal-cue':''}" aria-label="Doel: ${fmt(o.vol)} liter, blauw geel verhouding ${o.b} op ${o.y}"><strong>${fmt(o.vol)} L</strong><span>blauw : geel = ${o.b} : ${o.y}</span></div>`:`<div class="vat-info vat-info-spacer" aria-hidden="true"><strong>0 / 0 L</strong><span>blauw : geel = 0 : 0</span></div>`}
+    ${mathMode?`<div class="stock goal-stock">${fmt(o.vol)} l · verhouding ${o.b} : ${o.y}</div>`:`<div class="stock stock-spacer" aria-hidden="true">doel</div>`}
     <div class="tank-stage"><span class="top-connector" aria-hidden="true"></span><div class="tank hero ${state.flowing.some(Boolean)?'receiving':''}"><span class="inlet-stream" style="height:${Math.max(12,92-goalFill())}%;background:${stream}"></span><div class="paint" data-goal-paint style="height:${mathMode?64:goalFill()}%;background:${liquid}"></div></div></div>
-    ${mathMode?`<div class="goal-progress">gevuld <strong>${fmt(state.mixTotal)} / ${fmt(o.vol)} L</strong></div><div class="goalunit"><span class="unitlabel">1 L =</span>${targetBlock('blue')}<span class="unitlabel">of</span>${targetBlock('yellow')}</div>`:`<div class="vat-info vat-info-goal goal-summary ${state.goalCuePending?'goal-cue':''}" aria-label="Doel: ${fmt(o.vol)} liter, blauw geel verhouding ${o.b} op ${o.y}"><strong>${fmt(o.vol)} L</strong><span>blauw : geel = ${o.b} : ${o.y}</span></div><div class="goal-progress"><strong>${fmt(state.mixTotal)} / ${fmt(o.vol)} L</strong> gevuld</div>`}
+    ${mathMode?`<div class="goal-progress">gevuld <strong>${fmt(state.mixTotal)} / ${fmt(o.vol)} l</strong></div><div class="goalunit"><span class="unitlabel">1 l =</span>${targetBlock('blue')}<span class="unitlabel">of</span>${targetBlock('yellow')}</div>`:`<div class="goal-summary"><strong>${fmt(o.vol)} L</strong><span>blauw : geel = ${o.b} : ${o.y}</span></div><div class="goal-progress"><strong>${fmt(state.mixTotal)} / ${fmt(o.vol)} L</strong> gevuld</div>`}
   </div>`;
 }
 function tanksHTML(mathMode=false){
@@ -903,21 +714,7 @@ function layoutPipes(){
   const svg=machine.querySelector('.pipe-net'),connector=machine.querySelector('.top-connector');if(!svg||!connector)return;
   const box=svg.getBoundingClientRect(),target=connector.getBoundingClientRect(),w=box.width,h=box.height;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.setAttribute('preserveAspectRatio','none');
   const tx=target.left+target.width/2-box.left,ty=target.top-box.top+2;
-  sources().forEach((_,i)=>{
-    const tap=machine.querySelectorAll('.pipe-local')[i];
-    if(!tap)return;
-    /* Anchor the network pipe to the visible metal stem itself, not to the
-       wider pipe-local grid cell. This keeps the pipe exactly under the valve
-       after responsive reflow on both desktop and A20-sized screens. */
-    const stem=tap.querySelector('.stem')||tap;
-    const r=stem.getBoundingClientRect();
-    const sx=r.left+r.width/2-box.left;
-    const sy=r.bottom-box.top-1;
-    const dir=tx>sx?1:-1,span=Math.abs(tx-sx),bend=sx+dir*Math.min(78,span*.28),approach=tx-dir*(12+i*7),top=Math.max(3,ty-18+i*6);
-    const drop=Math.min(h-6,sy+16);
-    const d=`M ${sx} ${sy} V ${drop} H ${bend} V ${top} H ${approach} Q ${tx} ${top} ${tx} ${ty}`;
-    svg.querySelectorAll(`[data-route="${i}"]`).forEach(p=>p.setAttribute('d',d));
-  });
+  sources().forEach((_,i)=>{const tap=machine.querySelectorAll('.pipe-local')[i];if(!tap)return;const r=tap.getBoundingClientRect(),sx=r.left+r.width/2-box.left,sy=r.bottom-box.top-2,dir=tx>sx?1:-1,span=Math.abs(tx-sx),bend=sx+dir*Math.min(78,span*.28),approach=tx-dir*(12+i*7),top=Math.max(3,ty-18+i*6),d=`M ${sx} ${sy} V ${Math.min(h-6,sy+16)} H ${bend} V ${top} H ${approach} Q ${tx} ${top} ${tx} ${ty}`;svg.querySelectorAll(`[data-route="${i}"]`).forEach(p=>p.setAttribute('d',d))});
 }
 function ratioCheck(b,y){
   if(b+y===0)return false;const o=order();return Math.abs(b*o.y-y*o.b)<1e-8;
@@ -1000,7 +797,6 @@ function render(){
   $('#orderRatio').textContent=`${order().b} : ${order().y}`;
   menuGroup=currentMenuBucket();
   renderMachine();renderMath();renderDock();renderMenu();
-  state.goalCuePending=false;
   machine.classList.toggle('offleft',state.view==='math');
   math.classList.toggle('offright',state.view!=='math');
   viewBtn.textContent=state.view==='machine'?'∑ WERKTAFEL':'← MACHINE';
@@ -1107,7 +903,7 @@ function renderMath(){
     const c={blue:0,yellow:0};state.goalSlots.forEach(x=>{if(c[x]!==undefined)c[x]++});
     math.innerHTML=`<div class="mathscene">${tanksHTML(true)}
       <div class="mathwork step1">
-        <div class="work-instruction" aria-label="Doel: ${order().vol} vakjes, blauw geel verhouding ${order().b} op ${order().y}"><span class="work-goal-main">DOEL · <strong>${order().vol} vakjes</strong></span><span class="work-goal-ratio">blauw : geel = <strong>${order().b} : ${order().y}</strong></span></div>
+        <div class="work-instruction">Vul ${order().vol} vakjes · verhouding <strong>${order().b} : ${order().y}</strong> <span>blauw : geel</span></div>
         <div class="strip">${state.goalSlots.map((c,i)=>`<button class="slot ${c?'filled':''} ${i===state.animSlot?'snap':''} ${c==='blue'?'goalblue':c==='yellow'?'goalyellow':''}" style="${slotStyle()}" data-goal="${i}">${c?targetBlock(c):'?'}</button>`).join('')}</div>
         <div class="compare ${goalReady()?'good':''}">${goalReady()?`${order().vol} vakjes correct verdeeld`:`${c.blue} blauw · ${c.yellow} geel — nodig ${targetBlue()} · ${targetYellow()}`}</div>
       </div>
@@ -1183,7 +979,7 @@ function advanceAfterSuccess(){
   if(state.order<L().orders.length-1){
     state.order++;resetOrder();feedback('ok');render();return;
   }
-  progress.completed.add(state.level);
+  progress.completed.add(state.level);saveVfProgress();
   if(state.level<LEVELS.length-1){state.level++;resetLevel();feedback('ok')}else{toast('Alle bestellingen voltooid!');feedback('ok');render()}
 }
 function menuBucket(level){return level.sources.length===3?'three':'two'}
@@ -1224,7 +1020,7 @@ function renderMenu(){
       <div class="levelliters">${fmt(o.vol)} L</div>
     </button>`;
   }).join('');
-  g.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{state.level=Number(b.dataset.level);menuGroup=menuBucket(LEVELS[state.level]);$('#menu').classList.remove('open');resetLevel();feedback('select')});
+  g.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{state.level=Number(b.dataset.level);saveVfProgress();menuGroup=menuBucket(LEVELS[state.level]);$('#menu').classList.remove('open');resetLevel();feedback('select')});
 }
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1600)}
 viewBtn.onclick=()=>{state.view=state.view==='machine'?'math':'machine';feedback('select');render()}
@@ -1237,7 +1033,7 @@ resetLevel();
 const qa=new URLSearchParams(location.search);
 if(qa.get('qa')==='1'){
   app.classList.add('qa');
-  state.level=Math.max(0,Math.min(LEVELS.length-1,Number(qa.get('level')||1)-1));resetLevel();
+  state.level=Math.max(0,Math.min(LEVELS.length-1,qa.has('level')?Number(qa.get('level')||1)-1:(Number(vfSaved.lastLevel)||0)));resetLevel();
   if(qa.get('view')==='math')state.view='math';
   const phase=Number(qa.get('phase')||0);
   if(phase>=1){state.goalSlots=Array(targetBlue()).fill('blue').concat(Array(targetYellow()).fill('yellow'));state.mathPhase=1;state.activeMath=0}
@@ -1335,4 +1131,23 @@ if(qa.get('qa')==='1'){
   document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&body.classList.contains('vf-immersive'))closeHud()});
 })();
 </script>
+\n<script id="axiomaPortalBridge">
+(()=>{
+  const inPortal=window.self!==window.top&&new URLSearchParams(location.search).get('portal')==='1';
+  if(!inPortal)return;
+  document.documentElement.classList.add('axioma-portal-embed');
+  const hideRedundantFullscreen=()=>{
+    for(const id of ['fullBtn','fullscreen']){
+      const el=document.getElementById(id);
+      if(el){el.style.display='none';el.setAttribute('aria-hidden','true');el.tabIndex=-1;}
+    }
+  };
+  hideRedundantFullscreen();
+  new MutationObserver(hideRedundantFullscreen).observe(document.documentElement,{childList:true,subtree:true});
+  addEventListener('load',()=>{
+    hideRedundantFullscreen();
+    try{parent.postMessage({type:'axioma:game-ready',path:location.pathname},location.origin)}catch(_){}
+  },{once:true});
+})();
+</script>\n
 </body>

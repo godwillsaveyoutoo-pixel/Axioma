@@ -1,8 +1,8 @@
-const CACHE='axioma-speel-v4-game-worlds';
+const CACHE='axioma-speel-v5-koersveld-getallenfrontier';
 const CORE=[
   './','./index.html','./assets/app.css','./assets/app.js','./assets/icon.svg','./assets/icon-192.png','./assets/icon-512.png','./assets/icon-180.png','./manifest.webmanifest',
   './games/algebra-smederij.html','./games/data-check.html','./games/kubusbouw.html','./games/signal-lab.html','./games/taartenwinkel.html','./games/verfwinkel.html',
-  './games/continuum/index.html','./games/gravity-maze/index.html','./games/cellquation/index.html','./games/insleg/index.html'
+  './games/continuum/index.html','./games/gravity-maze/index.html','./games/cellquation/index.html','./games/insleg/index.html','./games/koersveld.html','./games/getallenfrontier.html'
 ];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('axioma-speel-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

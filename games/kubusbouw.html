@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#081225">
-<title>AXIOMA · Kubusbouw v0.6.3 — Perspectief & bediening</title>
+<title>AXIOMA · Kubusbouw v0.6.2 — Smartphone</title>
 <style>
 :root{font-family:Inter,ui-rounded,"Avenir Next","Segoe UI",system-ui,sans-serif;--ink:#f4f7ff;--muted:#97a6c4;--navy:#081225;--teal:#55dfd3;--violet:#9678e5;--gold:#efc365;--line:rgba(157,188,245,.14);--rail:clamp(224px,31vw,304px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--navy);color:var(--ink)}button{font:inherit;color:inherit;touch-action:manipulation}button:disabled{opacity:.38}
@@ -18,7 +18,7 @@
 .view{min-width:0;min-height:0;display:grid;grid-template-rows:19px minmax(0,1fr);place-items:center;padding:3px 2px;border-right:1px solid rgba(157,188,245,.09);background:rgba(255,255,255,.015)}.view:last-child{border-right:0}.view.pred{grid-column:1/-1;grid-template-columns:minmax(0,1fr) 112px;grid-template-rows:1fr;padding:5px 8px;border-top:1px solid rgba(157,188,245,.10);background:rgba(119,84,190,.08)}.viewhead{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-width:0}.view.pred .viewhead{align-items:flex-start}.viewhead b{font-size:7px;letter-spacing:.08em;color:#cabaff;white-space:nowrap}.viewhead span{font-size:5.5px;color:#7687a7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:min(62px,90%);aspect-ratio:1;padding:2px;background:#18233c}.view.pred .grid3{width:102px}.vcell,.predcell{position:relative;border:0;border-radius:3px;background:#f6f8fc;box-shadow:inset 0 0 0 1px rgba(72,89,125,.12);padding:0;cursor:pointer;min-width:0;min-height:0}.vcell.target{background:linear-gradient(145deg,#a98cf0,#7652c2)}.vcell.live:after{content:"";position:absolute;inset:27%;border-radius:50%;background:#50ddd1;box-shadow:0 0 7px rgba(80,221,209,.7)}.vcell.live:not(.target):after{background:#efa64d}.vcell.miss{outline:2px solid #55e8db;outline-offset:0}.plan-cell.plan-edit{outline:2px solid #ffd36f;outline-offset:0}.predcell.on{background:#20b8ad}.predcell.err{outline:2px solid #f0a244}
 .view-legend{height:17px;display:flex;justify-content:center;gap:7px;align-items:center;border-bottom:1px solid var(--line);font-size:5.5px;font-weight:1000;letter-spacing:.05em;color:#7183a3}.view-legend span{display:inline-flex;align-items:center;gap:3px}.view-legend i{width:6px;height:6px;display:inline-block}.view-legend .gold{border:1px solid #ffc761;background:rgba(255,199,97,.1)}.view-legend .violet{background:#8d6ddd}.view-legend .teal{background:#51d8cd}.hint{display:none}.feedback{min-height:28px;padding:4px 7px;border-bottom:1px solid var(--line);font-size:7px;line-height:1.22;color:#9fabc2;display:flex;align-items:center}.feedback.good{color:#91e7cb;background:rgba(28,111,85,.16)}.feedback.bad{color:#ffd28a;background:rgba(140,83,13,.16)}
 #controls{min-height:0;padding:5px 6px 6px;display:grid;gap:4px;align-content:end;overflow:hidden;background:rgba(3,10,24,.22)}.layer-title{display:none}.round-card{display:grid;grid-template-columns:auto 1fr;gap:1px 6px;align-items:center;padding:0 1px}.round-card small{font-size:5.5px;color:#6ddbd2;font-weight:1000;letter-spacing:.07em;grid-row:1}.round-card strong{font-size:10px;color:#f2d47c;line-height:1;grid-row:2}.round-card span{font-size:6px;color:#8f9dbc;line-height:1.1;grid-row:1/3;grid-column:2}.build-tip{font-size:6px;line-height:1.15;color:#72d7cf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.build-tip br{display:none}.build-tip b{color:#dffdfa}.assist-link{min-height:24px;border:1px solid var(--line);background:transparent;color:#8fa1c1;font-size:6px;font-weight:1000;letter-spacing:.06em}.assist-inline{display:none;grid-template-columns:repeat(3,1fr);gap:3px}.assist-inline.show{display:grid}.assist-inline button{min-height:26px;border:1px solid var(--line);background:#162541;color:#8494b3;font-size:6px;font-weight:1000}.assist-inline button.on{background:#237d83;color:white}.layers{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}.layers button{min-height:31px;border:1px solid var(--line);background:#162541;color:#8293b2;font-size:6px;font-weight:1000;padding:2px}.layers button.on{background:linear-gradient(145deg,#705bbd,#287f89);color:#fff}.layers b{display:inline;margin-right:3px}.actions{display:grid;grid-template-columns:.72fr 1.28fr;gap:4px}.btn{min-height:34px;border:1px solid rgba(151,183,255,.16);background:#15243f;color:#a8eae4;font-size:7px;font-weight:1000;letter-spacing:.02em}.btn.primary{background:linear-gradient(135deg,#17b6aa,#087b8c);color:#fff}.btn.gold{background:linear-gradient(145deg,#edc260,#ad762e);color:#24190a}.scaleq{display:flex;align-items:baseline;justify-content:space-between;gap:6px}.scaleq small{font-size:7px;color:#79ddd4;font-weight:1000}.scaleq strong{font-size:8px}.scaleopts{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.scaleopts button{min-height:38px;border:1px solid var(--line);background:#172640;color:#d8ceff;font-size:12px;font-weight:1000}.choice2,.choice3{display:grid;gap:4px}.choice2{grid-template-columns:repeat(2,1fr)}.choice3{grid-template-columns:repeat(3,1fr)}.choice2 button,.choice3 button,.scaleq{border:1px solid var(--line);background:#15243f;color:#d8ceff}.donebox{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;align-items:center;color:#93e6ca;font-size:7px}.donebox strong{line-height:1.15}.donebox .btn{min-width:92px}
-.depth-picker{display:none!important;position:absolute;left:50%;bottom:7px;transform:translate(-50%,8px);z-index:10;display:flex;align-items:center;gap:3px;padding:4px;background:#081426;border:1px solid rgba(100,231,218,.22);opacity:0;pointer-events:none;transition:.14s}.depth-picker.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}.depth-picker-title{display:none}.depth-picker button:not(.close-depth){min-width:54px;min-height:32px;border:1px solid var(--line);background:#172640;color:#99a9c6;font-weight:1000}.depth-picker button.active{background:#267d84!important;color:white!important}.depth-picker strong{display:block;font-size:6px}.depth-picker small{display:block;font-size:5.5px}.close-depth{width:28px;height:28px;border:1px solid var(--line);background:#15243f;color:#9aabc8}
+.depth-picker{position:absolute;left:50%;bottom:7px;transform:translate(-50%,8px);z-index:10;display:flex;align-items:center;gap:3px;padding:4px;background:#081426;border:1px solid rgba(100,231,218,.22);opacity:0;pointer-events:none;transition:.14s}.depth-picker.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}.depth-picker-title{display:none}.depth-picker button:not(.close-depth){min-width:54px;min-height:32px;border:1px solid var(--line);background:#172640;color:#99a9c6;font-weight:1000}.depth-picker button.active{background:#267d84!important;color:white!important}.depth-picker strong{display:block;font-size:6px}.depth-picker small{display:block;font-size:5.5px}.close-depth{width:28px;height:28px;border:1px solid var(--line);background:#15243f;color:#9aabc8}
 .complete{position:fixed;inset:42px 0 0;z-index:50;display:none;background:linear-gradient(160deg,#111c37,#081225)}.complete.show{display:grid;place-items:center}.card{width:100%;height:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:1fr auto;align-items:center;gap:10px;padding:22px;color:#f5f7ff}.card .check{font-size:54px;color:#65e4d4;grid-row:1/3}.card p{font-size:8px;color:#83d8d0;font-weight:1000;letter-spacing:.1em;margin:0}.card h2{font-size:28px;margin:4px 0}.facts{display:flex;gap:8px}.facts span{display:grid;place-items:center;min-width:70px;padding:7px;background:#142340}.facts b{font-size:16px;color:#f0ca69}.facts small{font-size:6px;color:#90a0be}.completeBtns{grid-column:2/4;display:flex;justify-content:flex-end;gap:6px}.completeBtns button{min-height:38px;border:1px solid var(--line);background:#142340;color:#a7e9e2;font-weight:1000;padding:0 16px}.completeBtns .gold{background:#c8953e;color:#211609}
 body.mode-plan .stage{display:none}body.mode-plan .body{grid-template-columns:1fr}body.mode-plan .workspace{border-left:0;grid-template-rows:auto minmax(0,1fr) 18px 30px auto}body.mode-plan .views{grid-template-columns:repeat(3,1fr)}body.mode-plan .view{padding:6px}body.mode-plan .grid3{width:min(132px,22vw)}body.mode-plan #controls{grid-template-columns:minmax(0,1fr) auto;align-items:end}body.mode-plan #controls .round-card{max-width:260px}body.mode-plan #controls .build-tip{display:none}body.mode-plan #controls .actions{min-width:150px}
 body.mode-predict .mission{min-height:31px;padding-block:4px}body.mode-predict .mission p{display:none}body.mode-predict .views{grid-template-rows:58px minmax(0,1fr)}body.mode-predict .view:not(.pred){padding:2px}body.mode-predict .view:not(.pred) .grid3{width:44px}body.mode-predict .view.pred{min-height:76px}body.mode-predict #controls{padding-top:3px}body.mode-predict #controls .hint{display:block!important;font-size:6px;line-height:1.15;margin:0!important;color:#91a0be}body.mode-predict #controls .actions{grid-template-columns:1fr}
@@ -92,9 +92,7 @@ body{overscroll-behavior:none}
 /* v0.6 — quieter smartphone UI, explicit multi-part exercises */
 .sa-cube-top{fill:#c4b0f6;opacity:1}.sa-cube-front{fill:#8d6adb;opacity:1}.sa-cube-side{fill:#6547ae;opacity:1}
 .stage-note:empty,.feedback:empty{display:none}
-.stage-orientation,.sa-hero-orientation{display:none!important}
-.edge-orientation-label{position:absolute;z-index:6;left:0;top:0;display:none;pointer-events:none;transform-origin:center center;white-space:nowrap;color:rgba(229,235,248,.70);font-size:9px;font-weight:1000;letter-spacing:.12em;line-height:1;text-shadow:0 1px 6px rgba(0,0,0,.92),0 0 2px rgba(0,0,0,.95);will-change:left,top,transform}
-.edge-orientation-label.show{display:block}.sa-hero .edge-orientation-label{font-size:10px;color:rgba(218,228,245,.67)}
+.stage-orientation{position:absolute;z-index:4;left:12px;right:12px;bottom:6px;display:flex;justify-content:space-between;pointer-events:none;color:rgba(214,225,244,.56);font-size:7px;font-weight:1000;letter-spacing:.12em;text-shadow:0 1px 7px rgba(0,0,0,.8)}
 .build-tutorial{position:absolute;z-index:18;left:50%;bottom:24px;transform:translate(-50%,10px);width:min(310px,72%);display:none;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:center;padding:9px 10px;background:rgba(9,18,39,.95);border:1px solid rgba(102,229,217,.32);box-shadow:0 12px 30px rgba(0,0,0,.28)}
 .build-tutorial.show{display:grid;transform:translate(-50%,0)}.build-tutorial strong{grid-column:1;font-size:11px;color:#f5d47e}.build-tutorial span{grid-column:1;font-size:10px;line-height:1.25;color:#d7e1f0}.build-tutorial button{grid-column:2;grid-row:1/3;min-width:50px;min-height:44px;border:0;background:#1b8c8d;color:white;font-weight:1000;font-size:9px}
 .mission{min-height:58px;padding:7px 9px 8px}.mission .id{font-size:7px;letter-spacing:.1em}.mission h1{margin:3px 0 0;font-size:14px;line-height:1.18;color:#f6f8ff}.mission p{display:none!important}
@@ -115,14 +113,8 @@ body.mode-plan .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}body.m
   .mission{min-height:62px}.mission h1{font-size:13.5px}.round-card{grid-template-columns:70px minmax(0,1fr)}.phase-card span{font-size:8.5px}
 }
 @media(min-width:1000px) and (min-height:560px) and (orientation:landscape){
-  .edge-orientation-label{font-size:clamp(11px,.72vw,15px)}.sa-hero .edge-orientation-label{font-size:clamp(11px,.72vw,15px)}
-  /* Classroom / desktop legibility: the task must read immediately from a normal viewing distance. */
-  .mission{min-height:clamp(96px,9.5vh,138px);padding:clamp(13px,1.15vh,18px) clamp(15px,1.15vw,22px)}
-  .mission .id{font-size:clamp(11px,.72vw,15px)}
-  .mission h1{font-size:clamp(22px,1.45vw,32px);line-height:1.16;letter-spacing:-.015em;margin-top:5px}
-  .feedback{min-height:clamp(48px,4.8vh,66px);padding:clamp(8px,.8vh,12px) clamp(14px,1vw,20px);font-size:clamp(12px,.82vw,16px);line-height:1.28}
-  .round-card{grid-template-columns:clamp(96px,7vw,126px) minmax(0,1fr);gap:4px 12px;padding-block:5px}
-  .round-card small{font-size:clamp(10px,.68vw,13px)}.round-card strong{font-size:clamp(16px,1.02vw,20px)}.round-card span{font-size:clamp(12px,.82vw,16px);line-height:1.24}
+  .mission{min-height:clamp(72px,7.5vh,98px)}.mission .id{font-size:clamp(9px,.65vw,12px)}.mission h1{font-size:clamp(18px,1.25vw,24px)}
+  .round-card small{font-size:clamp(9px,.62vw,12px)}.round-card strong{font-size:clamp(14px,.95vw,18px)}.round-card span{font-size:clamp(10px,.72vw,14px)}
   .stage-orientation{font-size:clamp(9px,.62vw,12px)}
 }
 </style>
@@ -174,7 +166,6 @@ body.mode-plan .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}body.m
     </div>
     <div class="sa-hero" aria-hidden="true">
       <canvas id="saHeroCanvas" aria-hidden="true"></canvas>
-      <span class="edge-orientation-label" id="heroFrontEdge" aria-hidden="true">VOOR</span><span class="edge-orientation-label" id="heroSideEdge" aria-hidden="true">ZIJ</span>
       <div class="sa-hero-orientation"><span>VOOR</span><span>ZIJ</span></div>
     </div>
   </div>
@@ -195,7 +186,7 @@ body.mode-plan .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}body.m
 <main class="game">
 <header class="top"><button class="home" id="home" aria-label="Startscherm">⌂</button><div class="title"><small>KUBUSBOUW</small><strong id="title"></strong></div><div class="progress"><b id="levelNo"></b><span>/22</span></div><button class="fullscreen" id="fullscreen" aria-label="Volledig scherm">⛶</button><button class="restart" id="restart" aria-label="Herstart level">↻</button></header>
 <section class="body">
-<section class="stage"><canvas id="canvas" aria-label="3D bouwkamer"></canvas><span class="edge-orientation-label" id="stageFrontEdge" aria-hidden="true">VOOR</span><span class="edge-orientation-label" id="stageSideEdge" aria-hidden="true">ZIJ</span><div class="stage-label" id="stageLabel"></div><div class="stage-note" id="stageNote"></div><div class="stage-orientation" aria-hidden="true"><span>VOOR</span><span>ZIJ</span></div><div class="build-tutorial" id="buildTutorial" role="dialog" aria-label="Bouwen"><strong>Zo bouw je</strong><span>Tik om te bouwen. Houd een kubus vast om hem weg te nemen. Sleep horizontaal om de bouw te draaien.</span><button type="button" id="closeBuildTutorial">OK</button></div><div class="depth-picker" id="depthPicker" aria-live="polite"></div><div class="readout" id="readout"><small></small><strong></strong><span></span></div></section>
+<section class="stage"><canvas id="canvas" aria-label="3D bouwkamer"></canvas><div class="stage-label" id="stageLabel"></div><div class="stage-note" id="stageNote"></div><div class="stage-orientation" aria-hidden="true"><span>VOOR</span><span>ZIJ</span></div><div class="build-tutorial" id="buildTutorial" role="dialog" aria-label="Bouwen"><strong>Zo bouw je</strong><span>Tik of sleep om een kubus te plaatsen. Houd een kubus even vast om de bovenste weg te nemen.</span><button type="button" id="closeBuildTutorial">OK</button></div><div class="depth-picker" id="depthPicker" aria-live="polite"></div><div class="readout" id="readout"><small></small><strong></strong><span></span></div></section>
 <aside class="workspace"><section class="mission"><div class="id" id="levelId"></div><h1 id="missionTitle"></h1><p id="instruction"></p></section><section class="views" id="views"></section><div class="feedback" id="feedback"></div><div id="controls"></div><div class="hint" id="hint"></div></aside>
 </section>
 <section class="complete" id="complete"><div class="card"><div class="check">✓</div><div><p>AXIOMA · KUBUSBOUW</p><h2>Ruimtelijk denken voltooid.</h2></div><div class="facts"><span><b>22</b><small>oefeningen</small></span><span><b>3D</b><small>modellen</small></span><span><b>3</b><small>aanzichten</small></span></div><div class="completeBtns"><button id="again">Speel opnieuw</button><button class="gold" id="backHome">Terug naar start</button></div></div></section>
@@ -203,7 +194,7 @@ body.mode-plan .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}body.m
 <script id="scaleAssemblyV050ShellJS">
 (() => {
   'use strict';
-  const LEVEL_META = [{"i":0,"id":"SA01","title":"Eén kubus","task":"build_unique"},{"i":1,"id":"SA02","title":"Eerste structuur","task":"build_unique"},{"i":2,"id":"SA03","title":"Diepte telt","task":"build_unique"},{"i":3,"id":"SA04","title":"Verplaats 1 van 5","task":"build_variant"},{"i":4,"id":"SA05","title":"Verplaats 2 van 6","task":"build_variant"},{"i":5,"id":"SA06","title":"Verplaats 2 van 7","task":"build_variant"},{"i":6,"id":"SA07","title":"Wat ziet ZIJ?","task":"predict_hidden_view"},{"i":7,"id":"SA08","title":"Wat ziet VOOR?","task":"predict_hidden_view"},{"i":8,"id":"SA09","title":"Lees het model: VOOR","task":"draw_view"},{"i":9,"id":"SA10","title":"Lees het model: BOVEN","task":"draw_view"},{"i":10,"id":"SA11","title":"Lees het model: ZIJ","task":"draw_view"},{"i":11,"id":"SA12","title":"Eén kubus ontbreekt","task":"repair"},{"i":12,"id":"SA13","title":"Eén kubus te veel","task":"repair"},{"i":13,"id":"SA14","title":"VOOR blijft hetzelfde","task":"preserve_change"},{"i":14,"id":"SA15","title":"BOVEN blijft hetzelfde","task":"preserve_change"},{"i":15,"id":"SA16","title":"ZIJ blijft hetzelfde","task":"preserve_change"},{"i":16,"id":"SA17","title":"Bouw zuiniger","task":"minimal"},{"i":17,"id":"SA18","title":"Vul verborgen ruimte","task":"maximal"},{"i":18,"id":"SA19","title":"Herstel de bouwtekening","task":"plan_repair"},{"i":19,"id":"SA20","title":"Bewijs het verschil","task":"build_variant_predict"},{"i":20,"id":"SA21","title":"Drie aanzichten","task":"build_unique"},{"i":21,"id":"SA22","title":"Volledige reconstructie","task":"build_unique"}];
+  const LEVEL_META = [{"i":0,"id":"SA01","title":"Eén kubus","task":"build_unique"},{"i":1,"id":"SA02","title":"Eerste structuur","task":"build_unique"},{"i":2,"id":"SA03","title":"Diepte telt","task":"build_unique"},{"i":3,"id":"SA04","title":"Verbouw 5 kubussen","task":"build_variant"},{"i":4,"id":"SA05","title":"Verbouw 6 kubussen","task":"build_variant"},{"i":5,"id":"SA06","title":"Verbouw 7 kubussen","task":"build_variant"},{"i":6,"id":"SA07","title":"Wat ziet ZIJ?","task":"predict_hidden_view"},{"i":7,"id":"SA08","title":"Wat ziet VOOR?","task":"predict_hidden_view"},{"i":8,"id":"SA09","title":"Lees het model: VOOR","task":"draw_view"},{"i":9,"id":"SA10","title":"Lees het model: BOVEN","task":"draw_view"},{"i":10,"id":"SA11","title":"Lees het model: ZIJ","task":"draw_view"},{"i":11,"id":"SA12","title":"Eén kubus ontbreekt","task":"repair"},{"i":12,"id":"SA13","title":"Eén kubus te veel","task":"repair"},{"i":13,"id":"SA14","title":"VOOR blijft hetzelfde","task":"preserve_change"},{"i":14,"id":"SA15","title":"BOVEN blijft hetzelfde","task":"preserve_change"},{"i":15,"id":"SA16","title":"ZIJ blijft hetzelfde","task":"preserve_change"},{"i":16,"id":"SA17","title":"Bouw zuiniger","task":"minimal"},{"i":17,"id":"SA18","title":"Vul verborgen ruimte","task":"maximal"},{"i":18,"id":"SA19","title":"Herstel de bouwtekening","task":"plan_repair"},{"i":19,"id":"SA20","title":"Bewijs het verschil","task":"build_variant_predict"},{"i":20,"id":"SA21","title":"Drie aanzichten","task":"build_unique"},{"i":21,"id":"SA22","title":"Volledige reconstructie","task":"build_unique"}];
   const LEVEL_GROUPS = [
     {label:'REEKS 1',title:'Bouwen',sub:'Van kubus naar structuur',start:0,end:5},
     {label:'REEKS 2',title:'Aanzichten',sub:'Kijken, lezen, voorspellen',start:6,end:10},
@@ -212,7 +203,7 @@ body.mode-plan .workspace{grid-template-rows:auto minmax(0,1fr) auto auto}body.m
   ];
   const TASK_COPY = {
     build_unique:'Bouw een 3D-model dat exact bij de gegeven aanzichten past.',
-    build_variant:'Neem de gevraagde kubussen weg en zet ze op een andere plaats, zonder de gegeven aanzichten te veranderen.',
+    build_variant:'Maak een andere geldige bouw met dezelfde voorwaarden.',
     predict_hidden_view:'Voorspel het ontbrekende aanzicht vóór je controleert.',
     draw_view:'Lees het 3D-model en teken het gevraagde aanzicht.',
     repair:'Herstel het model met één gerichte wijziging.',
@@ -708,27 +699,27 @@ const LEVELS = [
   }),
 
   makeLevel({
-    id: "SA04", title: "Verplaats 1 van 5",
-    instruction: "Bouw met 5 kubussen. Laat VOOR en BOVEN kloppen.",
-    variantInstruction: "Neem 1 kubus weg en zet hem op een andere plaats. VOOR en BOVEN blijven hetzelfde.",
-    hint: "Neem één kubus weg en bouw hem op een andere geldige plek.", task: "build_variant",
-    cubeBudget: 5, moveCount: 1,
+    id: "SA04", title: "Verbouw 5 kubussen",
+    instruction: "Bouw 5 kubussen die bij VOOR en BOVEN passen.",
+    variantInstruction: "Verbouw dezelfde 5 kubussen. Minstens 2 stapels moeten anders.",
+    hint: "VOOR en BOVEN moeten hetzelfde blijven.", task: "build_variant",
+    cubeBudget: 5, minChangedColumns: 2,
     exampleCoords: columns([[0, 0, 2], [0, 1, 1], [1, 0, 1], [1, 1, 1]]),
   }),
   makeLevel({
-    id: "SA05", title: "Verplaats 2 van 6",
-    instruction: "Bouw met 6 kubussen. Laat VOOR en BOVEN kloppen.",
-    variantInstruction: "Neem 2 kubussen weg en zet ze op een andere plaats. VOOR en BOVEN blijven hetzelfde.",
-    hint: "Twee kubussen krijgen een andere plaats; de twee aanzichten blijven gelijk.", task: "build_variant",
-    cubeBudget: 6, moveCount: 2,
+    id: "SA05", title: "Verbouw 6 kubussen",
+    instruction: "Bouw 6 kubussen die bij de aanzichten passen.",
+    variantInstruction: "Verbouw dezelfde 6 kubussen. Minstens 3 stapels moeten anders.",
+    hint: "Verander meerdere stapels, niet alleen één verborgen blok.", task: "build_variant",
+    cubeBudget: 6, minChangedColumns: 3,
     exampleCoords: columns([[0, 0, 2], [1, 0, 1], [0, 1, 1], [1, 1, 2]]),
   }),
   makeLevel({
-    id: "SA06", title: "Verplaats 2 van 7",
-    instruction: "Bouw met 7 kubussen. Laat VOOR en BOVEN kloppen.",
-    variantInstruction: "Neem 2 kubussen weg en zet ze op een andere plaats. VOOR en BOVEN blijven hetzelfde.",
-    hint: "Dezelfde twee aanzichten kunnen bij een andere 3D-bouw horen.", task: "build_variant",
-    cubeBudget: 7, moveCount: 2,
+    id: "SA06", title: "Verbouw 7 kubussen",
+    instruction: "Bouw 7 kubussen die bij de aanzichten passen.",
+    variantInstruction: "Verbouw dezelfde 7 kubussen. Minstens 4 stapels moeten anders.",
+    hint: "De aanzichten blijven vast. Alleen jouw 3D-model verandert.", task: "build_variant",
+    cubeBudget: 7, minChangedColumns: 4,
     exampleCoords: columns([[0, 0, 2], [0, 2, 1], [1, 1, 2], [1, 2, 1], [2, 0, 1]]),
   }),
 
@@ -838,11 +829,11 @@ const LEVELS = [
 
   makeLevel({
     id: "SA20", title: "Bewijs het verschil",
-    instruction: "Bouw met 6 kubussen. Laat BOVEN en VOOR kloppen.",
-    variantInstruction: "Neem 1 kubus weg en zet hem op een andere plaats. BOVEN en VOOR blijven hetzelfde; ZIJ verandert.",
+    instruction: "Bouw 6 kubussen die bij BOVEN en VOOR passen.",
+    variantInstruction: "Verbouw dezelfde 6 kubussen. BOVEN en VOOR blijven gelijk, maar ZIJ moet veranderen.",
     predictionInstruction: "Teken ZIJ van je tweede model.",
-    hint: "Eén verplaatste kubus kan onzichtbaar blijven in twee aanzichten en toch ZIJ veranderen.", task: "build_variant_predict",
-    hiddenView: "side", cubeBudget: 6, moveCount: 1,
+    hint: "Twee modellen kunnen voor twee scans gelijk lijken en voor de derde verschillen.", task: "build_variant_predict",
+    hiddenView: "side", cubeBudget: 6, minChangedColumns: 3,
     exampleCoords: columns([[0, 0, 2], [1, 0, 1], [0, 1, 1], [1, 1, 2]]),
   }),
 
@@ -882,12 +873,6 @@ function voxelDifference(a, b) {
   let n = 0;
   for (let i = 0; i < a.length; i += 1) if (!!a[i] !== !!b[i]) n += 1;
   return n;
-}
-
-function movedCubeCount(a, b) {
-  // Variant rounds keep the same total number of cubes. Every moved cube
-  // therefore creates exactly one empty old voxel and one filled new voxel.
-  return voxelDifference(a, b) / 2;
 }
 
 function viewDifference(a, b) {
@@ -933,12 +918,12 @@ function validateLevels() {
     if (level.task === "build_variant" || level.task === "build_variant_predict") {
       variantSolutions = solutions.filter((solution) => countVoxels(solution) === level.cubeBudget);
       variantReachable = variantSolutions.length >= 2 && variantSolutions.every((solution, i) =>
-        variantSolutions.some((other, j) => i !== j && movedCubeCount(solution, other) === level.moveCount),
+        variantSolutions.some((other, j) => i !== j && changedColumns(solution, other, level.size) >= level.minChangedColumns),
       );
       if (level.task === "build_variant_predict") {
-        hiddenDiffPair = variantSolutions.every((solution, i) => variantSolutions.some((other, j) =>
+        hiddenDiffPair = variantSolutions.some((solution, i) => variantSolutions.some((other, j) =>
           i !== j &&
-          movedCubeCount(solution, other) === level.moveCount &&
+          changedColumns(solution, other, level.size) >= level.minChangedColumns &&
           !viewsEqual(projectOccupancy(solution, level.size)[level.hiddenView], projectOccupancy(other, level.size)[level.hiddenView]),
         ));
       }
@@ -1047,16 +1032,6 @@ function ortho(left, right, bottom, top, near, far) {
     0,-2*bt,0,0,
     0,0,2*nf,0,
     (left+right)*lr,(top+bottom)*bt,(far+near)*nf,1,
-  ]);
-}
-function perspective(fovy, aspect, near, far) {
-  const f = 1 / Math.tan(fovy / 2);
-  const nf = 1 / (near - far);
-  return new Float32Array([
-    f / aspect,0,0,0,
-    0,f,0,0,
-    0,0,(far + near) * nf,-1,
-    0,0,(2 * far * near) * nf,0,
   ]);
 }
 function transformPoint(m, p) {
@@ -1209,73 +1184,36 @@ class ScaleWebGLRenderer {
     return changed;
   }
   camera(size){
-    const aspect=Math.max(.35,this.width/this.height);
+    const aspect=this.width/this.height;
+    const base=Math.max(4.85,size*1.42+0.58);
     const settleT=this.cameraSettleStart?clamp((performance.now()-this.cameraSettleStart)/420,0,1):1;
-    const settle=mix(1.035,1,easeOutCubic(settleT));
-    const target=[0,(size-1)*0.34-.16,0];
+    const settle=mix(1.045,1,easeOutCubic(settleT));
+    const viewH=base*settle;
+    const viewW=viewH*aspect;
+    const target=[0,(size-1)*0.34,0];
     let yaw=this.cameraTo;
     if(this.cameraTurnStart){
-      const t=clamp((performance.now()-this.cameraTurnStart)/260,0,1);
+      const t=clamp((performance.now()-this.cameraTurnStart)/340,0,1);
       yaw=mix(this.cameraFrom,this.cameraTo,easeOutCubic(t));
       if(t>=1)this.cameraTurnStart=0; else this.ensureLoop();
     }
-    // Real perspective: the near rim is now visibly wider than the far rim.
-    // The previous orthographic camera could make the platform read as an
-    // impossible trapezoid on large classroom displays.
-    const bx=5.55,bz=7.25,cs=Math.cos(yaw),sn=Math.sin(yaw);
+    const bx=5.8,bz=7.0,cs=Math.cos(yaw),sn=Math.sin(yaw);
     const rx=bx*cs+bz*sn, rz=-bx*sn+bz*cs;
-    const dir=vNorm([rx,4.35,rz]);
-    const distance=(8.95 + Math.max(0,size-3)*1.05)*settle;
-    const eye=[target[0]+dir[0]*distance,target[1]+dir[1]*distance,target[2]+dir[2]*distance];
+    const dir=vNorm([rx,4.4,rz]);
+    const eye=[target[0]+dir[0]*12,target[1]+dir[1]*12,target[2]+dir[2]*12];
     const view=lookAt(eye,target,[0,1,0]);
-    const fov=(31.5*Math.PI/180);
-    const proj=perspective(fov,aspect,.1,60);
+    const proj=ortho(-viewW/2,viewW/2,-viewH/2,viewH/2,-40,40);
     this.viewProj=mat4Mul(proj,view);
     return this.viewProj;
   }
-  currentCameraYaw(){
-    if(this.cameraTurnStart){
-      const t=clamp((performance.now()-this.cameraTurnStart)/260,0,1);
-      return mix(this.cameraFrom,this.cameraTo,easeOutCubic(t));
-    }
-    return this.cameraTo;
-  }
-  setCameraYaw(yaw,{animate=false}={}){
-    const next=clamp(yaw,-.72,.72);
-    const current=this.currentCameraYaw();
-    this.cameraStep=0;
-    if(animate){this.cameraFrom=current;this.cameraTo=next;this.cameraTurnStart=performance.now();this.ensureLoop();}
-    else {this.cameraFrom=next;this.cameraTo=next;this.cameraTurnStart=0;this.draw();}
-    this.hover=null;
-    return next;
-  }
-  getCameraYaw(){return this.currentCameraYaw();}
   setCameraStep(step){
     const next=clamp(Math.round(step),-1,1);
-    this.cameraStep=next;
-    return this.setCameraYaw(next*.52,{animate:true});
+    if(next===this.cameraStep)return next;
+    const current=this.cameraTurnStart?mix(this.cameraFrom,this.cameraTo,clamp((performance.now()-this.cameraTurnStart)/340,0,1)):this.cameraTo;
+    this.cameraFrom=current;this.cameraStep=next;this.cameraTo=next*0.52;this.cameraTurnStart=performance.now();this.hover=null;this.ensureLoop();
+    return next;
   }
   rotateCamera(delta){return this.setCameraStep(this.cameraStep+delta);}
-  positionEdgeLabel(el,a,b){
-    if(!el)return;
-    const midX=(a.x+b.x)/2, midY=(a.y+b.y)/2;
-    if(!Number.isFinite(midX)||!Number.isFinite(midY)){el.classList.remove("show");return;}
-    let deg=Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;
-    if(deg>90)deg-=180; else if(deg<-90)deg+=180;
-    el.style.left=`${midX}px`;el.style.top=`${midY}px`;
-    el.style.transform=`translate(-50%,-50%) rotate(${deg}deg)`;
-    el.classList.toggle("show",midX>-50&&midX<this.width+50&&midY>-50&&midY<this.height+50);
-  }
-  updateEdgeLabels(size){
-    const hero=this.canvas.id==="saHeroCanvas";
-    const front=document.getElementById(hero?"heroFrontEdge":"stageFrontEdge");
-    const side=document.getElementById(hero?"heroSideEdge":"stageSideEdge");
-    if(!front&&!side)return;
-    const r=size/2+.22, e=(size+.52)/2, y=-.394;
-    // Logical z=0 is VOOR and is rendered at +world-Z. ZIJ is the +X rim.
-    this.positionEdgeLabel(front,this.screen([-e,y,r]),this.screen([e,y,r]));
-    this.positionEdgeLabel(side,this.screen([r,y,e]),this.screen([r,y,-e]));
-  }
   screen(p){
     const q=transformPoint(this.viewProj,p);
     return {x:(q[0]*.5+.5)*this.width,y:(1-(q[1]*.5+.5))*this.height,z:q[2]};
@@ -1394,7 +1332,6 @@ class ScaleWebGLRenderer {
     let occ=s.occupancy,size=level.size||3;
     if(level.task==="scale"&&s.scaleStage===3&&s.scaled){occ=s.scaled.occupancy;size=s.scaled.size;}
     this.camera(size);
-    this.updateEdgeLabels(size);
     gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     this.drawEnvironment(size,s);
     this.drawCubes(occ,size,s);
@@ -1815,7 +1752,7 @@ function resetForLevel(nextLevel) {
   state.assistOpen = false;
   state.depthPreview = null;
   state.cameraStep = 0;
-  stageRenderer?.setCameraYaw?.(0);
+  stageRenderer?.setCameraStep?.(0);
   state.feedback = null;
   state.feedbackTone = "quiet";
   state.completed = false;
@@ -1955,7 +1892,7 @@ function beginVariantRound(l, cubes) {
   state.variantPhase = 1;
   state.history = [];
   state.highlightedRay = null;
-  setFeedback(`Deel 1 klaar. Neem nu precies ${l.moveCount} ${l.moveCount === 1 ? "kubus" : "kubussen"} weg en zet ${l.moveCount === 1 ? "hem" : "ze"} op een andere plaats. De aanzichten blijven hetzelfde.`, "good");
+  setFeedback(`Deel 1 klaar. Verbouw nu dezelfde ${cubes} kubussen tot een andere oplossing.`, "good");
   buzz([10, 24, 10]);
   render();
 }
@@ -2017,16 +1954,15 @@ function checkBuild() {
       return;
     }
 
-    const moved = movedCubeCount(state.firstSolution, state.occupancy);
-    if (moved === 0) {
-      setFeedback("Dit is nog je eerste oplossing. Verplaats de gevraagde kubus(sen).", "bad");
+    const changed = changedColumns(state.firstSolution, state.occupancy, l.size);
+    if (changed === 0) {
+      setFeedback("Dit is nog je eerste oplossing. Verbouw het model echt.", "bad");
       buzz(20);
       render();
       return;
     }
-    if (moved !== l.moveCount) {
-      const noun = l.moveCount === 1 ? "kubus" : "kubussen";
-      setFeedback(`Verplaats precies ${l.moveCount} ${noun}. Nu heb je er ${moved} verplaatst.`, "bad");
+    if (changed < l.minChangedColumns) {
+      setFeedback(`Nog te weinig veranderd. Maak minstens ${l.minChangedColumns} stapels anders en laat de aanzichten kloppen.`, "bad");
       buzz(20);
       render();
       return;
@@ -2422,8 +2358,7 @@ function renderControls() {
     if (l.task === "build_variant" || l.task === "build_variant_predict") {
       const totalParts = l.task === "build_variant_predict" ? 3 : 2;
       const round = state.variantPhase ? 2 : 1;
-      const moveNoun = l.moveCount === 1 ? "kubus" : "kubussen";
-      roundCard = `<div class="round-card phase-card"><small>DEEL ${round} VAN ${totalParts}</small><strong>${cubes} / ${l.cubeBudget} kubussen</strong><span>${state.variantPhase ? `Neem precies ${l.moveCount} ${moveNoun} weg en zet ${l.moveCount === 1 ? "hem" : "ze"} op een andere plaats. Aanzichten gelijk.` : `Bouw eerst met ${l.cubeBudget} kubussen en laat de aanzichten kloppen.`}</span></div>`;
+      roundCard = `<div class="round-card phase-card"><small>DEEL ${round} VAN ${totalParts}</small><strong>${cubes} / ${l.cubeBudget} kubussen</strong><span>${state.variantPhase ? `Verbouw ${l.cubeBudget} kubussen: minstens ${l.minChangedColumns} stapels anders.` : `Bouw eerst ${l.cubeBudget} kubussen die bij de aanzichten passen.`}</span></div>`;
       checkLabel = state.variantPhase ? "CONTROLEER DEEL 2" : "KLAAR MET DEEL 1";
     } else if (l.task === "minimal") {
       roundCard = state.optimizePhase
@@ -2562,28 +2497,65 @@ function render() {
   else if (l.task === "plan_repair") $("#stageLabel").textContent = `DEEL ${state.planPhase ? 2 : 1} / 2`;
   else $("#stageLabel").textContent = "";
 
-  $("#stageNote").textContent = "";
+  $("#stageNote").textContent = state.depthPreview ? "KIES DE BEDOELDE PLEK" : "";
 
   $("#buildTutorial")?.classList.toggle("show", state.levelIndex === 0 && !buildTutorialSeen && isBuildPhase() && !state.completed);
   renderViews();
   renderControls();
-  // v0.6.3: direct surface interaction; no build/remove depth popup.
+  renderDepthPicker();
   renderScaleReadout();
   drawStage();
   $("#complete").classList.toggle("show", state.gameCompleted);
 }
 
 function handleDirectTap(screenX, screenY) {
+  const l = level();
   if (!isBuildPhase() || state.predictionMode || state.completed) return;
-  // A short tap/click always means BUILD. The nearest visible build surface
-  // wins magnetically; removing is deliberately a separate long-press gesture.
-  const place = stageRenderer?.nearestTouchCandidate?.(screenX, screenY, "place", 58) || null;
-  if (place && canPlace(place.x, place.y, place.z)) {
-    state.selectedLayer = place.z;
-    placeOrRemove(place.x, place.y, place.z);
+  let candidates = stageRenderer?.pickCandidates(screenX, screenY) || [];
+  if (!candidates.length) {
+    clearDepthPreview();
+    render();
     return;
   }
-  stageRenderer?.clearHover();
+
+  // In WebGL surface-picking mode the renderer already tells us whether the
+  // player touched a build surface (floor/top) or a removable cube side.
+  // Never let an unrelated front cube steal a tap meant for a deeper floor tile.
+  if (candidates.some((c) => c.kind)) {
+    candidates = candidates.filter((c) => c.kind === "place" ? canPlace(c.x, c.y, c.z) : canRemove(c.x, c.y, c.z));
+  } else {
+    // Compatibility path for the deterministic layer picker.
+    const removable = candidates.filter((c) => state.occupancy[indexOf(c.x, c.y, c.z, l.size)] && canRemove(c.x, c.y, c.z));
+    if (removable.length) candidates = removable;
+    else {
+      const placeable = candidates.filter((c) => canPlace(c.x, c.y, c.z));
+      if (placeable.length) candidates = placeable;
+      else {
+        const actionable = candidates.filter(isActionable);
+        if (actionable.length) candidates = actionable;
+      }
+    }
+  }
+
+  // Deduplicate, then preserve renderer depth order.
+  const seen = new Set();
+  candidates = candidates.filter((c) => { const k = keyOf(c); if (seen.has(k)) return false; seen.add(k); return true; });
+
+  if (candidates.length === 1) {
+    const c = candidates[0];
+    state.selectedLayer = c.z;
+    placeOrRemove(c.x, c.y, c.z);
+    return;
+  }
+
+  const selected = candidates.find((c) => c.z === state.selectedLayer) || candidates[0];
+  state.depthPreview = {
+    candidates,
+    selectedKey: keyOf(selected),
+  };
+  setFeedback("Hier liggen meerdere plekken achter elkaar. Kies de bedoelde diepte in de kamer.", "quiet");
+  buzz(5);
+  render();
 }
 
 $("#closeBuildTutorial")?.addEventListener("click", dismissBuildTutorial);
@@ -2689,6 +2661,11 @@ stageCanvas.addEventListener("pointermove", (e) => {
   stageDown.lastY = y;
   stageDown.distance = Math.hypot(dx, dy);
 
+  if (!stageDown.touchLike) {
+    stageRenderer?.setHover(x, y);
+    return;
+  }
+
   if (stageDown.distance > 12) {
     cancelLongPress(stageDown);
     if (stageDown.longPressActive) stageDown.longPressActive = false;
@@ -2699,32 +2676,14 @@ stageCanvas.addEventListener("pointermove", (e) => {
     return;
   }
 
-  // Mouse: click builds, horizontal drag rotates immediately.
-  if (!stageDown.touchLike) {
-    if (stageDown.distance > 7 && Math.abs(dx) > Math.abs(dy) * .72) {
-      stageDown.orbiting = true;
-      stageRenderer?.setCameraYaw?.(stageDown.startYaw - dx * .0062);
-      stageRenderer?.clearHover();
-      return;
-    }
-    stageRenderer?.setHover(x, y);
-    return;
-  }
-
-  // Touch that starts on a build surface keeps the magnetic build-drag.
+  // When a touch starts on the board, movement means "move my build preview",
+  // not "rotate the camera". The target snaps magnetically to the nearest
+  // valid column so a thumb never has to hit the tiny visible top face.
   if (stageDown.startedOnTarget) {
     const place = nearestTouch("place", x, y, TOUCH_DRAG_RADIUS, stageDown.currentPlace);
     stageDown.currentPlace = place;
     if (place) stageRenderer?.setHoverCandidate(place, true);
     else stageRenderer?.clearHover();
-    return;
-  }
-
-  // Touch on empty stage rotates continuously instead of jumping after release.
-  if (stageDown.distance > 10 && Math.abs(dx) > Math.abs(dy) * .72) {
-    stageDown.orbiting = true;
-    stageRenderer?.setCameraYaw?.(stageDown.startYaw - dx * .0062);
-    stageRenderer?.clearHover();
   }
 });
 
@@ -2740,21 +2699,23 @@ stageCanvas.addEventListener("pointerdown", (e) => {
   const isTouch = touchLike(e);
   stageCanvas.setPointerCapture?.(e.pointerId);
 
-  let place = null, remove = null;
-  if (stageRenderer?.available && isBuildPhase() && !state.predictionMode && !state.completed) {
-    place = nearestTouch("place", x, y, isTouch ? TOUCH_PLACE_RADIUS : 48);
-    remove = nearestTouch("remove", x, y, isTouch ? TOUCH_REMOVE_RADIUS : 44);
+  if (isTouch && stageRenderer?.available && isBuildPhase() && !state.predictionMode && !state.completed) {
+    const place = nearestTouch("place", x, y, TOUCH_PLACE_RADIUS);
+    const remove = nearestTouch("remove", x, y, TOUCH_REMOVE_RADIUS);
+    stageDown = {
+      pointerId: e.pointerId, x, y, lastX: x, lastY: y, distance: 0,
+      touchLike: true, startedOnTarget: !!(place || remove),
+      currentPlace: place, removeTarget: remove,
+      longPressTimer: 0, longPressActive: false,
+    };
+    if (place) stageRenderer?.setHoverCandidate(place, true);
+    else if (remove) stageRenderer?.setHoverCandidate(remove, true);
+    armLongPressRemove(e.pointerId);
+    return;
   }
-  stageDown = {
-    pointerId: e.pointerId, x, y, lastX: x, lastY: y, distance: 0,
-    touchLike: isTouch, startedOnTarget: !!(place || remove), orbiting: false,
-    currentPlace: place, removeTarget: remove, startYaw: stageRenderer?.getCameraYaw?.() || 0,
-    longPressTimer: 0, longPressActive: false,
-  };
-  if (place) stageRenderer?.setHoverCandidate(place, isTouch);
-  else if (remove) stageRenderer?.setHoverCandidate(remove, isTouch);
-  else if (!isTouch) stageRenderer?.setHover(x, y);
-  armLongPressRemove(e.pointerId);
+
+  stageDown = { pointerId: e.pointerId, x, y, lastX: x, lastY: y, distance: 0, touchLike: isTouch, startedOnTarget: false };
+  stageRenderer?.setHover(x, y);
 });
 
 stageCanvas.addEventListener("pointerup", (e) => {
@@ -2763,18 +2724,13 @@ stageCanvas.addEventListener("pointerup", (e) => {
   const r = stageCanvas.getBoundingClientRect();
   const x = e.clientX - r.left;
   const y = e.clientY - r.top;
-  const dist = Math.hypot(x - d.x, y - d.y);
+  const dx = x - d.x;
+  const dy = y - d.y;
+  const dist = Math.hypot(dx, dy);
   cancelLongPress(d);
   stageDown = null;
 
-  if (d.orbiting) {
-    clearDepthPreview();
-    state.highlightedRay = null;
-    stageRenderer?.clearHover();
-    return;
-  }
-
-  if (stageRenderer?.available && isBuildPhase() && !state.predictionMode && !state.completed) {
+  if (d.touchLike && stageRenderer?.available && isBuildPhase() && !state.predictionMode && !state.completed) {
     if (d.longPressActive && d.removeTarget && dist <= 22) {
       state.selectedLayer = d.removeTarget.z;
       placeOrRemove(d.removeTarget.x, d.removeTarget.y, d.removeTarget.z);
@@ -2782,14 +2738,28 @@ stageCanvas.addEventListener("pointerup", (e) => {
       return;
     }
 
-    const place = nearestTouch("place", x, y, d.touchLike ? TOUCH_DRAG_RADIUS : 58, d.currentPlace) || d.currentPlace;
-    if (place && canPlace(place.x, place.y, place.z)) {
-      state.selectedLayer = place.z;
-      placeOrRemove(place.x, place.y, place.z);
+    if (d.startedOnTarget) {
+      const place = nearestTouch("place", x, y, TOUCH_DRAG_RADIUS, d.currentPlace) || d.currentPlace;
+      if (place && canPlace(place.x, place.y, place.z)) {
+        state.selectedLayer = place.z;
+        placeOrRemove(place.x, place.y, place.z);
+      } else if (d.removeTarget) {
+        setFeedback("Houd je vinger even op de kubus om de bovenste weg te nemen.", "quiet");
+        buzz(4);
+        render();
+      } else {
+        stageRenderer?.clearHover();
+      }
       return;
     }
-    if (d.removeTarget) {
-      setFeedback("Houd de kubus even vast om hem weg te nemen.", "quiet");
+
+    // Camera orbit remains available, but only if the swipe started away from
+    // the build board. This prevents a build-drag from accidentally rotating it.
+    if (Math.abs(dx) > 38 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+      state.cameraStep = stageRenderer.rotateCamera(dx < 0 ? 1 : -1);
+      clearDepthPreview();
+      state.highlightedRay = null;
+      setFeedback(state.cameraStep === 0 ? "Terug naar de centrale kijkhoek." : "Je kijkt nu schuin langs de bouwkamer.", "quiet");
       buzz(4);
       render();
       return;
@@ -2798,7 +2768,22 @@ stageCanvas.addEventListener("pointerup", (e) => {
     return;
   }
 
-  if (dist <= 12) handleDirectTap(x, y);
+  if (stageRenderer?.available && Math.abs(dx) > 34 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+    state.cameraStep = stageRenderer.rotateCamera(dx < 0 ? 1 : -1);
+    clearDepthPreview();
+    state.highlightedRay = null;
+    setFeedback(state.cameraStep === 0 ? "Terug naar de centrale kijkhoek." : "Je kijkt nu schuin langs de bouwkamer.", "quiet");
+    buzz(4);
+    render();
+    return;
+  }
+
+  if (dist > 15) return;
+  if (stageRenderer?.available) handleDirectTap(x, y);
+  else {
+    const hit = stageRenderer?.pick(x, y);
+    if (hit) placeOrRemove(hit.x, hit.y, hit.z);
+  }
 });
 
 stageCanvas.addEventListener("pointercancel", clearStageGesture);
@@ -2813,4 +2798,23 @@ window.ScaleAssemblyAPI = {
 window.dispatchEvent(new CustomEvent("scaleassembly:ready", { detail: getProgressSnapshot() }));
 if (!LEVEL_VALIDATION.every((x) => x.valid)) console.error("Scale level validation failed", LEVEL_VALIDATION);
 resetForLevel(LEVELS[state.levelIndex]);
-</script></body></html>
+</script>\n<script id="axiomaPortalBridge">
+(()=>{
+  const inPortal=window.self!==window.top&&new URLSearchParams(location.search).get('portal')==='1';
+  if(!inPortal)return;
+  document.documentElement.classList.add('axioma-portal-embed');
+  const hideRedundantFullscreen=()=>{
+    for(const id of ['fullBtn','fullscreen']){
+      const el=document.getElementById(id);
+      if(el){el.style.display='none';el.setAttribute('aria-hidden','true');el.tabIndex=-1;}
+    }
+  };
+  hideRedundantFullscreen();
+  new MutationObserver(hideRedundantFullscreen).observe(document.documentElement,{childList:true,subtree:true});
+  addEventListener('load',()=>{
+    hideRedundantFullscreen();
+    try{parent.postMessage({type:'axioma:game-ready',path:location.pathname},location.origin)}catch(_){}
+  },{once:true});
+})();
+</script>\n
+</body></html>

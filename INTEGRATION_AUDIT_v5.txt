@@ -1,0 +1,41 @@
+AXIOMA Speel — integration audit
+Version: v5 · Koersveld + Getallenfrontier
+
+New games integrated:
+- Koersveld v0.7 COMPLETE GAME PASS -> games/koersveld.html
+- Getallenfrontier v1.4 Belgian Math Truth -> games/getallenfrontier.html
+
+Library placement:
+- Koersveld appears in Games & spelwerelden and Meetkunde & ruimte.
+- Getallenfrontier appears in Games & spelwerelden and Getallen & verhoudingen.
+- Games & spelwerelden now contains 6 games/worlds.
+
+Portal navigation:
+- Both games open inside the existing full-screen AXIOMA player.
+- The persistent “AXIOMA · menu” control stays above the game iframe.
+- The control returns directly to the portal view from which the game was opened.
+- Browser Back / Escape also close the player.
+- Fullscreen keeps the AXIOMA exit control because fullscreen is requested on the player shell, not on the iframe itself.
+
+Orientation:
+- Koersveld keeps its landscape requirement and the portal landscape gate.
+- Getallenfrontier is marked orientation:any because its supplied build supports responsive portrait/landscape layouts.
+
+Progress integration:
+- Koersveld: reads localStorage key “koersveld-v07”; counts completed entries in done (42 total: 32 core + 10 bonus).
+- Getallenfrontier: reads localStorage key “gf_done” (28 total missions across 9 chapters).
+- Both therefore participate in “Ga verder” and “Mijn spellen”.
+
+PWA/cache:
+- Portal cache bumped to axioma-speel-v5-koersveld-getallenfrontier.
+- Both new single-file games are precached in the portal service worker.
+
+Static verification:
+- assets/app.js passes node --check.
+- Koersveld’s single inline JavaScript block passes node --check after extraction.
+- Getallenfrontier’s single inline JavaScript block passes node --check after extraction.
+- 302 static/runtime entry references checked across the integrated portal; 0 missing.
+- Both new game HTML files are self-contained and declare no external src/href asset dependencies.
+
+Browser note:
+- A Chromium screenshot smoke test was attempted in this container but the managed headless browser did not complete before timeout. Structural/runtime syntax verification therefore remains the reliable QA signal in this environment.

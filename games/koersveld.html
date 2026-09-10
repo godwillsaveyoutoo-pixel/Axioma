@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>KOERSVELD v0.7 — COMPLETE GAME PASS</title>
+<style>
+:root{
+  --bg:#07131a;--bg2:#0c2028;--ink:#f5fbff;--muted:#9abac3;--line:rgba(210,245,248,.15);
+  --cyan:#72e3e9;--cyan2:#34b9c3;--gold:#ffd36a;--green:#8be0aa;--red:#ff8e84;--violet:#c0a4ff;
+  --top:50px;--top-collapsed:12px;--bottom:88px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:none}
+button{font:inherit;color:inherit}
+#app{position:fixed;inset:0;display:grid;grid-template-rows:var(--top) 1fr var(--bottom);background:radial-gradient(circle at 70% 18%,#14343d 0,#0a1d24 38%,#061118 76%)}
+#app.menuMode{grid-template-rows:var(--top) 1fr 0}
+#app.topCollapsed{grid-template-rows:var(--top-collapsed) 1fr var(--bottom)}
+#app.menuMode.topCollapsed{grid-template-rows:var(--top-collapsed) 1fr 0}
+.top{position:relative;display:flex;align-items:center;gap:10px;padding:7px 10px 0;border-bottom:1px solid var(--line);background:rgba(4,13,18,.78);backdrop-filter:blur(9px);z-index:10;overflow:visible;transition:background .18s ease,border-color .18s ease}
+.topHandle{position:absolute;left:50%;top:0;transform:translateX(-50%);width:78px;height:28px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;z-index:20;padding:0}.topHandle span{display:block;width:34px;height:3px;border-radius:99px;background:rgba(212,245,248,.46);box-shadow:0 0 8px rgba(114,227,233,.08);transition:width .15s ease,background .15s ease}.topHandle:hover span,.topHandle:focus-visible span{width:42px;background:rgba(212,245,248,.78)}
+#app.topCollapsed .top{padding:0;border-bottom-color:rgba(210,245,248,.07);background:rgba(4,13,18,.72)}
+#app.topCollapsed .top>:not(.topHandle){display:none}
+#app.topCollapsed .topHandle{height:28px}
+#app.topCollapsed .topHandle span{background:rgba(212,245,248,.58)}
+.brand{display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:5px 4px;font-weight:850;cursor:pointer;min-width:134px}
+.logo{width:25px;height:25px;border-radius:50%;border:2px solid var(--cyan);position:relative}.logo:after{content:"";position:absolute;left:5px;top:11px;width:12px;height:2px;background:var(--cyan);transform:rotate(-27deg);transform-origin:left center}.logo:before{content:"";position:absolute;right:3px;top:4px;border-left:7px solid var(--cyan);border-top:4px solid transparent;border-bottom:4px solid transparent;transform:rotate(-27deg)}
+.heading{flex:1;min-width:0;text-align:center}.heading strong{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.heading span{display:block;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbtn{height:38px;min-width:42px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:800;cursor:pointer;padding:0 10px}
+#stage{position:relative;min-height:0;overflow:hidden}
+#canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.overlay{position:absolute;inset:0;display:none;background:linear-gradient(140deg,rgba(7,19,26,.98),rgba(8,29,36,.96));z-index:5}.overlay.active{display:block}
+#home{padding:clamp(18px,4vw,48px);display:none;grid-template-columns:1fr 1fr;align-items:center;gap:28px}#home.active{display:grid}
+.hero h1{font-size:clamp(44px,7vw,80px);line-height:.9;letter-spacing:-.05em;margin:0 0 12px}.hero p{font-size:clamp(16px,2vw,21px);line-height:1.45;color:#bfd7dd;max-width:650px;margin:0 0 22px}.kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);font-weight:850;margin-bottom:12px}.heroBtns{display:flex;gap:10px;flex-wrap:wrap}.primary,.secondary{min-height:48px;border-radius:13px;padding:0 18px;font-weight:850;cursor:pointer}.primary{border:0;background:var(--cyan);color:#062027}.secondary{border:1px solid var(--line);background:rgba(255,255,255,.05)}
+.demo{position:relative;height:min(62vh,410px);min-height:230px;border:1px solid rgba(210,245,248,.10);border-radius:24px;overflow:hidden;background-image:linear-gradient(rgba(170,225,230,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(170,225,230,.08) 1px,transparent 1px);background-size:36px 36px}.demo .p{position:absolute;width:13px;height:13px;border-radius:50%;background:#e9fdff;box-shadow:0 0 16px rgba(114,227,233,.3)}.demo .p1{left:20%;top:63%}.demo .p2{left:70%;top:29%}.demo .arr{position:absolute;left:22%;top:64%;width:48%;height:3px;background:var(--cyan);transform:rotate(-18deg);transform-origin:left center;box-shadow:0 0 18px rgba(114,227,233,.34)}.demo .arr:after{content:"";position:absolute;right:-1px;top:-6px;border-left:12px solid var(--cyan);border-top:7px solid transparent;border-bottom:7px solid transparent}.demo .label{position:absolute;left:44%;top:43%;font-size:24px;font-weight:800;color:#d8ffff}
+#menu{padding:8px 18px 24px;overflow:auto;touch-action:pan-y;background:linear-gradient(155deg,rgba(6,18,24,.985),rgba(8,28,34,.97))}#menu h2{margin:0;font-size:30px;letter-spacing:-.035em}#menu p{margin:3px 0 0;color:var(--muted);font-size:12px}.menuHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:16px;position:sticky;top:-16px;z-index:2;padding:15px 0 10px;background:linear-gradient(180deg,rgba(6,18,24,.995) 72%,rgba(6,18,24,0))}.menuIntro{max-width:650px}.family{margin:0 0 22px}.groupLabel{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 2px 8px;border-bottom:1px solid rgba(210,245,248,.13)}.groupLabel b{font-size:17px;letter-spacing:-.02em}.groupLabel small{color:var(--muted);font-size:10px;line-height:1.25;text-align:right}.levelGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:10px}.lvl{position:relative;min-height:210px;text-align:left;border:1px solid rgba(210,245,248,.14);background:linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.027));border-radius:17px;padding:8px 10px 11px;cursor:pointer;overflow:hidden;transition:transform .14s ease,border-color .14s ease,background .14s ease;box-shadow:0 10px 26px rgba(0,0,0,.12)}.lvl:hover{transform:translateY(-2px);border-color:rgba(114,227,233,.35);background:linear-gradient(180deg,rgba(114,227,233,.08),rgba(255,255,255,.03))}.lvl:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}.previewWrap{display:block;height:94px;margin:-1px -2px 9px;border-radius:12px;overflow:hidden;background:#08171e;border:1px solid rgba(210,245,248,.075);position:relative}.preview{display:block;width:100%;height:100%;pointer-events:none}.lvl .cardText{display:block;padding:0 3px}.lvl b{display:block;font-size:14px;line-height:1.12;letter-spacing:-.012em;padding-right:26px}.lvl small{display:block;color:#a7c2c9;font-size:10px;line-height:1.24;margin-top:5px;min-height:2.45em}.lvl .n{position:absolute;right:10px;top:10px;z-index:1;min-width:24px;width:auto;padding:0 5px;height:24px;border-radius:999px;display:grid;place-items:center;font-size:10px;color:#789ba3;font-weight:900;background:rgba(4,13,18,.72);border:1px solid rgba(210,245,248,.12);backdrop-filter:blur(5px)}.lvl.done{border-color:rgba(139,224,170,.43);background:linear-gradient(180deg,rgba(139,224,170,.08),rgba(139,224,170,.025))}.lvl.done .n{color:#082319;background:var(--green);border-color:transparent}.lvl.current:not(.done){border-color:rgba(255,211,106,.52);box-shadow:0 0 0 1px rgba(255,211,106,.12),0 12px 28px rgba(0,0,0,.16)}.lvl.current:not(.done) .n{color:#201900;background:var(--gold);border-color:transparent}.exerciseRow{display:flex;gap:7px;margin:8px 3px 0}.exBtn{height:44px;flex:1;min-width:0;border-radius:9px;border:1px solid rgba(210,245,248,.14);background:rgba(255,255,255,.045);color:#c5dce2;font-size:10px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}.exBtn:hover{border-color:rgba(114,227,233,.34);background:rgba(114,227,233,.07)}.exBtn.adv{border-color:rgba(192,164,255,.22);color:#ddceff}.exBtn.done{background:rgba(139,224,170,.12);border-color:rgba(139,224,170,.36);color:var(--green)}.exBtn .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.78}.lvl.complete{border-color:rgba(139,224,170,.43);background:linear-gradient(180deg,rgba(139,224,170,.08),rgba(139,224,170,.025))}.lvl.complete .n{color:#082319;background:var(--green);border-color:transparent}.menuKey{display:flex;gap:7px;align-items:center;font-size:10px;color:var(--muted);white-space:nowrap}.menuKey i{width:8px;height:8px;border-radius:50%;background:var(--cyan);display:inline-block} 
+
+.bonusCard{position:relative;min-height:170px;border:1px solid rgba(255,211,106,.28);background:linear-gradient(180deg,rgba(255,211,106,.075),rgba(192,164,255,.035));border-radius:17px;padding:8px 10px 11px;cursor:pointer;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.11);transition:transform .14s ease,border-color .14s ease,opacity .14s ease}.bonusCard:hover:not(.locked){transform:translateY(-2px);border-color:rgba(255,211,106,.55)}.bonusCard.locked{opacity:.42;cursor:default;filter:saturate(.65)}.bonusCard.done{border-color:rgba(139,224,170,.45);background:linear-gradient(180deg,rgba(139,224,170,.09),rgba(255,211,106,.025))}.bonusCard .bonusBadge{position:absolute;left:10px;top:10px;z-index:2;padding:4px 7px;border-radius:999px;background:rgba(7,19,26,.82);border:1px solid rgba(255,211,106,.34);color:var(--gold);font-size:9px;font-weight:950;letter-spacing:.12em}.bonusCard.done .bonusBadge{color:#082319;background:var(--green);border-color:transparent}.bonusCard .bonusPreview{height:88px;margin:-1px -2px 8px;border-radius:12px;overflow:hidden;background:#08171e;border:1px solid rgba(255,211,106,.12)}.bonusCard canvas{display:block;width:100%;height:100%}.bonusCard b{display:block;font-size:13px;line-height:1.12;padding:0 3px}.bonusCard small{display:block;color:#c8bfe0;font-size:9.5px;line-height:1.22;margin:4px 3px 0}.bonusCard .lockNote{color:#829aa1}.bonusCard .starMark{position:absolute;right:10px;top:10px;font-size:16px;color:var(--gold);font-weight:900}.bonusCard.done .starMark{color:var(--green)}
+.bottom{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 10px 8px 14px;border-top:1px solid var(--line);background:rgba(4,13,18,.84);backdrop-filter:blur(9px);z-index:10}.task{min-width:0}.taskTop{display:flex;align-items:center;gap:8px;min-width:0}.tag{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);font-weight:850}.math{font-size:clamp(15px,1.75vw,19px);font-weight:780;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.micro{font-size:10px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.controls{display:flex;gap:7px;align-items:center;overflow-x:auto;max-width:48vw;touch-action:pan-x;scrollbar-width:none}.controls::-webkit-scrollbar{display:none}.ctrl{height:42px;min-width:46px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-weight:800;padding:0 12px;cursor:pointer;white-space:nowrap}.ctrl.main{background:var(--cyan);color:#062027;border:0}.ctrl.next{background:var(--green);color:#062017;border:0}
+#toast{position:absolute;left:50%;top:10px;transform:translate(-50%,-6px);padding:7px 12px;border-radius:11px;border:1px solid var(--line);background:rgba(5,16,22,.95);font-size:11px;opacity:0;pointer-events:none;transition:.18s;z-index:4}#toast.show{opacity:1;transform:translate(-50%,0)}
+#infoStrip{position:absolute;right:12px;top:11px;max-width:min(390px,48vw);padding:8px 11px;border-radius:11px;background:rgba(4,15,20,.74);border:1px solid rgba(210,245,248,.11);color:#c9e2e7;font-size:10px;line-height:1.35;z-index:2;pointer-events:none}.term{color:#f4feff;font-weight:800}.vec{display:inline-flex;align-items:baseline;font-style:italic;white-space:nowrap}.vecbase{position:relative;display:inline-block;padding:0 .05em}.vecbase:before{content:"";position:absolute;left:.02em;right:.02em;top:-.34em;border-top:1.5px solid currentColor}.vecbase:after{content:"";position:absolute;right:-.01em;top:-.49em;width:.30em;height:.30em;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;transform:rotate(45deg)}.vec sub{font-size:.64em;line-height:1;margin-left:.02em;font-style:italic}.ov{display:inline-flex;align-items:baseline;font-style:italic;white-space:nowrap}.ovbase{position:relative;display:inline-block;padding:0 .12em}.ovbase:before{content:"";position:absolute;left:.04em;right:.04em;top:-.34em;border-top:1.5px solid currentColor}.ovbase:after{content:"";position:absolute;right:.01em;top:-.49em;width:.30em;height:.30em;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;transform:rotate(45deg)}.norm{white-space:nowrap}.mexpr{display:inline-block;font-size:1em;line-height:1;vertical-align:-.14em;color:inherit;white-space:nowrap}.mexpr mi{font-style:italic}.mexpr mo{color:inherit}
+#rotate{display:none;position:fixed;inset:0;z-index:99;background:#061118;align-items:center;justify-content:center;text-align:center;padding:28px}.phone{width:62px;height:104px;border:3px solid var(--cyan);border-radius:13px;margin:0 auto 16px;animation:r 2.4s ease-in-out infinite}@keyframes r{50%{transform:rotate(90deg)}}#rotate p{color:var(--muted);max-width:390px;line-height:1.45}
+@media(max-width:900px){:root{--top:42px;--bottom:82px}.brand{min-width:116px;font-size:13px}.heading strong{font-size:12px}.topbtn{height:34px}.bottom{padding:6px 8px 6px 10px}.ctrl{height:40px}.levelGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.lvl{min-height:145px}.previewWrap{height:74px}.bonusCard{min-height:135px}.bonusCard .bonusPreview{height:67px}.lvl b{font-size:13px}.lvl small{font-size:9px;min-height:2.35em}.groupLabel b{font-size:15px}.math{font-size:14px}.micro{font-size:9px}#infoStrip{top:7px;right:7px;font-size:9px;max-width:43vw;padding:6px 8px}}
+@media(max-width:700px){#home.active{grid-template-columns:1fr}.demo{display:none}#menu{padding-left:12px;padding-right:12px}.menuHead{top:-16px}.levelGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.lvl{min-height:139px;padding:7px 8px 9px;border-radius:14px}.previewWrap{height:70px;margin-bottom:7px}.bonusCard{min-height:128px;padding:7px 8px 9px;border-radius:14px}.bonusCard .bonusPreview{height:64px}.bonusCard b{font-size:11.5px}.bonusCard small{font-size:8.5px}.lvl b{font-size:12px}.lvl small{font-size:8.7px}.groupLabel small{display:none}.controls{max-width:45vw}}
+@media(orientation:portrait){#rotate{display:flex}}
+@media(max-width:639px),(max-height:359px){#rotate{display:flex}}
+/* v0.7: fixed gameplay layout, readable instructions and generous touch controls. */
+:root{--top:52px;--bottom:112px;--top-collapsed:16px}
+.topHandle,#app.topCollapsed .topHandle{height:44px;width:78px;align-items:start;padding-top:6px}
+.topbtn{height:44px;min-width:48px}.brand{min-height:44px}
+.heading{pointer-events:none}.top{padding-top:0}
+.bottom{padding:8px 16px;gap:14px;grid-template-columns:minmax(0,1fr) auto}
+.math{white-space:normal;overflow:visible;text-overflow:clip;font-size:17px;line-height:1.45;margin:2px 0}
+.micro{white-space:normal;overflow:visible;font-size:13px;line-height:1.45;margin-top:0;color:#b5cdd3}
+.taskTop{gap:10px}.tag{font-size:11px}.ctrl{height:46px;min-width:46px;padding:0 12px;font-size:14px}
+.controls{max-width:none;overflow:visible;flex-wrap:wrap;justify-content:flex-end;max-width:230px}
+.mexpr{line-height:1.25;vertical-align:-.16em;padding-top:3px}
+#infoStrip{pointer-events:auto;max-width:min(490px,80vw);font-size:14px;padding:16px;line-height:1.6;background:#102a33;box-shadow:0 12px 50px #0009;z-index:6}
+#infoStrip[hidden]{display:none!important}
+.help{background:none;border:0;color:#9dbdc6;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:12px;min-height:28px;padding:0 8px}
+#toast{display:none}.bonusCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#menu{padding-top:8px}.groupLabel small{font-size:12px}.lvl small,.bonusCard small{font-size:12px;line-height:1.5}.exBtn{font-size:12px;min-height:44px}
+.lvl{min-height:230px}.bonusCard{min-height:200px}.previewWrap,.bonusCard .bonusPreview{height:104px}.lvl b,.bonusCard b{font-size:16px}
+.hero .kicker:after{content:' / v0.7';color:#9abac3}.hero p{max-width:510px}
+.demo{background-color:#0a232b}.demo .arr{width:52%;top:68%;transform:rotate(-25deg)}.demo .p2{left:69%;top:34%}.demo .p1{top:67%}
+@media(max-height:500px){
+ :root{--bottom:112px}.bottom{padding:5px 10px;gap:10px}.math{font-size:15px;line-height:1.42}.micro{font-size:12px;line-height:1.38}.tag{font-size:10px}
+ .controls{max-width:172px;gap:5px}.ctrl{height:44px;font-size:12px;padding:0 10px}.controls .ctrl.next{flex:1}.help{min-height:22px;font-size:11px}
+ .lvl{min-height:181px}.bonusCard{min-height:165px}.previewWrap,.bonusCard .bonusPreview{height:78px}.lvl b,.bonusCard b{font-size:14px}.lvl small,.bonusCard small{font-size:11px}
+ #home{padding:22px;gap:20px}.hero h1{font-size:48px}.hero p{font-size:15px;margin-bottom:14px}.demo{height:210px;min-height:0}.heading strong{font-size:13px}.heading span{font-size:11px}
+}
+@media(max-width:700px){.controls{max-width:152px}.bottom{gap:8px}.math{font-size:14px}.micro{font-size:12px}.groupLabel b{font-size:15px}.lvl small,.bonusCard small{font-size:11px}.hero p{max-width:510px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+.bonusCard .bonusPreview{display:block}.demo>svg{width:100%;height:100%;display:block}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <button class="topHandle" id="topHandle" aria-label="Bovenste balk in- of uitklappen" aria-expanded="true"><span></span></button>
+    <button class="brand" id="brand" title="Startscherm"><span class="logo"></span><span>Koersveld</span></button>
+    <div class="heading"><strong id="headTitle">Vectorvlak</strong><span id="headSub">Axioma · v0.7 COMPLETE GAME PASS</span></div>
+    <button class="topbtn" id="menuBtn">Levels</button>
+  </div>
+  <div id="stage">
+    <canvas id="canvas"></canvas>
+    <div id="toast"></div>
+    <div id="infoStrip"></div>
+    <div id="home" class="overlay active">
+      <div class="hero">
+        <div class="kicker">Axioma · vectoren in het vlak</div>
+        <h1>Koersveld</h1>
+        <p><strong>Geef richting aan je inzicht.</strong> Teken, verplaats en combineer vectoren. Ontdek tien leerreeksen en tien korte bonusspellen.</p>
+        <div class="heroBtns"><button class="primary" id="startBtn">Start de leerroute</button><button class="secondary" id="homeLevels">Bekijk opdrachten</button></div>
+      </div>
+      <div class="demo"><svg viewBox="0 0 360 220" aria-label="Een vector van A naar B"><path d="M65 160L275 65M257 66L275 65L264 81" fill="none" stroke="#72e3e9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><g fill="#e3ffff"><circle cx="65" cy="160" r="6"/><circle cx="275" cy="65" r="6"/></g><g fill="#b5d3db" font-family="system-ui" font-size="16"><text x="46" y="185">A</text><text x="283" y="54">B</text><text x="160" y="100" font-style="italic">a</text></g><path d="M160 82h12m-4 -3 4 3-4 3" fill="none" stroke="#b5d3db" stroke-width="1.5"/></svg></div>
+    </div>
+    <div id="menu" class="overlay"></div>
+  </div>
+  <div class="bottom" id="bottom">
+    <div class="task"><div class="taskTop"><span class="tag" id="mode">DOEN</span></div><div class="math" id="taskText"></div><div class="micro" id="feedback"></div></div>
+    <div class="controls" id="controls"></div>
+  </div>
+</div>
+<div id="rotate"><div><div class="phone"></div><h2>Draai je scherm</h2><p>Koersveld gebruikt het volledige 2D-vlak. Gebruik een venster van minstens 640 × 360 CSS-px nodig.</p></div></div>
+<script>
+window.__runtimeErrors=[]; window.addEventListener('error',e=>{window.__runtimeErrors.push(String(e.message||e.error));document.documentElement.dataset.runtimeError=window.__runtimeErrors.join(' | ')});
+const $=s=>document.querySelector(s), app=$('#app'),canvas=$('#canvas'),ctx=canvas.getContext('2d');
+const home=$('#home'),menu=$('#menu'),bottom=$('#bottom'),controls=$('#controls'),taskText=$('#taskText'),feedback=$('#feedback'),mode=$('#mode'),infoStrip=$('#infoStrip');
+const C={cyan:'#72e3e9',gold:'#ffd36a',green:'#8be0aa',red:'#ff8e84',violet:'#c0a4ff',ink:'#f5fbff',muted:'#8faeb7'};
+const escMath=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const V=(a,sub='')=>{const base=`<mover accent="true"><mi>${escMath(a)}</mi><mo>→</mo></mover>`;return `<math class="mexpr" aria-label="vector ${escMath(a)}${sub?' sub '+escMath(sub):''}">${sub?`<msub>${base}<mi>${escMath(sub)}</mi></msub>`:base}</math>`};
+const OV=(ab)=>{const chars=[...String(ab)].map(ch=>ch==='′'?'<mo>′</mo>':`<mi>${escMath(ch)}</mi>`).join('');return `<math class="mexpr" aria-label="vector ${escMath(ab)}"><mover accent="true"><mrow>${chars}</mrow><mo>→</mo></mover></math>`};
+const CV=(base,sub='')=>({kind:'vec',base,sub});
+const COV=text=>({kind:'ov',text});
+const MT=text=>({kind:'text',text});
+const groups=[
+  ['1 · Basisbegrip','gelijke vectoren · vectoren tussen punten'],
+  ['2 · Bewerken & transleren','scalaire vermenigvuldiging · translatie'],
+  ['3 · Samenstellen','kop-staart · parallellogram · verschil · nulvector'],
+  ['4 · Ontbinden & patronen','componenten · translatiepatronen']
+];
+const lessons=[
+ {id:1,g:1,title:'Gelijke vectoren',subtitle:`richting · zin · grootte`,preview:1},
+ {id:2,g:1,title:'Vector tussen punten',subtitle:`van ${OV('AB')} naar een gelijke vector`,preview:2},
+ {id:3,g:2,title:'Scalair vermenigvuldigen',subtitle:`−${V('a')} · 2${V('a')} · −3${V('a')}`,preview:3},
+ {id:4,g:2,title:'Translatie',subtitle:`punt · terugredeneren · figuur`,preview:4},
+ {id:5,g:3,title:'Somvector · kop-staart',subtitle:`verplaats · construeer · compenseer`,preview:5},
+ {id:6,g:3,title:'Somvector · parallellogram',subtitle:`diagonaal vanuit hetzelfde beginpunt`,preview:6},
+ {id:7,g:3,title:'Ontbrekende vector',subtitle:`verschil als ontbrekende stap`,preview:7},
+ {id:8,g:3,title:'Nulvector & gesloten keten',subtitle:`totale som gelijk aan ${V('0')}`,preview:8},
+ {id:9,g:4,title:'Ontbinden in componenten',subtitle:`rechthoekig · schuin · negatieve component`,preview:9},
+ {id:10,g:4,title:'Vectorpatronen',subtitle:`één translatievector voor alle punten`,preview:10}
+];
+const L=(n,lesson,g,step,phase,title,kind,instruction,info,data={})=>({n,lesson,g,step,phase,title,kind,instruction,info,...data});
+const levels=[
+// 1 — Gelijke vectoren: herkennen → diagnosticeren → construeren
+L(1,1,1,1,'Begrijpen','Herken gelijke vectoren','choice',`Tik de vector die <b>gelijk is aan ${V('a')}</b>.`,`Twee vectoren zijn gelijk als ze <span class="term">dezelfde richting, dezelfde zin en dezelfde grootte</span> hebben. Hun plaats in het vlak speelt geen rol.`,{base:{o:[2,2],d:[3,1]},choices:[{o:[2,5],d:[3,1]},{o:[7,2],d:[-3,-1]},{o:[7,5],d:[4,1]}],labels:['b','c','d'],answer:0}),
+L(2,1,1,2,'Zelfstandig','Vind de afwijkende vector','odd',`Eén vector is <b>niet gelijk aan ${V('a')}</b>. Tik die vector.`,`Vergelijk richting, zin en grootte afzonderlijk. Een vector kan bijvoorbeeld dezelfde richting en zin hebben, maar een andere grootte.`,{base:{o:[2,5],d:[2,-1]},choices:[{o:[6,5],d:[2,-1]},{o:[8,3],d:[2,-1]},{o:[3,2],d:[4,-2]},{o:[9,6],d:[2,-1]}],labels:['b','c','d','e'],answer:2}),
+L(3,1,1,3,'Transfer','Construeer een gelijke vector','construct',`Construeer vanuit punt <b>P</b> ${OV('PQ')} zodat <b>${OV('PQ')} = ${V('a')}</b>.`,`Je vertaalt nu de definitie van gelijke vectoren naar een constructie: richting, zin en grootte moeten alle drie behouden blijven.`,{given:{o:[9,5],d:[-4,-2]},start:[7,5],expected:[-4,-2],label:'a',endLabel:'Q',successText:`Correct: ${OV('PQ')} = ${V('a')}.`}),
+
+// 2 — Vector tussen punten: notatie → zelfstandige constructie → transfer naar nieuw beginpunt
+L(4,2,1,1,'Begrijpen','Van A naar B','constructAB',`Construeer <b>${OV('AB')}</b>, de vector van punt A naar punt B.`,`Het beginpunt is A en het eindpunt is B. De volgorde in ${OV('AB')} bepaalt dus ook de zin.`,{A:[3,5],B:[8,2]}),
+L(5,2,1,2,'Zelfstandig','Construeer een tweede vector','constructAB',`Construeer <b>${OV('AB')}</b>. Let nu vooral op de <b>zin</b>: van A naar B.`,`Een schuine vector naar links of naar beneden is wiskundig niet anders: beginpunt en eindpunt leggen de vector volledig vast.`,{A:[9,1],B:[4,5]}),
+L(6,2,1,3,'Transfer','Dezelfde vector vanuit C','placePointD',`Plaats punt <b>D</b> zodat <b>${OV('AB')} = ${OV('CD')}</b>.`,`Je gebruikt dezelfde vector nu vanuit een ander beginpunt. ${OV('CD')} moet dezelfde richting, zin en grootte hebben als ${OV('AB')}.`,{A:[2,5],B:[5,2],C:[7,5],relation:'CD',hideGuide:true}),
+
+// 3 — Scalair vermenigvuldigen
+L(7,3,2,1,'Begrijpen','Tegengestelde vector','construct',`Construeer vanuit P ${OV('PQ')} zodat <b>${OV('PQ')} = −${V('a')}</b>.`,`De vector −${V('a')} heeft dezelfde richting en grootte als ${V('a')}, maar de tegengestelde zin.`,{given:{o:[2,2],d:[3,1]},start:[8,5],expected:[-3,-1],label:'a',endLabel:'Q',successText:`Correct: ${OV('PQ')} = −${V('a')}.`}),
+L(8,3,2,2,'Zelfstandig','Verdubbel de vector','construct',`Construeer vanuit P ${OV('PQ')} zodat <b>${OV('PQ')} = 2${V('a')}</b>.`,`Een positieve factor behoudt richting en zin. De grootte wordt met dezelfde factor vermenigvuldigd.`,{given:{o:[2,4],d:[2,-1]},start:[3,5],expected:[4,-2],label:'a',endLabel:'Q',successText:`Correct: ${OV('PQ')} = 2${V('a')}.`}),
+L(9,3,2,3,'Transfer','Negatieve factor','construct',`Construeer vanuit P ${OV('PQ')} zodat <b>${OV('PQ')} = −3${V('a')}</b>.`,`Bij een negatieve factor verandert de zin én wordt de grootte vermenigvuldigd met de absolute waarde van de factor.`,{given:{o:[9,4],d:[-1,1]},start:[5,5],expected:[3,-3],label:'a',endLabel:'Q',successText:`Correct: ${OV('PQ')} = −3${V('a')}.`}),
+
+// 4 — Translatie: beeldpunt → prebeeld → figuur → afleiden uit één puntenpaar
+L(10,4,2,1,'Begrijpen','Beeldpunt onder een translatie','placePoint',`Punt <b>A′</b> is het beeld van A onder de translatie met vector ${V('v')}. Plaats <b>A′</b>.`,`Bij een translatie geldt ${OV('AA′')} = ${V('v')}. De gegeven vector staat bewust elders in het vlak.`,{A:[7,5],vec:[3,-2],expected:[10,3],vecOrigin:[1,4]}),
+L(11,4,2,2,'Zelfstandig','Zoek het oorspronkelijke punt','placePreimage',`Punt <b>B′</b> is het beeld van B onder de translatie met vector ${V('v')}. Plaats het oorspronkelijke punt <b>B</b>.`,`Je redeneert nu terug. Nog steeds geldt ${OV('BB′')} = ${V('v')}.`,{Bprime:[9,2],vec:[4,-2],expected:[5,4],vecOrigin:[1,4]}),
+L(12,4,2,3,'Toepassen','Translatie van een figuur','moveShape',`Versleep de figuur zodat zijn beeld ontstaat door de translatie met vector ${V('v')}.`,`Voor elk punt X met beeld X′ geldt ${OV('XX′')} = ${V('v')}. Vorm, grootte en oriëntatie blijven behouden.`,{shape:[[2,4],[3,2],[4,4]],vec:[4,1],vecOrigin:[1,1]}),
+L(13,4,2,4,'Transfer','Leid de translatievector af','moveShapeFromPoint',`Hoekpunt <b>A′</b> is het beeld van hoekpunt A. Transleer de volledige <b>vierhoek</b> naar de juiste positie.`,`De vector wordt niet gegeven. Leid hem af uit ${OV('AA′')} en pas exact diezelfde vector toe op elk hoekpunt.`,{shapeName:'vierhoek',shape:[[2,2],[4,2],[5,4],[3,5]],imageAnchor:[7,4],anchorIndex:0,expectedShift:[5,2]}),
+
+// 5 — Kop-staart: methode → zelfstandig → gedeeltelijke opheffing
+L(14,5,3,1,'Begrijpen','Kop aan staart','headTail',`Verplaats ${V('b')} evenwijdig zodat zijn beginpunt samenvalt met het eindpunt van ${V('a')}. Construeer daarna <b>${V('a')} + ${V('b')}</b>.`,`Bij de kop-staartmethode verandert ${V('b')} niet door de evenwijdige verplaatsing. De somvector loopt van het eerste beginpunt naar het laatste eindpunt.`,{a:{o:[2,5],d:[3,-2]},b:{o:[8,2],d:[2,2]}}),
+L(15,5,3,2,'Zelfstandig','Som met tegengestelde componenten','headTail',`Plaats ${V('b')} kop aan staart met ${V('a')} en construeer <b>${V('a')} + ${V('b')}</b>.`,`Kijk naar de volledige verplaatsing, niet naar de afzonderlijke lengtes van de pijlen. Componenten kunnen elkaar gedeeltelijk opheffen.`,{a:{o:[2,5],d:[4,-1]},b:{o:[9,5],d:[-2,-3]}}),
+L(16,5,3,3,'Transfer','Som met sterke compensatie','headTail',`Construeer <b>${V('a')} + ${V('b')}</b> met de kop-staartmethode.`,`Gebruik de volledige verplaatsing: tegengestelde componenten kunnen elkaar sterk opheffen.`,{a:{o:[2,5],d:[5,-2]},b:{o:[9,2],d:[-4,3]}}),
+
+// 6 — Parallellogram: met steun → zonder hulplijnen → andere oriëntatie
+L(17,6,3,1,'Begrijpen','Parallellogrammethode','resultant',`Construeer de <b>somvector ${V('a')} + ${V('b')}</b> met de parallellogrammethode.`,`Beide vectoren vertrekken uit hetzelfde punt. De diagonaal vanuit dat gemeenschappelijke beginpunt is de somvector.`,{o:[3,5],a:[4,0],b:[2,-3]}),
+L(18,6,3,2,'Zelfstandig','Parallellogram zonder hulplijnen','resultant',`Construeer <b>${V('a')} + ${V('b')}</b>. De hulplijnen van het parallellogram zijn nu verborgen.`,`Je moet de diagonaal zelf afleiden uit de twee gegeven vectoren.`,{o:[6,5],a:[-3,-2],b:[4,-1],hideGuides:true}),
+L(19,6,3,3,'Transfer','Parallellogram met compensatie','resultant',`Construeer <b>${V('a')} + ${V('b')}</b>.`,`Ook wanneer delen van de vectoren elkaar tegenwerken, blijft dezelfde parallellogramregel gelden.`,{o:[6,3],a:[4,2],b:[-3,1],hideGuides:true}),
+
+// 7 — Ontbrekende vector / verschil
+L(20,7,3,1,'Begrijpen','Ontbrekende vector','missing',`Construeer ${V('b')} zodat <b>${V('a')} + ${V('b')} = ${V('r')}</b>.`,`De ontbrekende vector voldoet aan ${V('b')} = ${V('r')} − ${V('a')}.`,{o:[2,5],a:[3,-2],r:[6,-1]}),
+L(21,7,3,2,'Zelfstandig','Verschil in een andere richting','missing',`Construeer ${V('b')} zodat <b>${V('a')} + ${V('b')} = ${V('r')}</b>.`,`Lees eerst waar ${V('a')} eindigt en waar ${V('r')} eindigt. De ontbrekende vector verbindt die twee eindpunten.`,{o:[6,5],a:[4,-3],r:[-1,-1]}),
+L(22,7,3,3,'Transfer','Resultante ligt elders','missing',`Construeer de ontbrekende ${V('b')} in <b>${V('a')} + ${V('b')} = ${V('r')}</b>.`,`De positie en richting van ${V('r')} kunnen sterk verschillen van ${V('a')}; de verschilconstructie blijft hetzelfde.`,{o:[4,3],a:[-2,2],r:[4,1]}),
+
+// 8 — Nulvector / gesloten ketens
+L(23,8,3,1,'Begrijpen','Sluit een eenvoudige keten','closeChain',`Construeer de ontbrekende vector zodat de vectorketen <b>gesloten</b> is.`,`Een gesloten keten eindigt waar hij begon. De som van alle vectoren is dan de nulvector ${V('0')}.`,{o:[2,4],fixed:[[3,-2],[2,2]]}),
+L(24,8,3,2,'Zelfstandig','Sluit de keten','closeChain',`Construeer de ontbrekende vector zodat de totale som gelijk is aan ${V('0')}.`,`De ontbrekende vector is de tegengestelde van de somvector van alle reeds gegeven vectoren.`,{o:[4,4],fixed:[[4,-3],[-2,-1],[1,3]]}),
+L(25,8,3,3,'Transfer','Een keten die al sluit','closeChain',`Sluit de vectorketen met precies één vector.`,`Bij meer tussenstappen blijft dezelfde invariant gelden: beginpunt en eindpunt moeten samenvallen.`,{o:[5,2],fixed:[[3,1],[-1,3],[-4,-2],[2,-2]]}),
+
+// 9 — Ontbinden: rechthoekig → negatief → schuin → schuin met negatieve component
+L(26,9,4,1,'Begrijpen','Horizontale en verticale componenten','decompose',`Ontbind ${V('v')} in de horizontale componentvector ${V('v','x')} en de verticale componentvector ${V('v','y')}. <b>Teken beide componentvectoren kop aan staart.</b>`,`Na één correcte route construeer je dezelfde twee componentvectoren in de omgekeerde volgorde. Zo zie je dat de vectorsom niet van de volgorde afhangt.`,{o:[3,5],v:[5,-3],dirs:[[1,0],[0,-1]],coeff:[5,3],componentLabels:[['v','x'],['v','y']]}),
+L(27,9,4,2,'Zelfstandig','Negatieve componenten','decompose',`Ontbind ${V('v')} in ${V('v','x')} en ${V('v','y')}.`,`Een componentvector kan de tegengestelde zin hebben van de positieve asrichting. Teken beide mogelijke volgordes.`,{o:[7,5],v:[-4,-3],dirs:[[1,0],[0,-1]],coeff:[-4,3],componentLabels:[['v','x'],['v','y']]}),
+L(28,9,4,3,'Toepassen','Ontbind volgens schuine richtingen','decompose',`Ontbind ${V('v')} in twee componentvectoren volgens de twee aangegeven <b>richtingen</b>.`,`De componenten hoeven niet horizontaal en verticaal te zijn. Ze moeten evenwijdig zijn met de gegeven richtingen en samen exact ${V('v')} vormen.`,{o:[4,4],v:[5,-1],dirs:[[1,-1],[1,1]],coeff:[3,2],componentLabels:[['v','1'],['v','2']]}),
+L(29,9,4,4,'Transfer','Schuine ontbinding met negatieve component','decompose',`Ontbind ${V('v')} volgens de aangegeven richtingen.`,`Eén component heeft nu de tegengestelde zin van de getoonde positieve richting. De twee componentvectoren blijven uniek bepaald door de twee niet-evenwijdige richtingen.`,{o:[6,5],v:[1,-3],dirs:[[1,-1],[1,1]],coeff:[2,-1],componentLabels:[['v','1'],['v','2']]}),
+
+// 10 — Vectorpatronen: eenvoudig → andere zin → onregelmatiger patroon
+L(30,10,4,1,'Begrijpen','Ontdek de translatievector','pattern',`Construeer de <b>translatievector</b> ${V('t')} die het witte puntenpatroon op het blauwe patroon afbeeldt.`,`Voor elk overeenkomstig puntenpaar P en P′ geldt ${OV('PP′')} = ${V('t')}. Eén correcte vector moet dus voor alle punten werken.`,{points:[[2,2],[4,2],[3,4],[5,4]],shift:[3,1]}),
+L(31,10,4,2,'Zelfstandig','Patroon in tegengestelde zin','pattern',`Construeer de translatievector ${V('t')} die het ene puntenpatroon op het andere afbeeldt.`,`Controleer je hypothese op meerdere puntenparen; richting, zin en grootte moeten overal identiek zijn.`,{points:[[5,2],[7,2],[6,4],[8,5],[4,5]],shift:[-2,1]}),
+L(32,10,4,3,'Transfer','Onregelmatig vectorpatroon','pattern',`Bepaal en construeer de ene translatievector ${V('t')} die alle witte punten op hun beelden brengt.`,`De vorm van het patroon is nu minder regelmatig. Gebruik de overeenkomst tussen punten, niet de vorm als geheel.`,{points:[[2,4],[5,3],[4,6],[7,5],[8,3]],shift:[2,-2]}),
+
+// 10 korte bonusspellen — objecten als interactieve vectorconstructies
+L(33,1,1,99,'Bonus','Raketlancering','construct',`Lanceer vanuit ster P ${OV('PQ')} zodat <b>${OV('PQ')} = ${V('a')}</b>.`,`De raket maakt de vector zichtbaar: dezelfde richting, dezelfde zin en dezelfde grootte als ${V('a')}.`,{bonus:true,bonusTheme:'rocket',given:{o:[2,2],d:[3,1]},start:[3,6],expected:[3,1],label:'a',endLabel:'Q',successText:`Gelanceerd. ${OV('PQ')} = ${V('a')}.`}),
+L(34,2,1,99,'Bonus','Teckel op pad','constructAB',`Teken de teckel zo dat zijn route precies <b>${OV('AB')}</b> vormt.`,`Staart in A, neus in B: de lange teckel is zelf de vector van A naar B.`,{bonus:true,bonusTheme:'dachshund',A:[2,5],B:[9,2],successText:`Correct: de teckel volgt precies ${OV('AB')}.`}),
+L(35,3,2,99,'Bonus','Rekworm','construct',`Construeer vanuit P ${OV('PQ')} zodat <b>${OV('PQ')} = −2${V('a')}</b>.`,`Een negatieve factor keert de zin om; factor 2 verdubbelt de grootte.`,{bonus:true,bonusTheme:'worm',given:{o:[2,2],d:[2,1]},start:[8,5],expected:[-4,-2],label:'a',endLabel:'Q',successText:`Correct: ${OV('PQ')} = −2${V('a')}.`}),
+L(36,4,2,99,'Bonus','Vliegende boterham','moveShape',`Transleer de boterham volgens vector ${V('v')}.`,`Elk punt van de boterham ondergaat exact dezelfde translatie.`,{bonus:true,bonusTheme:'toast',shapeName:'boterham',shape:[[2,3],[4,3],[4,5],[2,5]],vec:[5,-2],vecOrigin:[1,6]}),
+L(37,5,3,99,'Bonus','Kikker in twee sprongen','headTail',`De eerste sprong ${V('a')} ligt vast. Plaats ${V('b')} kop aan staart en construeer daarna de rechtstreekse sprong <b>${V('a')} + ${V('b')}</b>.`,`De kikker maakt eerst twee aparte sprongen; daarna teken jij de ene somvector naar de vlieg.`,{bonus:true,bonusTheme:'frog',a:{o:[2,5],d:[3,-3]},b:{o:[8,2],d:[3,2]},successText:`Correct: de rechtstreekse sprong is ${V('a')} + ${V('b')}.`}),
+L(38,6,3,99,'Bonus','Ballon in de wind','resultant',`Construeer de somvector <b>${V('a')} + ${V('b')}</b>.`,`De twee windvectoren werken tegelijk; de diagonaal geeft hun som.`,{bonus:true,bonusTheme:'balloon',o:[3,5],a:[5,0],b:[2,-3]}),
+L(39,7,3,99,'Bonus','Mier & kruimel','missing',`Construeer ${V('b')} zodat <b>${V('a')} + ${V('b')} = ${V('r')}</b>.`,`De kruimel ligt aan het eindpunt van de gegeven resultante; jij construeert de ontbrekende stap.`,{bonus:true,bonusTheme:'ant',o:[2,5],a:[3,-2],r:[7,-1]}),
+L(40,8,3,99,'Bonus','Terug naar het nest','closeChain',`Construeer één vector zodat de route weer exact bij het nest eindigt.`,`Een gesloten vectorketen heeft totale som ${V('0')}.`,{bonus:true,bonusTheme:'nest',o:[3,4],fixed:[[3,-2],[3,1],[-1,3]]}),
+L(41,9,4,99,'Bonus','Kameleontong','decompose',`Ontbind ${V('v')} volgens de twee aangegeven richtingen. Teken beide componentvectoren.`,`De tong is de resultante; de twee componentvectoren vormen samen exact ${V('v')}.`,{bonus:true,bonusTheme:'chameleon',o:[3,4],v:[5,-1],dirs:[[1,-1],[1,1]],coeff:[3,2],componentLabels:[['v','1'],['v','2']]}),
+L(42,10,4,99,'Bonus','Vector-doodle','pattern',`Construeer de translatievector ${V('t')} die het hele puntenpatroon op zijn beeld brengt.`,`Eén vector moet voor alle puntenparen tegelijk werken.`,{bonus:true,bonusTheme:'doodle',points:[[2,2],[4,2],[3,4],[2,5],[4,5]],shift:[4,0]})
+];
+
+const bonusMeta={
+  1:{n:33,title:'Raketlancering',subtitle:'lanceer een gelijke raketvector',theme:'rocket'},
+  2:{n:34,title:'Teckel op pad',subtitle:'staart in A, neus in B',theme:'dachshund'},
+  3:{n:35,title:'Rekworm',subtitle:'keer om en rek uit',theme:'worm'},
+  4:{n:36,title:'Vliegende boterham',subtitle:'translatie met een rare passagier',theme:'toast'},
+  5:{n:37,title:'Kikker in twee sprongen',subtitle:'verplaats, spring, en teken de som',theme:'frog'},
+  6:{n:38,title:'Ballon in de wind',subtitle:'twee windvectoren tegelijk',theme:'balloon'},
+  7:{n:39,title:'Mier & kruimel',subtitle:'construeer de ontbrekende stap',theme:'ant'},
+  8:{n:40,title:'Terug naar het nest',subtitle:'sluit de route tot de nulvector',theme:'nest'},
+  9:{n:41,title:'Kameleontong',subtitle:'ontbind de lange tongvector',theme:'chameleon'},
+  10:{n:42,title:'Vector-doodle',subtitle:'na correct oplossen verschijnt de grap',theme:'doodle'}
+};
+const coreLevels=()=>levels.filter(l=>!l.bonus);
+const bonusForLesson=id=>levels.find(l=>l.bonus&&l.lesson===id);
+const lessonComplete=id=>coreLevels().filter(l=>l.lesson===id).every(l=>!!saved.done[l.n]);
+
+let current=0,state=null,screen='home',drag=null,anim=0;
+function loadSaved(){try{const cur=localStorage.getItem('koersveld-v07');if(cur){const p=JSON.parse(cur);return {done:p&&p.done&&typeof p.done==='object'?p.done:{}};}return {done:{}}}catch(e){return {done:{}}}}
+let saved=loadSaved();
+function save(){try{localStorage.setItem('koersveld-v07',JSON.stringify(saved))}catch(e){}}
+function add(a,b){return[a[0]+b[0],a[1]+b[1]]} function sub(a,b){return[a[0]-b[0],a[1]-b[1]]} function eq(a,b,eps=.01){return Math.abs(a[0]-b[0])<eps&&Math.abs(a[1]-b[1])<eps} function mul(a,k){return[a[0]*k,a[1]*k]}
+function setup(l){
+ const s=JSON.parse(JSON.stringify(l));s.hasVector=false;s.drawing=false;s.success=false;s.failed=0;s.stage=0;s.selected=null;s.point=null;
+ if(['constructAB','resultant','missing','closeChain'].includes(l.kind)){
+   let start=l.A||l.o; s.edit={o:[...start],d:[0,0]};
+ }
+ if(l.kind==='construct'){s.edit=null;s.drawing=false;s.hasVector=false}
+ if(l.kind==='headTail'){s.bPos=[...l.b.o];s.result={o:[...l.a.o],d:[0,0]}}
+ if(l.kind==='moveShape'||l.kind==='moveShapeFromPoint'){s.shapePos=[0,0]}
+ if(l.kind==='decompose'){s.decompPhase=0;s.decompPass=0;s.decompFirstDir=null;s.decompFirstDirDone=null;s.decompSegments=[];s.decompDrawing=null}
+ if(l.kind==='placePointD'){s.point=null}
+ if(l.kind==='pattern')s.edit={o:[...l.points[0]],d:[0,0]};
+ if(l.kind==='missing')s.edit.o=add(l.o,l.a);
+ if(l.kind==='closeChain')s.edit.o=l.fixed.reduce(add,[...l.o]);
+ return s;
+}
+let topCollapsed=false;
+function setTopCollapsed(v){topCollapsed=!!v;app.classList.toggle('topCollapsed',topCollapsed);const h=$('#topHandle');if(h)h.setAttribute('aria-expanded',String(!topCollapsed));requestAnimationFrame(()=>resize())}
+function openHome(){drag=null;screen='home';app.classList.add('menuMode');home.classList.add('active');menu.classList.remove('active');bottom.style.visibility='hidden';infoStrip.style.display='none';setTopCollapsed(false);$('#headTitle').textContent='Vectorvlak';$('#headSub').textContent='Axioma · v0.7 COMPLETE GAME PASS';draw()}
+function openMenu(){drag=null;screen='menu';app.classList.add('menuMode');home.classList.remove('active');menu.classList.add('active');bottom.style.visibility='hidden';infoStrip.style.display='none';renderMenu();setTopCollapsed(true);$('#headTitle').textContent='Leerroute';$('#headSub').textContent='10 leerreeksen · 32 kernopdrachten · 10 bonusspellen'}
+function play(n){drag=null;cancelAnimationFrame(anim);const idx=levels.findIndex(l=>l.n===n);current=idx<0?0:idx;state=setup(levels[current]);screen='game';app.classList.remove('menuMode');home.classList.remove('active');menu.classList.remove('active');bottom.style.visibility='visible';infoStrip.style.display='block';setTopCollapsed(true);updateUI();draw()}
+function renderMenu(){
+ menu.innerHTML=groups.map((g,gi)=>`<section class="family"><div class="groupLabel"><b>${g[0]}</b><small>${g[1]}</small></div><div class="levelGrid">${lessons.filter(ls=>ls.g===gi+1).map(ls=>{
+   const tasks=levels.filter(l=>l.lesson===ls.id&&!l.bonus).sort((a,b)=>a.step-b.step),doneCount=tasks.filter(t=>saved.done[t.n]).length,done=doneCount===tasks.length,first=tasks.find(t=>!saved.done[t.n])||tasks[0],bm=bonusMeta[ls.id],bonus=bonusForLesson(ls.id),bunlocked=true,bdone=!!saved.done[bonus.n]; // Alle opdrachten vrij toegankelijk; voortgang wordt lokaal bewaard.
+   const main=`<article class="lvl ${done?'complete':''}" data-default="${first.n}" aria-label="${ls.title}"><span class="n">${done?'✓':`${doneCount}/${tasks.length}`}</span><span class="previewWrap"><canvas class="preview" data-preview="${ls.preview}"></canvas></span><span class="cardText"><b>${ls.title}</b><small>${ls.subtitle}</small></span><span class="exerciseRow">${tasks.map(t=>`<button class="exBtn ${t.step===tasks.length?'adv':''} ${saved.done[t.n]?'done':''}" data-l="${t.n}" aria-label="${ls.title}, ${t.phase}"><span class="dot"></span>${saved.done[t.n]?'✓':t.step}</button>`).join('')}</span></article>`;
+   const extra=`<article class="bonusCard ${!bunlocked?'locked':''} ${bdone?'done':''}" ${bunlocked?`role="button" tabindex="0" data-bonus="${bonus.n}"`:''} aria-label="Bonus ${bm.title}" aria-disabled="${!bunlocked}"><span class="bonusBadge">${bdone?'KLAAR':'BONUS'}</span><span class="starMark">${bunlocked?(bdone?'✓':'★'):'•'}</span><span class="bonusPreview"><canvas class="bonusCanvas" data-theme="${bm.theme}"></canvas></span><b>${bm.title}</b><small class="${bunlocked?'':'lockNote'}">${bunlocked?bm.subtitle:'Speel eerst de reeks uit'}</small></article>`;
+   return main+extra;
+ }).join('')}</div></section>`).join('');
+ menu.querySelectorAll('.lvl[data-default]').forEach(card=>card.onclick=()=>play(+card.dataset.default));
+ menu.querySelectorAll('[data-l]').forEach(b=>b.onclick=e=>{e.stopPropagation();play(+b.dataset.l)});
+ menu.querySelectorAll('.bonusCard[data-bonus]').forEach(card=>card.onclick=()=>play(+card.dataset.bonus));
+ menu.querySelectorAll('[data-bonus]').forEach(c=>c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play(+c.dataset.bonus)}});renderMenuPreviews();renderBonusPreviews();
+}
+
+function renderMenuPreviews(){menu.querySelectorAll('canvas.preview').forEach(c=>renderMenuPreview(c,+c.dataset.preview))}
+function renderBonusPreviews(){menu.querySelectorAll('canvas.bonusCanvas').forEach(c=>renderBonusPreview(c,c.dataset.theme))}
+function renderBonusPreview(canvas,theme){
+ const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.max(120,r.width),h=Math.max(58,r.height);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const p=canvas.getContext('2d');p.setTransform(dpr,0,0,dpr,0,0);p.clearRect(0,0,w,h);p.fillStyle='#08171e';p.fillRect(0,0,w,h);
+ const X=x=>x*w/180,Y=y=>y*h/88; p.strokeStyle='rgba(180,232,238,.05)';for(let x=10;x<180;x+=25){p.beginPath();p.moveTo(X(x),0);p.lineTo(X(x),h);p.stroke()}for(let y=12;y<88;y+=22){p.beginPath();p.moveTo(0,Y(y));p.lineTo(w,Y(y));p.stroke()}
+ const dot=(x,y,c='#f5fbff',rr=3)=>{p.fillStyle=c;p.beginPath();p.arc(X(x),Y(y),rr,0,Math.PI*2);p.fill()};
+ const line=(x1,y1,x2,y2,c='#72e3e9',lw=3)=>{p.strokeStyle=c;p.lineWidth=lw;p.lineCap='round';p.beginPath();p.moveTo(X(x1),Y(y1));p.lineTo(X(x2),Y(y2));p.stroke()};
+ if(theme==='rocket'){for(const q of [[18,17],[49,12],[78,23],[139,15],[160,58],[33,67]]){dot(q[0],q[1],'rgba(255,255,255,.76)',2)};line(28,61,93,31,C.cyan,3);p.fillStyle=C.cyan;p.beginPath();p.moveTo(X(93),Y(31));p.lineTo(X(81),Y(29));p.lineTo(X(86),Y(40));p.closePath();p.fill();p.fillStyle=C.gold;p.beginPath();p.moveTo(X(28),Y(61));p.lineTo(X(18),Y(66));p.lineTo(X(24),Y(55));p.closePath();p.fill();dot(28,61,C.gold,4);dot(93,31,'rgba(255,211,106,.95)',4)}
+ else if(theme==='dachshund'){line(25,53,145,34,'rgba(114,227,233,.35)',2);p.strokeStyle=C.gold;p.lineWidth=8;p.lineCap='round';p.beginPath();p.moveTo(X(45),Y(51));p.lineTo(X(126),Y(38));p.stroke();p.fillStyle=C.gold;p.beginPath();p.arc(X(135),Y(36),8,0,Math.PI*2);p.fill();p.strokeStyle=C.gold;p.lineWidth=3;for(const x of [60,108]){p.beginPath();p.moveTo(X(x),Y(48));p.lineTo(X(x-2),Y(61));p.stroke()}p.beginPath();p.moveTo(X(44),Y(50));p.quadraticCurveTo(X(30),Y(37),X(25),Y(45));p.stroke();dot(24,53,C.gold,3.5);dot(145,34,C.green,3.5)}
+ else if(theme==='worm'){p.strokeStyle=C.violet;p.lineWidth=9;p.lineCap='round';p.beginPath();p.moveTo(X(25),Y(58));p.bezierCurveTo(X(60),Y(25),X(92),Y(72),X(145),Y(34));p.stroke();p.fillStyle=C.ink;p.beginPath();p.arc(X(143),Y(31),2,0,Math.PI*2);p.fill()}
+ else if(theme==='toast'){p.fillStyle='rgba(255,211,106,.9)';p.strokeStyle='#fff0b1';p.lineWidth=2;p.beginPath();p.roundRect(X(62),Y(25),X(58),Y(42),8);p.fill();p.stroke();p.fillStyle='#07131a';dot(78,45,'#07131a',2);dot(104,45,'#07131a',2);p.beginPath();p.arc(X(91),Y(51),6,.15,Math.PI-.15);p.strokeStyle='#07131a';p.stroke()}
+ else if(theme==='frog'){p.fillStyle='rgba(139,224,170,.3)';for(const q of [[40,58],[103,28],[139,49]]){p.beginPath();p.ellipse(X(q[0]),Y(q[1]),12,7,0,0,Math.PI*2);p.fill()}p.fillStyle=C.green;p.beginPath();p.ellipse(X(40),Y(58),12,8,0,0,Math.PI*2);p.fill();dot(35,49,C.green,4);dot(45,49,C.green,4);line(50,54,103,28,C.cyan,3);line(103,28,139,49,C.violet,3);line(40,58,139,49,C.gold,2)}
+ else if(theme==='balloon'){p.fillStyle='rgba(192,164,255,.85)';p.beginPath();p.ellipse(X(90),Y(37),18,24,0,0,Math.PI*2);p.fill();line(90,60,90,72,C.ink,1.5);line(30,60,79,55,C.cyan,3);line(30,60,58,25,C.violet,3)}
+ else if(theme==='ant'){p.fillStyle=C.ink;for(const x of [50,58,66])dot(x,54,C.ink,4);dot(138,30,C.gold,7);line(75,50,127,33,'rgba(255,211,106,.65)',2)}
+ else if(theme==='nest'){p.strokeStyle=C.gold;p.lineWidth=3;for(let i=0;i<5;i++){p.beginPath();p.arc(X(45),Y(55+i),18+i*2,.1,Math.PI-.1);p.stroke()}line(45,48,90,23,C.cyan,3);line(90,23,138,49,C.violet,3);line(138,49,45,55,C.green,3)}
+ else if(theme==='chameleon'){p.fillStyle=C.green;p.beginPath();p.arc(X(42),Y(57),13,0,Math.PI*2);p.fill();dot(47,52,C.ink,2);line(54,55,142,27,C.red,5);dot(148,24,C.ink,3)}
+ else {for(const q of [[58,28],[78,28],[68,48],[54,61],[82,61]])dot(q[0],q[1],C.cyan,4);for(const q of [[104,28],[124,28],[114,48],[100,61],[128,61]])dot(q[0],q[1],C.gold,4);p.strokeStyle=C.gold;p.lineWidth=2;p.beginPath();p.arc(X(114),Y(45),22,.2,Math.PI-.2);p.stroke()}
+}
+function renderMenuPreview(canvas,n){
+ const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.max(120,r.width),h=Math.max(62,r.height);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const p=canvas.getContext('2d');p.setTransform(dpr,0,0,dpr,0,0);p.clearRect(0,0,w,h);
+ const sx=w/180,sy=h/92,X=x=>x*sx,Y=y=>y*sy;
+ p.fillStyle='#08171e';p.fillRect(0,0,w,h);p.strokeStyle='rgba(180,232,238,.075)';p.lineWidth=1;
+ const step=23*sx;for(let x=8*sx;x<w;x+=step){p.beginPath();p.moveTo(x,0);p.lineTo(x,h);p.stroke()}for(let y=10*sy;y<h;y+=23*sy){p.beginPath();p.moveTo(0,y);p.lineTo(w,y);p.stroke()}
+ const dot=(x,y,label='',col='#f5fbff',rad=3.7)=>{x=X(x);y=Y(y);p.fillStyle=col;p.beginPath();p.arc(x,y,rad,0,Math.PI*2);p.fill();if(label){p.font=`700 ${Math.max(9,11*sx)}px system-ui`;p.fillStyle=col;p.fillText(label,x+6,y-6)}};
+ const arr=(x1,y1,x2,y2,col='#72e3e9',label='',ghost=false)=>{x1=X(x1);y1=Y(y1);x2=X(x2);y2=Y(y2);const a=Math.atan2(y2-y1,x2-x1),head=Math.max(8,10*sx);p.save();if(ghost){p.setLineDash([4,4]);p.globalAlpha=.48}p.strokeStyle=col;p.fillStyle=col;p.lineWidth=Math.max(2,2.7*sx);p.lineCap='round';p.beginPath();p.moveTo(x1,y1);p.lineTo(x2,y2);p.stroke();p.beginPath();p.moveTo(x2,y2);p.lineTo(x2-head*Math.cos(a-.43),y2-head*Math.sin(a-.43));p.lineTo(x2-head*Math.cos(a+.43),y2-head*Math.sin(a+.43));p.closePath();p.fill();p.restore();if(label)miniVecLabel(p,label,(x1+x2)/2+4,(y1+y2)/2-6,col,Math.max(9,11*sx));};
+ const poly=(pts,col='#72e3e9',fill='rgba(114,227,233,.10)',ghost=false)=>{p.save();if(ghost){p.setLineDash([4,4]);p.globalAlpha=.55}p.beginPath();pts.forEach((q,i)=>{const x=X(q[0]),y=Y(q[1]);i?p.lineTo(x,y):p.moveTo(x,y)});p.closePath();p.fillStyle=fill;p.fill();p.strokeStyle=col;p.lineWidth=Math.max(1.8,2.3*sx);p.stroke();p.restore()};
+ switch(n){
+  case 1: arr(16,25,54,39,C.cyan,'a');arr(82,20,120,34,C.violet);arr(64,72,26,58,C.gold);arr(110,74,162,44,C.violet);break;
+  case 2: dot(20,68,'A',C.gold,4.8);dot(75,28,'B',C.green,4.8);arr(20,68,75,28,C.cyan,'AB');dot(110,70,'C',C.violet,4.5);arr(110,70,165,30,C.gold,'',true);break;
+  case 3: arr(17,25,53,37,C.cyan,'a');arr(77,18,149,42,C.violet,'2a');arr(149,72,113,60,C.gold,'−a');break;
+  case 4: poly([[18,62],[34,27],[56,62]],C.cyan);poly([[103,53],[119,18],[141,53]],C.green,'rgba(139,224,170,.08)',true);arr(65,78,150,69,C.violet,'v');dot(18,62,'A',C.gold,4.1);dot(103,53,'A′',C.green,4.1);break;
+  case 5: arr(22,68,64,39,C.cyan,'a');arr(64,39,101,68,C.violet,'b');dot(64,39,'',C.ink,3.2);arr(22,68,101,68,C.gold,'a+b');break;
+  case 6: arr(24,68,78,68,C.cyan,'a');arr(24,68,56,28,C.violet,'b');dot(24,68,'',C.ink,3.2);arr(78,68,110,28,C.violet,'',true);arr(56,28,110,28,C.cyan,'',true);arr(24,68,110,28,C.gold,'a+b');break;
+  case 7: arr(22,72,70,26,C.cyan,'a');arr(22,72,145,66,C.green,'r');dot(70,26,'',C.ink,3.2);arr(70,26,145,66,C.gold,'?',true);break;
+  case 8: arr(30,68,78,35,C.cyan);arr(78,35,132,59,C.violet);arr(132,59,83,76,C.green);arr(83,76,30,68,C.gold,'?');break;
+  case 9: arr(32,72,140,44,C.green,'v');arr(32,72,87,18,C.cyan);arr(87,18,140,44,C.violet);break;
+  case 10:[[25,22],[55,22],[40,53],[70,53]].forEach(q=>dot(q[0],q[1],'','rgba(245,251,255,.75)',3.4));[[90,38],[120,38],[105,69],[135,69]].forEach(q=>dot(q[0],q[1],'',C.cyan,3.4));arr(82,15,147,31,C.gold,'t');break;
+ }
+}
+function miniVecLabel(p,label,x,y,col,size){
+ const raw=String(label);p.save();p.fillStyle=col;p.strokeStyle=col;p.lineWidth=1.1;p.lineCap='round';
+ const drawText=(t,xx,yy,italic=false,scale=1)=>{p.font=`${italic?'italic ':''}700 ${Math.round(size*scale)}px system-ui`;p.fillText(t,xx,yy);return p.measureText(t).width};
+ const arrowOver=(t,xx,yy)=>{p.font=`italic 700 ${size}px system-ui`;const w=p.measureText(t).width;p.fillText(t,xx,yy);const ay=yy-size*.88;p.beginPath();p.moveTo(xx,ay);p.lineTo(xx+w,ay);p.stroke();p.beginPath();p.moveTo(xx+w,ay);p.lineTo(xx+w-3,ay-2);p.lineTo(xx+w-3,ay+2);p.closePath();p.fill();return w};
+ const vec=(base,sub='',prefix='')=>{let xx=x;if(prefix)xx+=drawText(prefix,xx,y,false,1);const bw=arrowOver(base,xx,y);if(sub)drawText(sub,xx+bw+1,y+2,true,.68)};
+ if(raw==='?'){drawText('?',x,y,false,1);p.restore();return}
+ if(/^[A-Z]{2}$/.test(raw)){arrowOver(raw,x,y);p.restore();return}
+ if(raw==='−a'){vec('a','', '−');p.restore();return}
+ const ma=raw.match(/^([−-]?\d*)a$/);if(ma&&ma[1]){vec('a','',ma[1].replace('-', '−'));p.restore();return}
+ if(raw==='a+b'){let xx=x;xx+=arrowOver('a',xx,y);xx+=drawText(' + ',xx,y,false,.9);arrowOver('b',xx,y);p.restore();return}
+ if(raw==='vₓ'){vec('v','x');p.restore();return}
+ if(raw==='vᵧ'){vec('v','y');p.restore();return}
+ if(/^[a-z]$/.test(raw)){arrowOver(raw,x,y);p.restore();return}
+ drawText(raw,x,y,true,1);p.restore();
+}
+
+
+function updateUI(msg=''){
+ const l=levels[current],ls=lessons.find(x=>x.id===l.lesson);$('#headTitle').textContent=l.title;$('#headSub').textContent=`${ls?.title||groups[l.g-1][0]} · ${l.phase}`;taskText.innerHTML=l.instruction;feedback.innerHTML=msg||defaultFeedback(l);infoStrip.innerHTML=l.info;infoStrip.hidden=true;document.querySelector('.help')?.setAttribute('aria-expanded','false');mode.textContent=state.success?'KLAAR':(l.bonus?'BONUS':(l.kind==='decompose'?`ROUTE ${state.decompPass+1}/2`:'DOEN'));renderControls();
+}
+function defaultFeedback(l){
+ if(l.kind==='headTail') return l.bonusTheme==='frog' ? (state.stage===0?`De eerste sprong ${V('a')} ligt vast. Verplaats nu ${V('b')} zodat de tweede sprong vertrekt vanaf het landingsblad van ${V('a')}.`:`Teken nu de rechtstreekse sprongvector ${V('a')} + ${V('b')} naar de vlieg.`) : (state.stage===0?`Verplaats ${V('b')} evenwijdig; richting, zin en grootte blijven behouden.`:`Construeer nu de somvector ${V('a')} + ${V('b')}.`);
+ if(l.kind==='decompose'){
+  if(state.decompPhase===0) return state.decompPass===0?`Druk op het beginpunt van ${V('v')} en teken de eerste componentvector.`:`Tweede route: begin nu met de andere componentrichting.`;
+  return `Druk op het eindpunt van je eerste componentvector en teken de tweede tot het eindpunt van ${V('v')}.`;
+ }
+ if(['choice','odd'].includes(l.kind)) return `Tik één vector.`;
+ if(['placePoint','placePreimage','placePointD'].includes(l.kind)) return `Tik het roosterpunt dat aan de vectorvoorwaarde voldoet.`;
+ if(l.kind==='moveShape') return `Versleep de ${l.shapeName||'driehoek'} volgens de gegeven vector. Na het bewegen blijft de oorspronkelijke figuur als hulplijn zichtbaar.`;
+ if(l.kind==='moveShapeFromPoint') return `Leid de translatie af uit A en A′ en versleep daarna de hele ${l.shapeName||'figuur'}. De oorspronkelijke figuur blijft als hulplijn zichtbaar.`;
+ if(l.kind==='construct') return l.bonusTheme==='rocket' ? (state.hasVector?`Je raketbaan voor ${OV('PQ')} staat klaar. Vergelijk richting, zin en grootte met ${V('a')}.`:`Druk op ster P, sleep de raketbaan en laat los op een sterpunt.`) : (state.hasVector?`Je construeerde ${OV('PQ')}. Pas de constructie aan door opnieuw vanuit P te slepen, of controleer je antwoord.`:`Sleep vanaf punt P en laat los op een roosterpunt.`);
+ if(l.kind==='constructAB' && l.bonusTheme==='dachshund') return `Sleep vanuit A: laat de staart in A en zorg dat de neus precies in B eindigt.`;
+ return `Druk op de gouden startring, sleep en laat los op een roosterpunt.`;
+}
+function nextCoreLevelId(l){if(l.bonus){const nxt=levels.find(x=>!x.bonus&&x.lesson===l.lesson+1&&x.step===1);return nxt?.n||null}const same=levels.find(x=>!x.bonus&&x.lesson===l.lesson&&x.step===l.step+1);if(same)return same.n;const nxt=levels.find(x=>!x.bonus&&x.lesson===l.lesson+1&&x.step===1);return nxt?.n||null}
+function isLastCoreInLesson(l){return !l.bonus&&!levels.some(x=>!x.bonus&&x.lesson===l.lesson&&x.step>l.step)}
+function renderControls(){
+ controls.innerHTML='';btn('↺',()=>{drag=null;state=setup(levels[current]);updateUI();draw()});
+ if(!state.success){if(levels[current].kind!=='decompose')btn('Controleer',check,'main');return}
+ const l=levels[current];
+ if(isLastCoreInLesson(l)){
+   const bonus=bonusForLesson(l.lesson),next=nextCoreLevelId(l);btn('★ Bonus',()=>play(bonus.n),'main');btn(next?'Volgende reeks':'Levels',()=>next?play(next):openMenu(),'next');return
+ }
+ const next=nextCoreLevelId(l);btn(next?'Volgende':'Levels',()=>next?play(next):openMenu(),'next')
+}
+function btn(t,fn,cls=''){const b=document.createElement('button');b.className='ctrl '+cls;b.textContent=t;b.setAttribute('aria-label',t==='↺'?'Opdracht opnieuw beginnen':t);b.onclick=fn;controls.appendChild(b)}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),1100)}
+function success(text){state.success=true;saved.done[levels[current].n]=1;save();updateUI(text||'Correct.');renderControls();toast(levels[current].bonus?'Bonus gehaald ★':'Correct');draw()}
+function fail(text){state.failed++;updateUI(text);feedback.setAttribute('role','status');draw()}
+
+function check(){const l=levels[current]; if(state.success)return;if(['constructAB','resultant','missing','closeChain','pattern'].includes(l.kind)&&!state.hasVector){fail('Teken eerst vanaf de gouden startring. Laat los op een roosterpunt.');return}if(l.kind==='headTail'&&state.stage===1&&!state.hasVector){fail('Teken de rechtstreekse vector vanaf de gouden startring.');return}
+ switch(l.kind){
+  case'choice': if(state.selected===l.answer)success(`Correct: dezelfde richting, dezelfde zin én dezelfde grootte.`);else fail(state.selected===null?'Tik eerst een van de vergelijkingsvectoren.':vectorDiag(l.choices[state.selected].d,l.base.d));break;
+  case'odd': if(state.selected===l.answer)success(`Juist. ${vectorDiag(l.choices[l.answer].d,l.base.d)}`);else fail(`Deze vector is wél gelijk aan ${V('a')}. Zoek welke eigenschap bij een andere vector verschilt.`);break;
+  case'construct': if(!state.edit||!state.hasVector){fail(`Construeer eerst ${OV('PQ')} door vanuit P te slepen en los te laten.`);break} if(eq(state.edit.d,l.expected))success(l.successText||`Correct: ${OV('PQ')} heeft de gevraagde richting, zin en grootte.`);else fail(vectorDiag(state.edit.d,l.expected));break;
+  case'constructAB': if(eq(state.edit.d,sub(l.B,l.A)))success(l.successText||`Correct: dit is ${OV('AB')}.`);else fail(vectorDiag(state.edit.d,sub(l.B,l.A)));break;
+  case'placePoint': if(state.point&&eq(state.point,l.expected))success(`Correct: ${OV('AA′')} = ${V('v')}.`);else fail(state.point?vectorDiag(sub(state.point,l.A),l.vec):'Teken vanaf A naar het beeldpunt A′.');break;
+  case'placePreimage': if(state.point&&eq(state.point,l.expected))success(`Correct: vanuit B brengt ${V('v')} je precies naar B′.`);else fail(state.point?vectorDiag(sub(l.Bprime,state.point),l.vec):'Tik het gezochte oorspronkelijke punt B.');break;
+  case'moveShape': if(eq(state.shapePos,l.vec))success(`Correct: elk hoekpunt is met exact dezelfde vector verplaatst.`);else fail(vectorDiag(state.shapePos,l.vec));break;
+  case'moveShapeFromPoint': if(eq(state.shapePos,l.expectedShift))success(`Correct: de hele ${l.shapeName||'figuur'} is getransleerd met ${OV('AA′')}.`);else fail(`A van het beeld moet eerst samenvallen met A′; dezelfde verplaatsing geldt dan voor elk hoekpunt.`);break;
+  case'headTail':
+    if(state.stage===0){const target=add(l.a.o,l.a.d); if(eq(state.bPos,target)){state.stage=1;state.hasVector=false;state.result.o=[...l.a.o];if(l.bonusTheme==='frog')animateEvent('frogSteps');updateUI(`Goed. ${V('b')} is evenwijdig verplaatst zonder te veranderen. Construeer nu de somvector.`);draw()}else fail(`Het beginpunt van ${V('b')} moet samenvallen met het eindpunt van ${V('a')}; richting, zin en grootte van ${V('b')} blijven onveranderd.`)}
+    else {const ex=add(l.a.d,l.b.d); if(eq(state.result.d,ex))success(l.successText||`Correct: de somvector loopt van het beginpunt van ${V('a')} naar het eindpunt van de verplaatste ${V('b')}.`);else fail(vectorDiag(state.result.d,ex))}break;
+  case'resultant': {const ex=add(l.a,l.b); if(eq(state.edit.d,ex))success(`Correct: de diagonaal stelt de somvector ${V('a')} + ${V('b')} voor.`);else fail(vectorDiag(state.edit.d,ex));break}
+  case'missing': {const ex=sub(l.r,l.a); if(eq(state.edit.d,ex))success(`Correct: ${V('b')} = ${V('r')} − ${V('a')}.`);else fail(vectorDiag(state.edit.d,ex));break}
+  case'closeChain': {const sum=l.fixed.reduce((a,v)=>add(a,v),[0,0]),ex=mul(sum,-1); if(eq(state.edit.d,ex))success(`Correct. De totale som is ${V('0')}; de keten sluit.`);else fail(`De ontbrekende vector moet de tegengestelde zijn van de somvector van de gegeven keten.`);break}
+  case'decompose': {fail(`Deze opdracht controleert automatisch bij het loslaten. Teken de componentvectoren vanaf het aangegeven beginpunt.`);break}
+  case'pattern': if(state.edit&&eq(state.edit.d,l.shift))success(`Correct: dezelfde translatievector koppelt elk wit punt aan zijn overeenkomstige blauwe punt.`);else fail(vectorDiag(state.edit.d,l.shift)+' Controleer ook een tweede puntenpaar.');break;
+  case'placePointD': {if(l.relation==='CD'){const ex=add(l.C,sub(l.B,l.A));if(state.point&&eq(state.point,ex))success(`Correct: ${OV('AB')} = ${OV('CD')}.`);else fail(`Controleer richting, zin en grootte van ${OV('AB')} en ${OV('CD')}.`)}else{const ex=sub(l.C,sub(l.B,l.A));if(state.point&&eq(state.point,ex))success(`Correct: ${OV('AB')} = ${OV('DC')}.`);else fail(`Controleer richting, zin en grootte van ${OV('AB')} en ${OV('DC')}.`)}break}
+ }
+}
+
+function resize(){const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
+window.addEventListener('resize',()=>{resize();if(screen==='menu'){renderMenuPreviews();renderBonusPreviews()}});
+function geom(){const w=canvas.clientWidth,h=canvas.clientHeight;const cols=12,rows=7;const cell=Math.max(1,Math.min((w-64)/cols,(h-44)/rows,58));const gw=cols*cell,gh=rows*cell;return{w,h,cols,rows,cell,x:(w-gw)/2,y:(h-gh)/2}}
+function toPx(p){const g=geom();return[g.x+p[0]*g.cell,g.y+p[1]*g.cell]} function toGrid(x,y){const g=geom();return[Math.max(0,Math.min(g.cols,Math.round((x-g.x)/g.cell))),Math.max(0,Math.min(g.rows,Math.round((y-g.y)/g.cell)))]}
+function draw(){if(!ctx)return;const g=geom();ctx.clearRect(0,0,g.w,g.h);ctx.fillStyle='#07131a';ctx.fillRect(0,0,g.w,g.h);if(screen!=='game')return;const l=levels[current];drawGrid(g,l);if(l.bonus)drawBonusBackdrop(l,g);if(l.bonus)drawBonusLevel(l,state);else drawLevel(l,state);drawStartCue(l,state)}
+function drawBonusBackdrop(l,g){ctx.save();if(l.bonusTheme==='rocket'){for(const q of [[1,1],[3,6],[5,1],[8,5],[10,1],[11,6]]){const p=toPx(q);ctx.fillStyle='rgba(255,255,255,.72)';ctx.beginPath();ctx.arc(p[0],p[1],3,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(255,211,106,.45)';ctx.beginPath();ctx.moveTo(p[0]-5,p[1]);ctx.lineTo(p[0]+5,p[1]);ctx.moveTo(p[0],p[1]-5);ctx.lineTo(p[0],p[1]+5);ctx.stroke()}}ctx.restore()}
+function drawGrid(g,l){ctx.save();ctx.strokeStyle=l?.bonus?'rgba(185,235,240,.065)':'rgba(185,235,240,.09)';ctx.lineWidth=1;for(let i=0;i<=g.cols;i++){const x=g.x+i*g.cell;ctx.beginPath();ctx.moveTo(x,g.y);ctx.lineTo(x,g.y+g.rows*g.cell);ctx.stroke()}for(let j=0;j<=g.rows;j++){const y=g.y+j*g.cell;ctx.beginPath();ctx.moveTo(g.x,y);ctx.lineTo(g.x+g.cols*g.cell,y);ctx.stroke()}for(let i=0;i<=g.cols;i++)for(let j=0;j<=g.rows;j++){const[x,y]=toPx([i,j]);ctx.fillStyle='rgba(205,242,245,.23)';ctx.beginPath();ctx.arc(x,y,l?.bonusTheme==='rocket'?2.6:2,0,Math.PI*2);ctx.fill()}ctx.restore()}
+
+function point(p,label='',color=C.ink,r=6){const[x,y]=toPx(p);ctx.save();ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.shadowColor=color;ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0;if(label){ctx.font='700 14px system-ui';ctx.fillStyle=color;ctx.fillText(label,x+9,y-9)}ctx.restore()}
+function drawMathLabel(label,x,y,color,size=15){const toks=Array.isArray(label)?label:[typeof label==='object'?label:MT(String(label))];ctx.save();ctx.fillStyle=color;ctx.strokeStyle=color;ctx.lineWidth=1.25;ctx.lineCap='round';let widths=[];for(const t of toks){if(t.kind==='vec'){ctx.font=`italic 700 ${size}px system-ui`;const bw=ctx.measureText(t.base).width;ctx.font=`italic 700 ${Math.round(size*.68)}px system-ui`;const sw=t.sub?ctx.measureText(t.sub).width+1:0;widths.push(bw+sw)}else if(t.kind==='ov'){ctx.font=`italic 700 ${size}px system-ui`;widths.push(ctx.measureText(t.text).width)}else{ctx.font=`700 ${size}px system-ui`;widths.push(ctx.measureText(t.text).width)}}let cur=x;for(let i=0;i<toks.length;i++){const t=toks[i];if(t.kind==='vec'){ctx.font=`italic 700 ${size}px system-ui`;const bw=ctx.measureText(t.base).width;ctx.fillText(t.base,cur,y);const ay=y-size*.92;ctx.beginPath();ctx.moveTo(cur,ay);ctx.lineTo(cur+bw,ay);ctx.stroke();ctx.beginPath();ctx.moveTo(cur+bw,ay);ctx.lineTo(cur+bw-3.5,ay-2.4);ctx.lineTo(cur+bw-3.5,ay+2.4);ctx.closePath();ctx.fill();if(t.sub){ctx.font=`italic 700 ${Math.round(size*.68)}px system-ui`;ctx.fillText(t.sub,cur+bw+1,y+3)}}else if(t.kind==='ov'){ctx.font=`italic 700 ${size}px system-ui`;const w=ctx.measureText(t.text).width;ctx.fillText(t.text,cur,y);const ay=y-size*.92;ctx.beginPath();ctx.moveTo(cur,ay);ctx.lineTo(cur+w,ay);ctx.stroke();ctx.beginPath();ctx.moveTo(cur+w,ay);ctx.lineTo(cur+w-3.5,ay-2.4);ctx.lineTo(cur+w-3.5,ay+2.4);ctx.closePath();ctx.fill()}else{ctx.font=`700 ${size}px system-ui`;ctx.fillText(t.text,cur,y)}cur+=widths[i]+(i<toks.length-1?3:0)}ctx.restore()}
+function arrow(o,d,color=C.cyan,label='',opts={}){if(eq(d,[0,0])){point(o,'',color,5);if(state?.hasVector)drawMathLabel(CV('0'),toPx(o)[0]+12,toPx(o)[1]-10,color);return {a:toPx(o),b:toPx(o)}}const a=toPx(o),b=toPx(add(o,d)),ang=Math.atan2(b[1]-a[1],b[0]-a[0]);ctx.save();ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=opts.width||3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke();ctx.beginPath();ctx.moveTo(b[0],b[1]);ctx.lineTo(b[0]-14*Math.cos(ang-.45),b[1]-14*Math.sin(ang-.45));ctx.lineTo(b[0]-14*Math.cos(ang+.45),b[1]-14*Math.sin(ang+.45));ctx.closePath();ctx.fill();ctx.fillStyle=opts.startColor||color;ctx.beginPath();ctx.arc(...a,opts.startR||4,0,Math.PI*2);ctx.fill();if(label){const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;ctx.restore();drawMathLabel(label,mx+8,my-8,color,15);ctx.save()}if(opts.handle){ctx.fillStyle='#f6ffff';ctx.beginPath();ctx.arc(...b,8,0,Math.PI*2);ctx.fill();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke()}ctx.restore();return{a,b}}
+
+function drawStarPoint(p,label='',color=C.gold,r=8){const [x,y]=toPx(p);ctx.save();ctx.fillStyle=color;ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1.2;ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2===0?r:r*.45,px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.fill();ctx.stroke();if(label){ctx.font='700 14px system-ui';ctx.fillStyle=color;ctx.fillText(label,x+10,y-9)}ctx.restore()}
+function drawSparkleAt(p,color=C.gold){const [x,y]=toPx(p);ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.globalAlpha=.9;for(const [dx,dy] of [[0,-11],[0,11],[-11,0],[11,0],[-8,-8],[8,-8],[-8,8],[8,8]]){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y+dy);ctx.stroke()}ctx.restore()}
+function drawBoneAt(p){const [x,y]=toPx(add(p,[.18,-.12]));ctx.save();ctx.fillStyle='rgba(255,211,106,.96)';for(const dx of [-11,11]){ctx.beginPath();ctx.arc(x+dx,y-4,4,0,Math.PI*2);ctx.arc(x+dx,y+4,4,0,Math.PI*2);ctx.fill()}ctx.fillRect(x-11,y-4,22,8);ctx.restore()}
+function drawLilyPad(p,scale=1){const [x,y]=toPx(p);ctx.save();ctx.fillStyle='rgba(139,224,170,.35)';ctx.beginPath();ctx.ellipse(x,y,16*scale,10*scale,-.15,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(139,224,170,.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+12*scale,y-2*scale);ctx.stroke();ctx.restore()}
+function drawJumpArc(a,b,color='rgba(255,255,255,.25)'){const A=toPx(a),B=toPx(b),mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2-20;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([6,6]);ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.quadraticCurveTo(mx,my,B[0],B[1]);ctx.stroke();ctx.restore()}
+
+
+
+
+function drawNest(p){const q=toPx(add(p,[0,.25]));ctx.save();ctx.strokeStyle=C.gold;ctx.lineWidth=2.4;for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(q[0],q[1]+i*2,16+i*2,.1,Math.PI-.1);ctx.stroke()}ctx.restore()}
+
+
+
+function drawLevel(l,s){
+ if(['choice','odd'].includes(l.kind)){
+  arrow(l.base.o,l.base.d,C.cyan,CV('a'));
+  l.choices.forEach((v,i)=>arrow(v.o,v.d,i===s.selected?C.gold:C.violet,CV(l.labels?.[i]||String.fromCharCode(98+i))));return;
+ }
+ if(l.kind==='construct'){
+  arrow(l.given.o,l.given.d,C.cyan,CV('a'));point(l.start,'P',C.gold);
+  if(s.edit){arrow(s.edit.o,s.edit.d,C.gold,s.drawing?'':COV('PQ'));if(s.hasVector&&!s.drawing)point(add(s.edit.o,s.edit.d),'Q',C.green,5)}return;
+ }
+ if(l.kind==='constructAB'){point(l.A,'A',C.gold);point(l.B,'B',C.green);if(s.drawing||s.hasVector)arrow(s.edit.o,s.edit.d,C.gold,COV('AB'));return}
+ if(l.kind==='placePoint'){
+  point(l.A,'A',C.gold);arrow(l.vecOrigin,l.vec,C.cyan,CV('v'));
+  if(s.point){arrow(l.A,sub(s.point,l.A),C.gold,COV('AA′'));if(!s.drawing)point(s.point,'A′',C.green,5)}return;
+ }
+ if(l.kind==='placePreimage'){point(l.Bprime,'B′',C.green);arrow(l.vecOrigin,l.vec,C.cyan,CV('v'));if(s.point){point(s.point,'B',C.gold);arrow(s.point,sub(l.Bprime,s.point),C.gold,COV('BB′'))}return}
+ if(['moveShape','moveShapeFromPoint'].includes(l.kind)){
+  const atStart=eq(s.shapePos,[0,0]);drawShape(l.shape,atStart?'rgba(114,227,233,.13)':'rgba(114,227,233,.025)',C.cyan,atStart?false:'ghost');
+  l.shape.forEach((p,i)=>point(p,String.fromCharCode(65+i),atStart?C.cyan:C.muted,3));
+  if(!atStart){const pts=l.shape.map(p=>add(p,s.shapePos));drawShape(pts,'rgba(255,211,106,.12)',C.gold);pts.forEach((p,i)=>point(p,String.fromCharCode(65+i)+'′',C.gold,4))}
+  if(l.kind==='moveShape')arrow(l.vecOrigin,l.vec,C.cyan,CV('v'));else if(!s.success)point(l.imageAnchor,'A′',C.green,6);return;
+ }
+ if(l.kind==='headTail'){
+  arrow(l.a.o,l.a.d,C.cyan,CV('a'));arrow(s.bPos,l.b.d,C.violet,CV('b'));
+  if(s.stage===1&&(s.drawing||s.hasVector))arrow(s.result.o,s.result.d,C.gold,[CV('a'),MT('+'),CV('b')]);return;
+ }
+ if(l.kind==='resultant'){
+  arrow(l.o,l.a,C.cyan,CV('a'));arrow(l.o,l.b,C.violet,CV('b'));
+  if(!l.hideGuides){ctx.save();ctx.setLineDash([5,5]);ctx.strokeStyle='rgba(210,245,248,.20)';line(add(l.o,l.a),add(l.o,add(l.a,l.b)));line(add(l.o,l.b),add(l.o,add(l.a,l.b)));ctx.restore()}
+  if(s.drawing||s.hasVector)arrow(s.edit.o,s.edit.d,C.gold,[CV('a'),MT('+'),CV('b')]);return;
+ }
+ if(l.kind==='missing'){arrow(l.o,l.a,C.cyan,CV('a'));arrow(l.rOrigin||l.o,l.r,C.green,CV('r'));if(s.drawing||s.hasVector)arrow(s.edit.o,s.edit.d,C.gold,CV('b'));return}
+ if(l.kind==='closeChain'){
+  let p=l.o;l.fixed.forEach((v,i)=>{arrow(p,v,[C.cyan,C.violet,C.green][i%3]);p=add(p,v)});point(l.o,'P',C.ink,5);
+  if(s.drawing||s.hasVector)arrow(s.edit.o,s.edit.d,C.gold,eq(s.edit.d,[0,0])?'':CV('u'));return;
+ }
+ if(l.kind==='decompose'){
+  if(s.firstRoute){ctx.save();ctx.globalAlpha=.20;s.firstRoute.forEach(seg=>arrow(seg.o,seg.d,seg.dir?C.violet:C.cyan));ctx.restore()}
+  arrow(l.o,l.v,C.green,CV('v'));l.dirs.forEach((d,i)=>axis(l.o,d,i?C.violet:C.cyan));const labs=l.componentLabels;
+  s.decompSegments.forEach(seg=>arrow(seg.o,seg.d,seg.dir?C.violet:C.cyan,CV(...labs[seg.dir])));
+  if(s.decompPhase===1&&!s.success){const first=s.decompSegments[0];axis(add(first.o,first.d),l.dirs[1-first.dir],first.dir?C.cyan:C.violet)}
+  if(s.decompDrawing)arrow(s.decompDrawing.o,s.decompDrawing.d,C.gold);
+  point(l.o,'',C.ink,5);point(add(l.o,l.v),'',C.green,5);return;
+ }
+ if(l.kind==='pattern'){drawPattern(l,s);return}
+ if(l.kind==='placePointD'){
+  point(l.A,'A',C.gold);point(l.B,'B',C.green);point(l.C,'C',C.violet);if(!l.hideGuide)arrow(l.A,sub(l.B,l.A),C.cyan,COV('AB'));
+  if(s.point){arrow(l.C,sub(s.point,l.C),C.gold,COV('CD'));if(!s.drawing)point(s.point,'D',C.green)}return;
+ }
+}
+
+// Shared target illustrations.
+
+
+
+
+
+function line(a,b){const A=toPx(a),B=toPx(b);ctx.beginPath();ctx.moveTo(...A);ctx.lineTo(...B);ctx.stroke()}
+
+function drawShape(shape,fill,stroke,mode=false){ctx.save();const ghost=mode==='ghost';if(ghost){ctx.globalAlpha=.48;ctx.setLineDash([7,6])}const pts=shape.map(toPx);ctx.beginPath();ctx.moveTo(...pts[0]);pts.slice(1).forEach(p=>ctx.lineTo(...p));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=ghost?2.2:3;ctx.stroke();if(ghost)ctx.setLineDash([]);pts.forEach(p=>{ctx.fillStyle=stroke;ctx.beginPath();ctx.arc(...p,ghost?3.5:5,0,Math.PI*2);ctx.fill()});ctx.restore()}
+function pointerPos(e){const r=canvas.getBoundingClientRect(),t=e.touches?.[0]||e.changedTouches?.[0]||e;return[t.clientX-r.left,t.clientY-r.top]}
+function dist(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1])}
+
+canvas.addEventListener('pointerdown',e=>{
+ if(screen!=='game'||state.success||drag)return;
+ const [x,y]=pointerPos(e),l=levels[current];canvas.setPointerCapture?.(e.pointerId);
+ if(['choice','odd'].includes(l.kind)){let best=-1,bd=Infinity;l.choices.forEach((v,i)=>{const d=segmentDistance(toPx(v.o),toPx(add(v.o,v.d)),[x,y]);if(d<bd){bd=d;best=i}});if(bd<28){state.selected=best;updateUI();draw()}return}
+ if(l.kind==='placePreimage'){state.point=toGrid(x,y);updateUI();draw();return}
+ if(['moveShape','moveShapeFromPoint'].includes(l.kind)){const pts=l.shape.map(p=>toPx(add(p,state.shapePos)));if(insidePolygon([x,y],pts)||pts.some((p,i)=>segmentDistance(p,pts[(i+1)%pts.length],[x,y])<22))drag={type:'shape',start:[x,y],orig:[...state.shapePos]};return}
+ if(l.kind==='headTail'&&state.stage===0){if(hitArrowBody(state.bPos,l.b.d,x,y))drag={type:'moveB',start:[x,y],orig:[...state.bPos]};return}
+ const start=constructionStart(l,state);if(!start||dist([x,y],toPx(start))>30)return;
+ state.drawing=true;
+ if(l.kind==='decompose'){state.decompDrawing={o:[...start],d:[0,0]};drag={type:'decompDraw',ed:state.decompDrawing}}
+ else if(['placePoint','placePointD'].includes(l.kind)){state.point=[...start];drag={type:'pointDraw',o:start}}
+ else{const ed={o:[...start],d:[0,0]};if(l.kind==='headTail')state.result=ed;else state.edit=ed;state.hasVector=false;drag={type:'drawConstruct',ed};}
+ draw();
+});
+canvas.addEventListener('pointermove',e=>{
+ if(!drag||screen!=='game')return;const [x,y]=pointerPos(e),l=levels[current],g=toGrid(x,y);
+ if(drag.ed)drag.ed.d=sub(g,drag.ed.o);
+ else if(drag.type==='pointDraw')state.point=g;
+ else if(drag.type==='moveB')state.bPos=clampOrigin(add(drag.orig,[Math.round((x-drag.start[0])/geom().cell),Math.round((y-drag.start[1])/geom().cell)]),[[0,0],l.b.d]);
+ else if(drag.type==='shape')state.shapePos=clampOrigin(add(drag.orig,[Math.round((x-drag.start[0])/geom().cell),Math.round((y-drag.start[1])/geom().cell)]),l.shape);
+ draw();
+});
+function resetDecompAttempt(){state.decompPhase=0;state.decompFirstDir=null;state.decompSegments=[];state.decompDrawing=null}
+function finishDecompSegment(l){
+ const seg=state.decompDrawing;if(!seg||eq(seg.d,[0,0])){resetDecompAttempt();fail(`Geen geldige componentvector. Begin opnieuw vanuit het beginpunt van ${V('v')}.`);return}
+ const comps=[mul(l.dirs[0],l.coeff[0]),mul(l.dirs[1],l.coeff[1])];
+ if(state.decompPhase===0){
+  let i=eq(seg.d,comps[0])?0:(eq(seg.d,comps[1])?1:-1);
+  if(i<0){const message=componentDiag(seg.d,l,comps);resetDecompAttempt();fail(message);return}
+  if(state.decompPass===1&&i===state.decompFirstDirDone){resetDecompAttempt();fail(`Die volgorde heb je al gebruikt. Begin opnieuw met de andere componentrichting.`);return}
+  state.decompFirstDir=i;state.decompSegments=[{o:[...seg.o],d:[...seg.d],dir:i}];state.decompDrawing=null;state.decompPhase=1;
+  updateUI(`Goed. Teken nu vanaf dit eindpunt de componentvector volgens de andere richting.`);draw();return
+ }
+ const remaining=1-state.decompFirstDir,expected=comps[remaining],target=add(l.o,l.v);
+ if(!eq(seg.d,expected)||!eq(add(seg.o,seg.d),target)){
+  const message=componentDiag(seg.d,l,comps,remaining);resetDecompAttempt();fail(message+' Teken opnieuw vanaf het beginpunt.');return
+ }
+ state.decompSegments.push({o:[...seg.o],d:[...seg.d],dir:remaining});state.decompDrawing=null;
+ if(state.decompPass===0){
+  state.firstRoute=state.decompSegments.map(seg=>({...seg}));state.decompFirstDirDone=state.decompFirstDir;state.decompPass=1;resetDecompAttempt();state.decompPass=1;state.decompFirstDirDone=1-remaining;
+  updateUI(`Correct. Deze componentvectoren zijn uniek bepaald. Construeer nu dezelfde componentvectoren in de <b>omgekeerde volgorde</b>: begin met de andere richting.`);draw();return
+ }
+ success(`${V('v')} = ${V('v','1')} + ${V('v','2')} = ${V('v','2')} + ${V('v','1')}. Dezelfde componenten, omgekeerde volgorde.`)
+}
+canvas.addEventListener('pointerup',()=>{
+ if(!drag||screen!=='game')return;const l=levels[current],type=drag.type;drag=null;state.drawing=false;
+ if(type==='decompDraw')finishDecompSegment(l);
+ else if(type==='drawConstruct'){state.hasVector=true;updateUI();if(l.bonusTheme==='rocket')animateEvent('launch')}
+ else updateUI();draw();
+});
+canvas.addEventListener('pointercancel',()=>{if(!drag)return;drag=null;state=setup(levels[current]);updateUI('Aanraking onderbroken. Begin opnieuw vanaf de startring.');draw()});
+$('#topHandle').onclick=()=>setTopCollapsed(!topCollapsed);$('#brand').onclick=openHome;$('#menuBtn').onclick=openMenu;$('#startBtn').onclick=openMenu;$('#homeLevels').onclick=openMenu;
+// The original curriculum and renderer remain the foundation. Shared construction
+// and object geometry use one grid, one validation path, and one pointer lifecycle.
+const shortTasks={
+ 3:`Teken vanaf P: ${OV('PQ')} = ${V('a')}.`,4:`Teken ${OV('AB')}: van A naar B.`,5:`Teken ${OV('AB')}. Let op de zin.`,6:`Teken vanaf C: ${OV('CD')} = ${OV('AB')}.`,
+ 7:`Teken vanaf P: ${OV('PQ')} = −${V('a')}.`,8:`Teken vanaf P: ${OV('PQ')} = 2${V('a')}.`,9:`Teken vanaf P: ${OV('PQ')} = −3${V('a')}.`,
+ 10:`Transleer A met ${V('v')}: teken naar A′.`,11:`B′ is het beeld van B onder ${V('v')}. Plaats B.`,12:`Transleer de driehoek met ${V('v')}.`,13:`A wordt A′. Transleer de hele vierhoek.`,
+ 14:`Plaats ${V('b')} kop aan staart. Teken daarna ${V('a')} + ${V('b')}.`,15:`Plaats ${V('b')} kop aan staart. Teken daarna ${V('a')} + ${V('b')}.`,16:`Construeer ${V('a')} + ${V('b')} via kop-aan-staart.`,
+ 17:`Teken de somvector ${V('a')} + ${V('b')}.`,18:`Teken ${V('a')} + ${V('b')} zonder hulplijnen.`,19:`Teken de somvector ${V('a')} + ${V('b')}.`,
+ 20:`Teken de ontbrekende ${V('b')}: ${V('a')} + ${V('b')} = ${V('r')}.`,21:`Teken ${V('b')}: ${V('a')} + ${V('b')} = ${V('r')}.`,22:`Teken ${V('b')}: ${V('a')} + ${V('b')} = ${V('r')}.`,
+ 23:`Sluit de keten met één vector.`,24:`Vul aan tot een gesloten keten: totale som ${V('0')}.`,25:`De keten sluit al. Construeer de ontbrekende ${V('0')}.`,
+ 26:`Ontbind ${V('v')}: eerst beide componenten, dan omgekeerd.`,27:`Ontbind ${V('v')}. Gebruik beide volgordes.`,28:`Ontbind ${V('v')} volgens de schuine richtingen.`,29:`Ontbind ${V('v')}. Let op de zin van de componenten.`,
+ 30:`Teken ${V('t')}: van het witte naar het blauwe patroon.`,31:`Teken ${V('t')}: van wit naar blauw.`,32:`Teken ${V('t')} die elk wit punt op zijn blauwe beeld brengt.`,
+ 33:`Bouw vanaf ster P een raket: ${OV('PQ')} = ${V('a')}.`,34:`Rek de teckel: staart in A, neus in B.`,35:`Rek de worm vanaf P: ${OV('PQ')} = −2${V('a')}.`,36:`Schuif de boterham met ${V('v')} op het bord.`,
+ 37:`Plaats sprong ${V('b')}. Teken dan ${V('a')} + ${V('b')}.`,38:`Stuur de ballon: teken ${V('a')} + ${V('b')}.`,39:`Teken het mierenspoor ${V('b')}: ${V('a')} + ${V('b')} = ${V('r')}.`,40:`Teken de laatste vlucht terug naar het nest.`,41:`Maak twee tongsegmenten volgens de richtingen. Keer dan om.`,42:`Verschuif de witte stippen met ${V('t')}. Bouw de doodle.`
+};
+levels.forEach(l=>{if(shortTasks[l.n])l.instruction=shortTasks[l.n]});
+levels[21].rOrigin=[7,2];levels[21].info=`De gegeven ${V('r')} staat elders in het vlak. Verplaats die vector in gedachten zonder richting, zin of grootte te veranderen. Construeer dan de ontbrekende stap.`;
+levels[34].given.o=[2,1];
+levels[26].title='Een negatieve component';
+levels[41].points=[[2,1],[4,1],[3,2],[1,3],[5,3],[3,4],[2,6],[4,6]];levels[41].shift=[5,0];
+levels[24].info=`De nulvector heeft grootte nul: beginpunt en eindpunt vallen samen. Richting en zin zijn niet bepaald. Tik de startring en laat los op hetzelfde punt.`;
+levels[40].info=`De twee tongsegmenten zijn de componentvectoren van ${V('v')}. Bij twee vaste niet-evenwijdige richtingen is de ontbinding uniek. Alleen hun volgorde wisselt.`;
+[26,27,28,29,41].forEach(n=>levels[n-1].info+=` Positieve richtingen herken je aan de kleine pijlen. De twee volgordes geven dezelfde som.`);
+levels.filter(l=>l.kind==='pattern').forEach(l=>l.info=`Witte stippen zijn het origineel, blauwe ringen het beeld. De gouden kandidaat volgt jouw vector. Controleer dezelfde verplaatsing op alle puntenparen.`);
+levels[30].info+=' Een witte stip in een blauwe ring hoort bij beide patronen.';
+const help=document.createElement('button');help.className='help';help.textContent='Inzicht';help.setAttribute('aria-expanded','false');help.onclick=()=>{infoStrip.hidden=!infoStrip.hidden;help.setAttribute('aria-expanded',String(!infoStrip.hidden))};$('.taskTop').appendChild(help);
+feedback.setAttribute('aria-live','polite');feedback.setAttribute('aria-atomic','true');
+canvas.setAttribute('aria-label','Vectorvlak. Sleep vanaf de gouden startring en laat los op een roosterpunt.');
+function constructionStart(l,s){
+ if(l.kind==='construct')return l.start;
+ if(l.kind==='constructAB')return l.A;
+ if(l.kind==='placePoint')return l.A;
+ if(l.kind==='placePointD')return l.C;
+ if(l.kind==='headTail')return s.stage===1?l.a.o:null;
+ if(l.kind==='decompose')return s.decompPhase===0?l.o:add(l.o,s.decompSegments[0].d);
+ if(s.edit)return s.edit.o;return null;
+}
+function clampOrigin(o,pts){return o.map((v,i)=>Math.max(-Math.min(...pts.map(p=>p[i])),Math.min((i?7:12)-Math.max(...pts.map(p=>p[i])),v)))}
+function segmentDistance(a,b,p){const d=sub(b,a),n=d[0]*d[0]+d[1]*d[1];const t=n?Math.max(0,Math.min(1,((p[0]-a[0])*d[0]+(p[1]-a[1])*d[1])/n)):0;return dist(p,add(a,mul(d,t)))}
+function hitArrowBody(o,d,x,y){return segmentDistance(toPx(o),toPx(add(o,d)),[x,y])<25}
+function insidePolygon(p,pts){let inside=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const a=pts[i],b=pts[j];if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])inside=!inside}return inside}
+function vectorDiag(v,e){
+ const lv=Math.hypot(...v),le=Math.hypot(...e),cross=v[0]*e[1]-v[1]*e[0],dot=v[0]*e[0]+v[1]*e[1];
+ if(le<.01)return `Hier is de nulvector nodig: laat beginpunt en eindpunt samenvallen.`;
+ if(lv<.01)return `Je tekende de nulvector. De gevraagde vector heeft een grootte groter dan nul.`;
+ if(Math.abs(cross)<.01&&dot<0)return `De richting klopt, maar de zin is tegengesteld${Math.abs(lv-le)>.01?' en de grootte verschilt':''}.`;
+ if(Math.abs(cross)<.01&&dot>0)return `Richting en zin kloppen; de vector is ${lv>le?'te lang':'te kort'}.`;
+ if(Math.abs(lv-le)<.01)return `De grootte klopt, maar de richting verschilt.`;
+ return `De richting en grootte verschillen. Vergelijk de horizontale en verticale verplaatsing.`;
+}
+function componentDiag(d,l,comps,required=null){
+ const aligned=l.dirs.map(v=>Math.abs(d[0]*v[1]-d[1]*v[0])<.01);
+ if(required!==null&&!aligned[required])return 'Deze component ligt niet volgens de andere opgegeven richting.';
+ const i=required??aligned.findIndex(Boolean);
+ if(i<0)return 'De eerste component ligt volgens geen van beide aangegeven richtingen.';
+ return vectorDiag(d,comps[i])+' De componenten moeten samen bij het eindpunt uitkomen.';
+}
+function drawStartCue(l,s){
+ if(s.success)return;const p=constructionStart(l,s);if(!p)return;
+ const q=toPx(p);ctx.save();ctx.strokeStyle=C.gold;ctx.globalAlpha=s.drawing?.4:.85;ctx.lineWidth=1.7;ctx.beginPath();ctx.arc(...q,13,0,Math.PI*2);ctx.stroke();ctx.restore();
+}
+function axis(o,d,color){
+ const n=Math.hypot(...d),u=mul(d,1/n);let lo=-Infinity,hi=Infinity;
+ for(let i=0;i<2;i++){if(Math.abs(u[i])<1e-8)continue;let a=(0-o[i])/u[i],b=((i?7:12)-o[i])/u[i];lo=Math.max(lo,Math.min(a,b));hi=Math.min(hi,Math.max(a,b))}
+ ctx.save();ctx.setLineDash([4,5]);ctx.strokeStyle=color;ctx.globalAlpha=.38;line(add(o,mul(u,lo)),add(o,mul(u,hi)));ctx.restore();
+ const end=toPx(add(o,mul(u,Math.min(hi,1.15)))),ang=Math.atan2(u[1],u[0]);ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(end[0]-7*Math.cos(ang-.5),end[1]-7*Math.sin(ang-.5));ctx.lineTo(...end);ctx.lineTo(end[0]-7*Math.cos(ang+.5),end[1]-7*Math.sin(ang+.5));ctx.stroke();ctx.restore();
+}
+// Short, cancellable, non-blocking causal animations. Geometry never changes.
+function animateEvent(type){if(matchMedia('(prefers-reduced-motion: reduce)').matches){state.motion=null;draw();return}state.motion={type,start:performance.now()};cancelAnimationFrame(anim);const owner=state;function frame(){if(state!==owner||screen!=='game')return;draw();if(performance.now()-owner.motion.start<380)anim=requestAnimationFrame(frame)}anim=requestAnimationFrame(frame)}
+function motionProgress(){return state?.motion?Math.min(1,(performance.now()-state.motion.start)/380):1}
+const baseSuccess=success;success=function(message){baseSuccess(message);help.setAttribute('aria-expanded','false');if(levels[current].bonus)animateEvent('success')};
+const baseDefaultFeedback=defaultFeedback;defaultFeedback=function(l){
+ if(l.n===25)return 'Tik de startring en laat los op hetzelfde punt: grootte nul.';
+ if(l.kind==='placePoint'||l.kind==='placePointD')return 'Druk op de startring. Teken naar het gezochte beeldpunt.';
+ if(l.kind==='moveShape')return 'Pak de figuur vast en verschuif haar over het rooster.';
+ if(l.kind==='moveShapeFromPoint')return 'Verschuif de figuur zodat hoekpunt A op A′ belandt.';
+ if(l.kind==='decompose')return state.decompPhase?'Teken vanaf de nieuwe startring volgens de andere richting.':(state.decompPass?'Dezelfde componenten, andere volgorde. Begin met de andere richting.':'Teken vanaf de startring volgens een van de twee richtingen.');
+ if(l.kind==='headTail')return state.stage===0?'Pak de paarse vector vast en zet zijn beginpunt op het blauwe eindpunt.':(l.bonus?'De luie kikker wacht bij P. Teken zijn rechtstreekse sprong.':'Teken de somvector vanaf de startring.');
+ if(l.bonusTheme==='rocket')return state.hasVector?'Je raket is getekend. Vergelijk richting, zin en grootte.':'Sleep vanaf ster P. De raket zelf volgt jouw verplaatsing.';
+ if(l.bonusTheme==='worm')return 'Staart blijft in P. Negatieve factor: keer de zin om en verdubbel de lengte.';
+ if(l.bonusTheme==='dachshund')return 'Sleep vanaf A. Zijn staart blijft staan; zijn neus volgt je vinger.';
+ if(l.bonusTheme==='balloon')return 'Sleep vanaf de startring: de ballon volgt jouw somvector.';
+ if(l.bonusTheme==='ant')return 'De mier wacht na de eerste stap. Teken het laatste spoor naar de kruimel.';
+ if(l.bonusTheme==='nest')return 'Pak de vogel bij de startring. Sluit zijn vlucht tot bij P.';
+ if(l.kind==='pattern')return 'Sleep vanaf de startring. De gouden stippen moeten op alle blauwe passen.';
+ if(['constructAB','resultant','missing','closeChain'].includes(l.kind))return 'Sleep vanaf de startring en laat los op een roosterpunt.';
+ return baseDefaultFeedback(l);
+};
+// Pixel-space artwork shared by game and menu: the tail and nose are exact endpoints.
+function vectorObject(p,A,B,theme,color=C.gold,reaction=0){
+ const dx=B[0]-A[0],dy=B[1]-A[1],len=Math.hypot(dx,dy);if(len<2)return;
+ p.save();p.translate(...A);p.rotate(Math.atan2(dy,dx));p.lineCap='round';p.lineJoin='round';
+ const h=Math.min(theme==='dachshund'?18:12,len*.13),poly=pts=>{p.beginPath();pts.forEach((q,i)=>i?p.lineTo(...q):p.moveTo(...q));p.closePath()};
+ if(theme==='rocket'){
+  const gr=p.createLinearGradient(0,-h,0,h);gr.addColorStop(0,'#d7fcff');gr.addColorStop(.45,color);gr.addColorStop(1,'#208897');p.fillStyle=gr;
+  p.beginPath();p.moveTo(0,0);p.lineTo(h,-h*.8);p.lineTo(len-h*2,-h);p.quadraticCurveTo(len-h*.8,-h*.9,len,0);p.quadraticCurveTo(len-h*.8,h*.9,len-h*2,h);p.lineTo(h,h*.8);p.closePath();p.fill();
+  p.fillStyle='#28818e';poly([[h,0],[h*.2,-h*1.6],[h*3,-h*.7]]);p.fill();poly([[h,0],[h*.2,h*1.6],[h*3,h*.7]]);p.fill();
+  p.fillStyle='#082d43';p.beginPath();p.ellipse(Math.max(h,len-h*2.8),0,h*.6,h*.65,0,0,Math.PI*2);p.fill();p.strokeStyle='#dffaff';p.lineWidth=1.8;p.stroke();
+  p.fillStyle=C.gold;poly([[0,0],[h*.6,-h*.4],[h*1.7,0],[h*.6,h*.4]]);p.fill();
+ }else if(theme==='dachshund'){
+  const nose=len,head=Math.max(h*2,len-h*2.4);p.strokeStyle='#d59453';p.lineWidth=3;
+  p.beginPath();p.moveTo(0,0);p.bezierCurveTo(h,-h*(1.8+reaction),h*.8,0,h*2,0);p.stroke();
+  p.fillStyle='#bc743c';p.beginPath();p.moveTo(h*1.6,-h*.65);p.bezierCurveTo(len*.4,-h*1.1,head-h,-h*.8,head,-h*.8);p.quadraticCurveTo(head+h,-h*1.1,head+h*.8,-h*.3);p.lineTo(nose,0);p.lineTo(nose-h*.6,h*.45);p.lineTo(head,h*.55);p.quadraticCurveTo(len*.45,h*1.1,h*2,h*.7);p.closePath();p.fill();
+  p.strokeStyle='#bc743c';p.lineWidth=5;for(const x of [Math.min(h*3,len*.3),Math.max(len*.5,head-h)]){p.beginPath();p.moveTo(x,h*.4);p.lineTo(x-h*.15,h*1.5);p.lineTo(x+h*.45,h*1.5);p.stroke()}
+  p.fillStyle='#6f3d28';p.beginPath();p.ellipse(head,h*.2,h*.48,h*1.1,-.18+reaction*.2,0,Math.PI*2);p.fill();p.fillStyle='#07131a';p.beginPath();p.arc(nose-2,0,2.8,0,Math.PI*2);p.fill();p.fillStyle='#fff4d7';p.beginPath();p.arc(head+h*.65,-h*.4,3,0,Math.PI*2);p.fill();p.fillStyle='#07131a';p.beginPath();p.arc(head+h*.75,-h*.4,1.5,0,Math.PI*2);p.fill();
+ }else if(theme==='worm'){
+  p.strokeStyle=color;p.lineWidth=h*1.5;p.beginPath();p.moveTo(0,0);p.lineTo(len-h*.7,0);p.stroke();p.fillStyle=color;p.beginPath();p.ellipse(len-h*.7,0,h*.7,h*.8,0,0,Math.PI*2);p.fill();
+  p.strokeStyle='#603957';p.lineWidth=1.4;for(let x=h;x<len-h*1.5;x+=h*.9){p.beginPath();p.moveTo(x,-h*.65);p.quadraticCurveTo(x+h*.3,0,x,h*.65);p.stroke()}
+  p.fillStyle='#fff';p.beginPath();p.arc(len-h*.7,-h*.35,3,0,Math.PI*2);p.fill();p.fillStyle='#132734';p.beginPath();p.arc(len-h*.5,-h*.35,1.5,0,Math.PI*2);p.fill();
+ }else if(theme==='tongue'){
+  p.strokeStyle='#ee859d';p.lineWidth=8;p.beginPath();p.moveTo(0,0);p.lineTo(len,0);p.stroke();p.strokeStyle='#ffced0';p.lineWidth=2;p.beginPath();p.moveTo(0,-2);p.lineTo(len,-2);p.stroke();
+ }
+ p.restore();
+}
+function objectVector(o,d,theme,color=C.gold){vectorObject(ctx,toPx(o),toPx(add(o,d)),theme,color,state.success?Math.sin(motionProgress()*Math.PI):0)}
+function labelAt(text,p,color=C.muted){const q=toPx(p);ctx.save();ctx.font='600 12px system-ui';ctx.fillStyle=color;ctx.fillText(text,q[0],q[1]);ctx.restore()}
+function trail(o,d,color=C.gold){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.4;ctx.setLineDash([2,7]);line(o,add(o,d));ctx.restore()}
+function bird(p){const q=toPx(p);ctx.save();ctx.translate(...q);ctx.fillStyle='#bda4ed';ctx.beginPath();ctx.moveTo(-13,4);ctx.bezierCurveTo(-6,-12,7,-12,11,-2);ctx.lineTo(18,1);ctx.lineTo(10,5);ctx.quadraticCurveTo(-1,13,-13,4);ctx.fill();ctx.fillStyle='#7c64b8';ctx.beginPath();ctx.moveTo(0,3);ctx.quadraticCurveTo(-16,-15,-18,-6);ctx.quadraticCurveTo(-11,7,0,3);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(7,-2,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#12232f';ctx.beginPath();ctx.arc(8,-2,1.5,0,Math.PI*2);ctx.fill();ctx.restore()}
+function bread(shape,shift,ghost=false){
+ const pts=shape.map(p=>toPx(add(p,shift))),x=Math.min(...pts.map(p=>p[0])),y=Math.min(...pts.map(p=>p[1])),w=Math.max(...pts.map(p=>p[0]))-x,h=Math.max(...pts.map(p=>p[1]))-y;
+ ctx.save();ctx.translate(x,y);ctx.fillStyle=ghost?'#13303b':'#edb96f';ctx.strokeStyle=ghost?'#6c999f':'#b7733d';ctx.lineWidth=3;if(ghost){ctx.globalAlpha=.5;ctx.setLineDash([5,5])}
+ ctx.beginPath();ctx.moveTo(w*.12,h);ctx.lineTo(w*.12,h*.4);ctx.bezierCurveTo(-w*.2,h*.02,w*.25,-h*.06,w*.5,h*.07);ctx.bezierCurveTo(w*.75,-h*.06,w*1.2,h*.02,w*.88,h*.4);ctx.lineTo(w*.88,h);ctx.closePath();ctx.fill();ctx.stroke();
+ if(!ghost){ctx.fillStyle='#ffdea0';ctx.beginPath();ctx.roundRect(w*.24,h*.3,w*.52,h*.54,5);ctx.fill();ctx.fillStyle='#493322';for(const xx of [.36,.64]){ctx.beginPath();ctx.arc(w*xx,h*.49,2,0,Math.PI*2);ctx.fill()}ctx.strokeStyle='#493322';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(w*.5,h*.6,5,.1,Math.PI-.1);ctx.stroke()}
+ ctx.restore();
+}
+function drawPattern(l,s,doodle=false){
+ const original=l.points,images=original.map(p=>add(p,l.shift)),edges=[[0,1],[0,2],[1,2],[3,2],[2,4],[2,5],[5,6],[5,7]];
+ if(doodle){ctx.save();ctx.strokeStyle='#21424d';ctx.lineWidth=2;for(const [a,b]of edges)line(original[a],original[b]);ctx.restore()}
+ original.forEach(p=>point(p,'',C.ink,4));images.forEach(p=>{const q=toPx(p);ctx.save();ctx.strokeStyle=C.cyan;ctx.lineWidth=2;ctx.beginPath();ctx.arc(...q,7,0,Math.PI*2);ctx.stroke();ctx.restore()});
+ if(s.hasVector||s.drawing){const cand=original.map(p=>add(p,s.edit.d));cand.forEach(p=>point(p,'',C.gold,4));arrow(s.edit.o,s.edit.d,C.gold,CV('t'));
+  if(doodle){ctx.save();ctx.strokeStyle=C.gold;ctx.lineWidth=3;for(const [a,b]of edges)line(cand[a],cand[b]);ctx.restore();if(s.success){const face=mul(add(cand[0],cand[1]),.5);const q=toPx(face);ctx.save();ctx.strokeStyle=C.gold;ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(q[0]-22,q[1]-14,44,30,8);ctx.stroke();ctx.fillStyle=C.ink;ctx.fillRect(q[0]-11,q[1]-4,5,5);ctx.fillRect(q[0]+6,q[1]-4,5,5);ctx.restore();labelAt('ROBOT DISCO',add(cand[6],[-.5,.8]),C.gold)}}
+ }
+}
+
+function drawBonusLevel(l,s){
+ const theme=l.bonusTheme,progress=motionProgress();
+ if(theme==='rocket'||theme==='worm'){
+  objectVector(l.given.o,l.given.d,theme,C.cyan);const mid=add(l.given.o,mul(l.given.d,.5));drawMathLabel(CV('a'),toPx(mid)[0],toPx(mid)[1]-20,C.cyan);
+  if(theme==='rocket')drawStarPoint(l.start,'P');else point(l.start,'P',C.gold);
+  if(s.edit){
+   const launching=theme==='rocket'&&s.motion?.type==='launch'&&progress<1&&!s.drawing;
+   ctx.save();if(launching)ctx.globalAlpha=.16;objectVector(s.edit.o,s.edit.d,theme);ctx.restore();
+   if(launching){const tip=add(s.edit.o,mul(s.edit.d,progress)),tail=add(s.edit.o,mul(s.edit.d,Math.max(0,progress-.32)));objectVector(tail,sub(tip,tail),'rocket');}
+   if(s.hasVector&&!s.drawing)point(add(s.edit.o,s.edit.d),'Q',C.gold,4);
+  }return;
+ }
+ if(theme==='dachshund'){drawBoneAt(l.B);point(l.A,'A',C.gold);point(l.B,'B',C.green);if(s.hasVector||s.drawing)objectVector(s.edit.o,s.edit.d,theme);return}
+ if(theme==='toast'){
+  const center=l.shape.reduce(add,[0,0]).map(v=>v/l.shape.length),plate=toPx(add(center,l.vec)),g=geom();ctx.save();ctx.strokeStyle='#b7d4dc';ctx.fillStyle='#173542';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(...plate,g.cell*1.3,g.cell*1.2,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(...plate,g.cell,g.cell*.92,0,0,Math.PI*2);ctx.stroke();ctx.restore();
+  if(!eq(s.shapePos,[0,0]))bread(l.shape,[0,0],true);bread(l.shape,s.shapePos);arrow(l.vecOrigin,l.vec,C.cyan,CV('v'));return;
+ }
+ if(theme==='frog'){
+  const o=l.a.o,mid=add(o,l.a.d),end=add(mid,l.b.d);[o,mid,end].forEach(p=>drawLilyPad(p,1.25));arrow(o,l.a.d,C.cyan,CV('a'));arrow(s.bPos,l.b.d,C.violet,CV('b'));drawLilyPad(s.bPos,.8);drawTinyFly(end);point(o,'P',C.gold,4);
+  if(s.stage===0){drawTinyFrog(o);drawTinyFrog(s.bPos)}else{
+   let active=end;if(s.motion?.type==='frogSteps'&&progress<1)active=progress<.5?jumpPoint(o,l.a.d,progress*2):jumpPoint(mid,l.b.d,(progress-.5)*2);drawTinyFrog(active);
+   const target=add(o,s.result.d);drawTinyFrog(s.success?jumpPoint(o,s.result.d,progress):s.drawing?target:o);
+   if(s.drawing||s.hasVector){trail(o,s.result.d);drawJumpArc(o,target,C.gold)}labelAt('1 sprong voor de luie kikker',add(o,[-1,1.3]),C.gold);
+  }return;
+ }
+ if(theme==='balloon'){
+  arrow(l.o,l.a,C.cyan,CV('a'));arrow(l.o,l.b,C.violet,CV('b'));axis(l.o,[1,0],C.muted);
+  const d=s.edit.d,candidate=add(l.o,mul(d,s.success?progress:1));trail(l.o,d);drawBalloonAt(candidate);point(l.o,'P',C.gold);return;
+ }
+ if(theme==='ant'){
+  arrow(l.o,l.a,C.cyan,CV('a'));arrow(l.o,l.r,C.green,CV('r'));const o=add(l.o,l.a);trail(o,s.edit.d);drawTinyAnt(add(o,mul(s.edit.d,s.success?progress:1)));if(!s.success||progress<1)drawTinyCrumb(add(l.o,l.r));return;
+ }
+ if(theme==='nest'){
+  drawNest(l.o);point(l.o,'P',C.gold,4);let o=l.o;l.fixed.forEach((d,i)=>{arrow(o,d,[C.cyan,C.violet,C.green][i%3]);o=add(o,d)});trail(o,s.edit.d);bird(add(o,mul(s.edit.d,s.success?progress:1)));return;
+ }
+ if(theme==='chameleon'){
+  drawChameleon(l.o);arrow(l.o,l.v,C.green,CV('v'));l.dirs.forEach((d,i)=>axis(l.o,d,i?C.violet:C.cyan));if(!s.success||progress<1)drawTinyFly(add(l.o,l.v));
+  if(s.firstRoute){ctx.save();ctx.globalAlpha=.18;s.firstRoute.forEach(seg=>objectVector(seg.o,seg.d,'tongue'));ctx.restore()}
+  s.decompSegments.forEach(seg=>objectVector(seg.o,seg.d,'tongue'));if(s.decompDrawing)objectVector(s.decompDrawing.o,s.decompDrawing.d,'tongue');return;
+ }
+ if(theme==='doodle'){drawPattern(l,s,true);return}
+}
+// Bonus previews use the same endpoint-faithful object drawing as gameplay.
+const oldBonusPreview=renderBonusPreview;renderBonusPreview=function(c,theme){
+ if(!['rocket','dachshund','worm','chameleon'].includes(theme)){oldBonusPreview(c,theme);return}
+ const r=c.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=r.width,h=r.height;c.width=w*dpr;c.height=h*dpr;const p=c.getContext('2d');p.setTransform(dpr,0,0,dpr,0,0);p.fillStyle='#08171e';p.fillRect(0,0,w,h);
+ if(theme==='chameleon'){vectorObject(p,[w*.18,h*.75],[w*.46,h*.25],'tongue');vectorObject(p,[w*.46,h*.25],[w*.79,h*.54],'tongue')}
+ else vectorObject(p,[w*.12,h*.68],[w*.82,h*.4],theme,theme==='worm'?C.violet:C.gold);
+};
+// Each stationary target is drawn around its actual grid point.
+function drawTinyFly(p){const q=toPx(p);ctx.save();ctx.translate(...q);ctx.fillStyle='#e2f5fa';ctx.beginPath();ctx.ellipse(-5,-5,6,3,-.5,0,Math.PI*2);ctx.ellipse(5,-5,6,3,.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ba8647';ctx.beginPath();ctx.ellipse(0,0,4,5,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#07131a';ctx.fillRect(-2,-1,4,2);ctx.restore()}
+function drawTinyAnt(p){const q=toPx(p);ctx.save();ctx.translate(...q);ctx.strokeStyle='#ccdae1';ctx.lineWidth=1.5;for(const x of [-6,0,5])for(const sign of [-1,1]){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x-3,sign*7);ctx.lineTo(x+1,sign*9);ctx.stroke()}ctx.fillStyle='#dde4ed';for(const [x,r] of [[-8,5],[0,3],[7,4]]){ctx.beginPath();ctx.ellipse(x,0,r,r*.8,0,0,Math.PI*2);ctx.fill()}ctx.strokeStyle='#dde4ed';ctx.beginPath();ctx.moveTo(9,-2);ctx.lineTo(13,-7);ctx.moveTo(10,0);ctx.lineTo(16,-2);ctx.stroke();ctx.fillStyle='#091a23';ctx.beginPath();ctx.arc(8,-1,1.5,0,Math.PI*2);ctx.fill();ctx.restore()}
+function drawTinyCrumb(p){const q=toPx(p);ctx.save();ctx.translate(...q);ctx.fillStyle='#e8b962';ctx.beginPath();ctx.moveTo(-8,-4);ctx.lineTo(-2,-9);ctx.lineTo(7,-5);ctx.lineTo(9,4);ctx.lineTo(2,8);ctx.lineTo(-7,5);ctx.closePath();ctx.fill();ctx.fillStyle='#a06a36';for(const [x,y] of [[-3,-3],[3,0],[-1,4]]){ctx.beginPath();ctx.arc(x,y,1.5,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function drawTinyFrog(p){const q=toPx(p);ctx.save();ctx.translate(...q);ctx.fillStyle='#458b6f';ctx.beginPath();ctx.ellipse(-11,5,9,5,-.4,0,Math.PI*2);ctx.ellipse(11,5,9,5,.4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8be0aa';ctx.beginPath();ctx.moveTo(-13,4);ctx.bezierCurveTo(-17,-9,-7,-14,0,-9);ctx.bezierCurveTo(7,-14,17,-9,13,4);ctx.quadraticCurveTo(0,12,-13,4);ctx.fill();for(const x of [-7,7]){ctx.fillStyle='#c6f0ad';ctx.beginPath();ctx.arc(x,-8,6,0,Math.PI*2);ctx.fill();ctx.fillStyle='#142e2a';ctx.beginPath();ctx.arc(x+1,-8,2.3,0,Math.PI*2);ctx.fill()}ctx.strokeStyle='#246351';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-7,2);ctx.quadraticCurveTo(0,6,7,2);ctx.stroke();ctx.restore()}
+function drawChameleon(p){const q=toPx(p);ctx.save();ctx.translate(...q);ctx.strokeStyle='#67bca0';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-36,8);ctx.bezierCurveTo(-64,15,-59,-15,-43,-10);ctx.bezierCurveTo(-32,-7,-45,6,-49,-1);ctx.stroke();ctx.fillStyle='#82d798';ctx.beginPath();ctx.moveTo(-44,7);ctx.bezierCurveTo(-47,-17,-16,-22,-9,-7);ctx.lineTo(0,0);ctx.lineTo(-13,8);ctx.quadraticCurveTo(-28,17,-44,7);ctx.fill();ctx.strokeStyle='#67bca0';ctx.lineWidth=3;for(const x of [-34,-17]){ctx.beginPath();ctx.moveTo(x,8);ctx.lineTo(x-3,17);ctx.lineTo(x+3,17);ctx.stroke()}ctx.fillStyle='#c5e993';ctx.beginPath();ctx.arc(-12,-7,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#172e2b';ctx.beginPath();ctx.arc(-9,-7,3,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#357b61';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-13,4);ctx.lineTo(0,0);ctx.stroke();ctx.restore()}
+// Explicitly show the two summands on the completed decomposition.
+const baseFinishDecomp=finishDecompSegment;finishDecompSegment=function(l){baseFinishDecomp(l);if(state.success){const labs=l.componentLabels;updateUI(`${V('v')} = ${V(...labs[0])} + ${V(...labs[1])} = ${V(...labs[1])} + ${V(...labs[0])}. Dezelfde componenten, omgekeerde volgorde.`)}};
+const baseDraw=draw;draw=function(){baseDraw();if(screen!=='game')return;const l=levels[current],g=geom(),available=g.x-32;if(available<95)return;ctx.save();ctx.font='700 11px system-ui';ctx.fillStyle=l.bonus?C.gold:C.cyan;ctx.fillText(`${l.bonus?'BONUS':String(l.lesson).padStart(2,'0')+' / 10'} · ${l.bonus?'SPEEL':l.step}`,18,30);ctx.fillStyle='#91b1ba';ctx.font='600 13px system-ui';const words=l.title.split(' ');let row='',y=52;for(const word of words){if(ctx.measureText(row+' '+word).width>available&&row){ctx.fillText(row,18,y);y+=19;row=word}else row+=(row?' ':'')+word}ctx.fillText(row,18,y);ctx.restore()};
+function drawBalloonAt(p){const q=toPx(p);ctx.save();ctx.translate(...q);const gr=ctx.createLinearGradient(-14,-12,14,14);gr.addColorStop(0,'#e0ceff');gr.addColorStop(.5,'#ab85e2');gr.addColorStop(1,'#665397');ctx.fillStyle=gr;ctx.beginPath();ctx.moveTo(0,19);ctx.bezierCurveTo(-25,2,-15,-21,0,-19);ctx.bezierCurveTo(15,-21,25,2,0,19);ctx.fill();ctx.strokeStyle='#f4e9ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-8,-10);ctx.quadraticCurveTo(-12,-4,-9,2);ctx.stroke();ctx.fillStyle='#d7b1ff';ctx.beginPath();ctx.moveTo(0,17);ctx.lineTo(-3,21);ctx.lineTo(3,21);ctx.closePath();ctx.fill();ctx.restore()}
+
+function jumpPoint(o,d,t){return add(add(o,mul(d,t)),[0,-.45*Math.sin(Math.PI*t)])}
+
+resize();openHome();
+</script>
+</body>
+</html>
